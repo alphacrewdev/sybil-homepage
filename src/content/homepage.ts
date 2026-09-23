@@ -1,6 +1,7 @@
 // Central content file for the homepage and shared nav/footer.
 // Swap TODO(karen) values once she answers Sybil-Homepage-Questionnaire.html —
 // nothing else in the codebase should need to change when copy/assets land.
+import { withBase } from "../lib/base";
 
 export const site = {
   name: "Sybil Digital Learning",
@@ -13,10 +14,10 @@ export const site = {
 };
 
 export const nav = [
-  { label: "About", href: "/about" },
-  { label: "Courses", href: "/courses" },
-  { label: "For Programs", href: "/program-directors" },
-  { label: "Contact", href: "/contact" },
+  { label: "About", href: withBase("/about") },
+  { label: "Courses", href: withBase("/courses") },
+  { label: "For Programs", href: withBase("/program-directors") },
+  { label: "Contact", href: withBase("/contact") },
 ];
 
 export const hero = {
@@ -24,8 +25,8 @@ export const hero = {
   headline: "Radiology board review, animated by the radiologist who wrote it.",
   sub:
     "Short, on-demand video courses covering the material residents are tested on — written, storyboarded, and reviewed personally by Dr. Karen Brown before a single frame ships.",
-  primaryCta: { label: "Browse courses", href: "/courses" },
-  secondaryCta: { label: "Bringing this to your program?", href: "/program-directors" },
+  primaryCta: { label: "Browse courses", href: withBase("/courses") },
+  secondaryCta: { label: "Bringing this to your program?", href: withBase("/program-directors") },
   mediaCaption: "NUCLEAR MEDICINE · MOD 12 / 29",
   // TODO(karen/amanda): swap for a real course clip or hero image — see questionnaire A3
 };
@@ -154,13 +155,13 @@ export const audiences = [
     title: "For residency programs",
     body:
       "Priced per resident, up to 12 — the price doesn't increase past that. Includes live Q&A sessions with Dr. Brown and full progress reporting for your program.",
-    cta: { label: "Talk to us about your program", href: "/program-directors" },
+    cta: { label: "Talk to us about your program", href: withBase("/program-directors") },
   },
   {
     title: "For individual residents",
     body:
       "Buy a single course or the full bundle, six months of access. Support by email — the same content, without live sessions with Dr. Brown.",
-    cta: { label: "Browse courses", href: "/courses" },
+    cta: { label: "Browse courses", href: withBase("/courses") },
   },
 ];
 

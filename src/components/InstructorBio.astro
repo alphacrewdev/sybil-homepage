@@ -1,6 +1,7 @@
 ---
 import BracketFrame from "./BracketFrame.astro";
 import { instructor } from "../content/homepage";
+import { withBase } from "../lib/base";
 ---
 
 <section class="border-t bg-[var(--surface)]">
@@ -15,7 +16,7 @@ import { instructor } from "../content/homepage";
       <p class="font-[family-name:var(--font-display)] text-xl font-semibold">{instructor.name}</p>
       <p class="mt-3 max-w-lg text-sm leading-relaxed text-[var(--text-muted)]">{instructor.bio}</p>
       <a
-        href="/about"
+        href={withBase("/about")}
         class="mt-5 inline-block text-sm font-medium underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--accent)]"
       >
         Full bio and credentials

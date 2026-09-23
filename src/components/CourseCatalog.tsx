@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { withBase } from "../lib/base";
 
 type CourseStatus = "available" | "in-production" | "coming-soon";
 
@@ -49,7 +50,7 @@ export default function CourseCatalog({ courses }: { courses: Course[] }) {
 
       <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((course) => (
-          <a key={course.slug} href={`/courses#${course.slug}`} className="bracket-frame block">
+          <a key={course.slug} href={withBase(`/courses#${course.slug}`)} className="bracket-frame block">
             <span className="bf-corner" aria-hidden="true"></span>
             <span className="bf-corner" aria-hidden="true"></span>
             <div className="relative flex h-full flex-col justify-between p-5" style={{ background: "var(--surface)" }}>
