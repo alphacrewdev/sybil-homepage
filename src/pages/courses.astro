@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PagePlaceholder from "../components/PagePlaceholder.astro";
+---
+
+<BaseLayout title="Courses">
+  <PagePlaceholder
+    eyebrow="PUBLIC COURSE CATALOG / PRICING"
+    heading="Courses & pricing"
+    body="Public catalog of purchasable on-demand courses. Self-pay students get 6-month access to pre-recorded videos, not live classes — this is a product catalog, not a subscription page. High priority per the developer spec; Stripe checkout ships in Phase 2."
+    pending={["Final course list + per-course pricing from Karen", "Bundle discount rules", "Board Review Questions pricing (being revised upward)"]}
+  />
+</BaseLayout>

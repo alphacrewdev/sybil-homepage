@@ -1,0 +1,35 @@
+---
+import { site, nav, footer } from "../content/homepage";
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t">
+  <div class="mx-auto max-w-6xl px-5 py-14 md:px-8">
+    <div class="flex flex-col gap-10 md:flex-row md:justify-between">
+      <div>
+        <p class="font-[family-name:var(--font-display)] text-base font-semibold">{site.name}</p>
+        <a
+          href={`mailto:${footer.contactEmail}`}
+          class="mt-2 inline-block text-sm text-[var(--text-muted)] hover:text-[var(--accent)]"
+        >
+          {footer.contactEmail}
+        </a>
+      </div>
+
+      <nav class="flex flex-wrap gap-x-8 gap-y-2" aria-label="Footer">
+        {nav.map((item) => (
+          <a href={item.href} class="text-sm text-[var(--text-muted)] hover:text-[var(--accent)]">
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-3 border-t pt-6 text-xs text-[var(--text-muted)] md:flex-row md:items-center md:justify-between">
+      <p>© {year} {site.name}. All rights reserved.</p>
+      <a href={footer.legacyPlatform.href} class="hover:text-[var(--accent)]">
+        {footer.legacyPlatform.label}
+      </a>
+    </div>
+  </div>
+</footer>

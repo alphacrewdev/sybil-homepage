@@ -1,0 +1,20 @@
+---
+// Reusable viewfinder/region-of-interest frame — the site's one recurring
+// signature device. Use only on media and course cards, never as a generic
+// card wrapper.
+interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<div class:list={["bracket-frame", className]}>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <div class="relative">
+    <slot />
+    {label && <span class="tag-mono absolute bottom-2 left-2 bg-[var(--bg)]/80 px-1.5 py-0.5">{label}</span>}
+  </div>
+</div>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PagePlaceholder from "../components/PagePlaceholder.astro";
+---
+
+<BaseLayout title="About">
+  <PagePlaceholder
+    eyebrow="ABOUT / INSTRUCTOR BIOS"
+    heading="About Sybil"
+    body="This page will carry Dr. Karen Brown's full bio and credentials, and her co-author's if he's credited publicly. Low priority per the developer spec — build once copy and photos are in hand."
+    pending={["Karen's bio + headshot", "Co-author bio, if credited", "Confirm: separate page or homepage section, per content length"]}
+  />
+</BaseLayout>

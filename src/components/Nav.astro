@@ -1,0 +1,107 @@
+---
+import { site, nav } from "../content/homepage";
+
+const path = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 border-b bg-[var(--bg)]/90 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
+    <a href="/" class="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
+      Sybil<span style="color: var(--accent)">.</span>
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+      {nav.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            "text-sm transition-colors hover:text-[var(--accent)]",
+            path === item.href ? "text-[var(--text)] font-medium" : "text-[var(--text-muted)]",
+          ]}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle dark mode"
+        class="grid h-9 w-9 place-items-center rounded-full border text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
+      >
+        <svg id="icon-sun" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+        <svg id="icon-moon" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+        </svg>
+      </button>
+
+      <a
+        href={site.appUrl}
+        class="hidden rounded-full px-4 py-2 text-sm font-medium transition-colors md:inline-block"
+        style="background: var(--accent); color: var(--accent-contrast);"
+      >
+        Log in
+      </a>
+
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        class="grid h-9 w-9 place-items-center rounded-full border md:hidden"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="hidden flex-col gap-1 border-t px-5 py-4 md:hidden" aria-label="Primary mobile">
+    {nav.map((item) => (
+      <a href={item.href} class="rounded px-2 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent)]">
+        {item.label}
+      </a>
+    ))}
+    <a
+      href={site.appUrl}
+      class="mt-2 rounded-full px-4 py-2.5 text-center text-sm font-medium"
+      style="background: var(--accent); color: var(--accent-contrast);"
+    >
+      Log in
+    </a>
+  </nav>
+</header>
+
+<script>
+  const themeToggle = document.getElementById("theme-toggle");
+  const iconSun = document.getElementById("icon-sun");
+  const iconMoon = document.getElementById("icon-moon");
+  const root = document.documentElement;
+
+  function syncIcon() {
+    const isDark = root.classList.contains("dark");
+    iconSun?.classList.toggle("hidden", isDark);
+    iconMoon?.classList.toggle("hidden", !isDark);
+  }
+  syncIcon();
+
+  themeToggle?.addEventListener("click", () => {
+    root.classList.toggle("dark");
+    localStorage.setItem("sybil-theme", root.classList.contains("dark") ? "dark" : "light");
+    syncIcon();
+  });
+
+  const menuToggle = document.getElementById("menu-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  menuToggle?.addEventListener("click", () => {
+    const isOpen = mobileMenu?.classList.toggle("flex");
+    mobileMenu?.classList.toggle("hidden");
+    menuToggle.setAttribute("aria-expanded", String(!!isOpen));
+  });
+</script>

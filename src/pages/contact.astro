@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PagePlaceholder from "../components/PagePlaceholder.astro";
+---
+
+<BaseLayout title="Contact">
+  <PagePlaceholder
+    eyebrow="CONTACT"
+    heading="Get in touch"
+    body="Simple contact form — name, email, title, company — delivered via SendGrid. No live chat: it sets a response-time expectation that doesn't match how support actually works here."
+    pending={["Confirm form fields with Karen", "Confirm destination email/routing"]}
+  />
+</BaseLayout>
