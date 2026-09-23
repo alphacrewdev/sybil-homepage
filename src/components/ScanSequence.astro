@@ -1,0 +1,501 @@
+---
+// Scroll-driven scan sequence.
+//
+// Concept: reading a study means scrolling through a stack of slices — it's
+// the one gesture every radiology resident performs thousands of times. So
+// page scroll IS stack scroll here. Progress runs three stages: traversing
+// the stack, focusing on a finding, then a nuclear-medicine tracer bloom
+// (the course actually in production).
+//
+// Deliberately stylised rather than pseudo-anatomical: the audience is
+// radiologists, and a crude fake cross-section would read as amateur
+// immediately. The geometry instead echoes the logo — concentric arcs
+// around a central orb, in the navy-to-teal brand ramp.
+
+const stages = [
+  {
+    kicker: "The stack",
+    line: "A resident scrolls through thousands of these.",
+    sub: "Slice after slice, most of it normal, on top of a full clinical service.",
+  },
+  {
+    kicker: "The teaching",
+    line: "Sybil teaches exactly what to look for.",
+    sub: "Short animated modules scoped to the findings the boards actually test.",
+  },
+  {
+    kicker: "In production",
+    line: "The Nuclear Medicine course, 29 modules.",
+    sub: "Written, storyboarded and reviewed by a practising radiologist.",
+  },
+];
+---
+
+<section class="scan" aria-labelledby="scan-heading">
+  <h2 id="scan-heading" class="sr-only">How Sybil teaches</h2>
+
+  <div class="scan-sticky">
+    <canvas id="scan-canvas" aria-hidden="true"></canvas>
+
+    <!-- Viewer overlay, following DICOM readout conventions -->
+    <div class="scan-hud" aria-hidden="true">
+      <div class="hud-tl">
+        <span class="tag-mono" id="hud-series">SERIES 3 · AXIAL</span>
+        <span class="tag-mono" id="hud-mode">CT · W 400 L 40</span>
+      </div>
+      <div class="hud-tr">
+        <span class="tag-mono" id="hud-slice">SLICE 001 / 120</span>
+      </div>
+      <div class="hud-rail"><div class="hud-rail-thumb" id="hud-thumb"></div></div>
+    </div>
+
+    <div class="scan-stages">
+      {stages.map((stage, i) => (
+        <figure class="scan-stage" data-stage={i}>
+          <figcaption class="tag-mono scan-kicker">{stage.kicker}</figcaption>
+          <p class="scan-line">{stage.line}</p>
+          <p class="scan-sub">{stage.sub}</p>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .scan {
+    position: relative;
+    height: 360vh;
+    background: var(--bg);
+  }
+
+  .scan-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  #scan-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Scrim so the copy stays readable over the canvas at every slice: a soft
+     vignette plus a bottom-weighted wash under the text column. */
+  .scan-sticky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 50% 45%, transparent 55%, color-mix(in srgb, var(--bg) 70%, transparent) 100%),
+      linear-gradient(to top, var(--bg) 2%, color-mix(in srgb, var(--bg) 55%, transparent) 26%, transparent 55%);
+  }
+
+  .scan-hud {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .hud-tl,
+  .hud-tr {
+    position: absolute;
+    top: clamp(4.75rem, 9vh, 7rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .hud-tl { left: clamp(1.25rem, 4vw, 3rem); }
+  .hud-tr { right: clamp(1.25rem, 4vw, 3rem); text-align: right; }
+
+  .hud-rail {
+    position: absolute;
+    right: clamp(1.25rem, 4vw, 3rem);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: min(38vh, 16rem);
+    background: color-mix(in srgb, var(--border) 70%, transparent);
+  }
+
+  .hud-rail-thumb {
+    position: absolute;
+    left: -2px;
+    width: 6px;
+    height: 2rem;
+    background: var(--accent);
+    will-change: transform;
+  }
+
+  .scan-stages {
+    position: relative;
+    z-index: 2;
+    width: min(46rem, 100% - 2.5rem);
+    padding-bottom: clamp(2rem, 14vh, 9rem);
+    display: grid;
+    align-self: end;
+  }
+
+  .scan-stage {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: opacity, transform;
+  }
+
+  .scan-kicker {
+    display: block;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .scan-line {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    font-size: clamp(1.6rem, 4.4vw, 2.75rem);
+    text-wrap: balance;
+  }
+
+  .scan-sub {
+    margin: 0.75rem 0 0;
+    max-width: 34rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Without motion, the section collapses to one viewport showing a single
+     representative slice and the final message — no scroll hijack, no loop. */
+  @media (prefers-reduced-motion: reduce) {
+    .scan { height: 100svh; }
+    .scan-stage { opacity: 1; transform: none; }
+    .scan-stage[data-stage="0"],
+    .scan-stage[data-stage="1"] { display: none; }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".scan");
+  const canvas = document.getElementById("scan-canvas") as HTMLCanvasElement | null;
+  const thumb = document.getElementById("hud-thumb");
+  const sliceLabel = document.getElementById("hud-slice");
+  const modeLabel = document.getElementById("hud-mode");
+  const stageEls = Array.from(document.querySelectorAll<HTMLElement>(".scan-stage"));
+
+  if (section && canvas) {
+    const ctx = canvas.getContext("2d")!;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const TOTAL_SLICES = 120;
+    const RINGS = 7;
+    const POINTS = 96;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let progress = reduced ? 0.82 : 0;
+    let eased = progress;
+    let running = false;
+    let visible = false;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = canvas!.clientWidth;
+      height = canvas!.clientHeight;
+      canvas!.width = Math.round(width * dpr);
+      canvas!.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Deterministic value noise — scrolling back must reproduce the same
+    // slice, so nothing here may use Math.random().
+    function hash(n: number) {
+      const s = Math.sin(n * 127.1) * 43758.5453123;
+      return s - Math.floor(s);
+    }
+
+    function sliceRadius(slice: number, ring: number, angle: number) {
+      const a = angle / (Math.PI * 2);
+      const seed = slice * 31.7 + ring * 7.3;
+      const lobes =
+        Math.sin(angle * 3 + hash(seed) * 6.28) * 0.055 +
+        Math.sin(angle * 5 - hash(seed + 1) * 6.28) * 0.03 +
+        Math.sin(angle * 2 + hash(seed + 2) * 6.28 + a) * 0.045;
+      return 1 + lobes;
+    }
+
+    function readCss(name: string, fallback: string) {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    }
+
+    function draw(p: number) {
+      const accent = readCss("--accent", "#027682");
+      const navy = readCss("--color-navy-700", "#022b62");
+      const teal = readCss("--color-teal-300", "#3fb3c2");
+      const muted = readCss("--border", "#cfdde4");
+      const isDark = document.documentElement.classList.contains("dark");
+      // Navy-on-near-white needs more weight than teal-on-navy to read with
+      // the same confidence, so light mode gets boosted.
+      const ink = isDark ? 1 : 1.55;
+      const lead = isDark ? teal : navy;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height / 2;
+      const base = Math.min(width, height) * 0.3;
+
+      // Continuous slice position; neighbouring slices are blended so the
+      // traversal morphs instead of flipping between discrete frames.
+      const slicePos = p * (TOTAL_SLICES - 1);
+      const s0 = Math.floor(slicePos);
+      const blend = slicePos - s0;
+
+      // Stage weights: 0 traverse, 1 focus, 2 tracer bloom.
+      const focus = Math.min(1, Math.max(0, (p - 0.32) / 0.28));
+      const bloom = Math.min(1, Math.max(0, (p - 0.66) / 0.3));
+
+      ctx.lineJoin = "round";
+
+      for (let ring = 0; ring < RINGS; ring++) {
+        const ringT = ring / (RINGS - 1);
+        const scale = 0.32 + ringT * 0.85;
+        // Outer rings recede as the sequence focuses inward.
+        const dim = 1 - focus * ringT * 0.72;
+
+        ctx.beginPath();
+        for (let i = 0; i <= POINTS; i++) {
+          const angle = (i / POINTS) * Math.PI * 2;
+          const r0 = sliceRadius(s0, ring, angle);
+          const r1 = sliceRadius(s0 + 1, ring, angle);
+          const r = (r0 * (1 - blend) + r1 * blend) * base * scale;
+          // Axial views are wider than they are deep.
+          const x = cx + Math.cos(angle) * r * 1.22;
+          const y = cy + Math.sin(angle) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+
+        const grad = ctx.createLinearGradient(cx - base, cy - base, cx + base, cy + base);
+        grad.addColorStop(0, navy);
+        grad.addColorStop(1, ring < 3 ? teal : accent);
+        ctx.strokeStyle = grad;
+        ctx.globalAlpha = Math.min(1, (0.2 + (1 - ringT) * 0.55) * dim * ink);
+        ctx.lineWidth = ring === 0 ? 2.2 : 1.15;
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = 1;
+
+      // Broken concentric arcs in four quadrants — the logo's own geometry,
+      // rotating slowly as the stack advances.
+      const spin = p * Math.PI * 0.55;
+      for (let band = 0; band < 3; band++) {
+        const r = base * (1.28 + band * 0.26);
+        ctx.strokeStyle = band === 0 ? lead : accent;
+        ctx.globalAlpha = Math.min(1, (0.3 - band * 0.07) * ink * (1 - focus * 0.55));
+        ctx.lineWidth = 2.4 - band * 0.5;
+        ctx.lineCap = "round";
+        for (let q = 0; q < 4; q++) {
+          const mid = spin + q * (Math.PI / 2) + Math.PI / 4;
+          const span = 0.52 - band * 0.06;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, r * 1.22, r, 0, mid - span, mid + span);
+          ctx.stroke();
+        }
+      }
+      ctx.lineCap = "butt";
+
+      // Angular graticule, for the density a real viewport has.
+      ctx.strokeStyle = muted;
+      ctx.globalAlpha = 0.55 * ink;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < 48; i++) {
+        const a = (i / 48) * Math.PI * 2;
+        const rr = base * 2.05;
+        const len = i % 4 === 0 ? base * 0.06 : base * 0.03;
+        ctx.moveTo(cx + Math.cos(a) * rr * 1.22, cy + Math.sin(a) * rr);
+        ctx.lineTo(cx + Math.cos(a) * (rr + len) * 1.22, cy + Math.sin(a) * (rr + len));
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Focus reticle: converges on the finding as stage 2 takes over.
+      if (focus > 0) {
+        // Corners track the same 1.22 x-aspect as the rings, so the bracket
+        // frames the shape instead of floating beside it.
+        const reach = base * (1.5 - focus * 0.95);
+        const len = base * 0.16;
+        ctx.strokeStyle = accent;
+        ctx.globalAlpha = Math.min(1, focus * 0.9 * ink);
+        ctx.lineWidth = 1.8;
+        for (let q = 0; q < 4; q++) {
+          const sx = q % 2 === 0 ? -1 : 1;
+          const sy = q < 2 ? -1 : 1;
+          const x = cx + sx * reach * 1.22;
+          const y = cy + sy * reach;
+          ctx.beginPath();
+          ctx.moveTo(x, y - sy * len);
+          ctx.lineTo(x, y);
+          ctx.lineTo(x - sx * len, y);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // Tracer uptake: nuclear medicine finale, blooming from the centre orb.
+      if (bloom > 0) {
+        const r = base * (0.12 + bloom * 1.25);
+        const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        halo.addColorStop(0, accent);
+        halo.addColorStop(0.35, teal);
+        halo.addColorStop(1, "transparent");
+        ctx.globalAlpha = 0.5 * bloom;
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // Centre orb — the logo's focal point, always present.
+      const orb = ctx.createRadialGradient(cx - 3, cy - 3, 1, cx, cy, base * 0.1);
+      orb.addColorStop(0, teal);
+      orb.addColorStop(1, navy);
+      ctx.fillStyle = orb;
+      ctx.beginPath();
+      ctx.arc(cx, cy, base * (0.075 + bloom * 0.025), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Faint graticule, so the field reads as a viewport rather than art.
+      ctx.strokeStyle = muted;
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - base * 1.55);
+      ctx.lineTo(cx, cy - base * 1.38);
+      ctx.moveTo(cx, cy + base * 1.38);
+      ctx.lineTo(cx, cy + base * 1.55);
+      ctx.moveTo(cx - base * 1.85, cy);
+      ctx.lineTo(cx - base * 1.68, cy);
+      ctx.moveTo(cx + base * 1.68, cy);
+      ctx.lineTo(cx + base * 1.85, cy);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // HUD text
+      const sliceNo = String(Math.round(1 + p * (TOTAL_SLICES - 1))).padStart(3, "0");
+      if (sliceLabel) sliceLabel.textContent = `SLICE ${sliceNo} / ${TOTAL_SLICES}`;
+      if (modeLabel) modeLabel.textContent = bloom > 0.45 ? "NM · TRACER UPTAKE" : "CT · W 400 L 40";
+      if (thumb) thumb.style.transform = `translateY(${p * (thumb.parentElement!.clientHeight - thumb.clientHeight)}px)`;
+
+      // Stage copy cross-fades on the same grid cell.
+      stageEls.forEach((el, i) => {
+        const start = i * 0.33;
+        const t = Math.min(1, Math.max(0, (p - start) / 0.16));
+        const out = Math.min(1, Math.max(0, (p - (start + 0.26)) / 0.12));
+        const opacity = t * (1 - out);
+        el.style.opacity = String(opacity);
+        el.style.transform = `translateY(${(1 - t) * 14 - out * 10}px)`;
+      });
+    }
+
+    function readProgress() {
+      const rect = section!.getBoundingClientRect();
+      const scrollable = section!.offsetHeight - window.innerHeight;
+      if (scrollable <= 0) return 0;
+      return Math.min(1, Math.max(0, -rect.top / scrollable));
+    }
+
+    function loop() {
+      if (!running) return;
+      eased += (progress - eased) * 0.085;
+      draw(eased);
+      if (Math.abs(progress - eased) > 0.0005) {
+        requestAnimationFrame(loop);
+      } else {
+        running = false;
+      }
+    }
+
+    function kick() {
+      if (!running && visible) {
+        running = true;
+        requestAnimationFrame(loop);
+      }
+    }
+
+    resize();
+
+    if (reduced) {
+      // One representative slice, drawn once. No scroll listener, no RAF.
+      draw(progress);
+      window.addEventListener("resize", () => { resize(); draw(progress); }, { passive: true });
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          visible = entries[0].isIntersecting;
+          if (visible) kick();
+        },
+        { threshold: 0 },
+      );
+      io.observe(section);
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          progress = readProgress();
+          kick();
+        },
+        { passive: true },
+      );
+
+      window.addEventListener(
+        "resize",
+        () => {
+          resize();
+          progress = readProgress();
+          eased = progress;
+          draw(eased);
+        },
+        { passive: true },
+      );
+
+      progress = readProgress();
+      eased = progress;
+      draw(eased);
+    }
+
+    // Repaint on theme change so canvas colours follow the toggle.
+    new MutationObserver(() => draw(eased)).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+</script>

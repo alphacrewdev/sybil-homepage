@@ -3,87 +3,206 @@ import { site, nav } from "../content/homepage";
 import { withBase } from "../lib/base";
 
 const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path === `${href}/`;
 ---
 
-<header class="sticky top-0 z-50 border-b bg-[var(--bg)]/90 backdrop-blur">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
-    <a href={withBase("/")} class="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
-      Sybil<span style="color: var(--accent)">.</span>
+<header class="nav" id="nav">
+  <div class="bar">
+    <a class="brand" href={withBase("/")} aria-label={`${site.name} — home`}>
+      <img class="logo logo-light" src={withBase("/brand/sybil-logo-color.png")} alt={site.name} width="838" height="283" />
+      <img class="logo logo-dark" src={withBase("/brand/sybil-logo-white.png")} alt={site.name} width="838" height="283" />
     </a>
 
-    <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+    <span class="grow"></span>
+
+    <nav class="links" aria-label="Primary">
       {nav.map((item) => (
-        <a
-          href={item.href}
-          class:list={[
-            "text-sm transition-colors hover:text-[var(--accent)]",
-            path === item.href ? "text-[var(--text)] font-medium" : "text-[var(--text-muted)]",
-          ]}
-        >
-          {item.label}
-        </a>
+        <a href={item.href} class:list={["link", isActive(item.href) && "current"]}>{item.label}</a>
       ))}
     </nav>
 
-    <div class="flex items-center gap-3">
-      <button
-        id="theme-toggle"
-        type="button"
-        aria-label="Toggle dark mode"
-        class="grid h-9 w-9 place-items-center rounded-full border text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
-      >
-        <svg id="icon-sun" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
-        </svg>
-        <svg id="icon-moon" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
-        </svg>
-      </button>
+    <button id="theme-toggle" type="button" class="icon-btn" aria-label="Toggle dark mode">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+      </svg>
+      <svg id="icon-moon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+      </svg>
+    </button>
 
-      <a
-        href={site.appUrl}
-        class="hidden rounded-full px-4 py-2 text-sm font-medium transition-colors md:inline-block"
-        style="background: var(--accent); color: var(--accent-contrast);"
-      >
-        Log in
-      </a>
+    <a class="cta" href={site.appUrl}>Log in</a>
 
-      <button
-        id="menu-toggle"
-        type="button"
-        aria-label="Open menu"
-        aria-expanded="false"
-        class="grid h-9 w-9 place-items-center rounded-full border md:hidden"
-      >
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 7h16M4 12h16M4 17h16"></path>
-        </svg>
-      </button>
-    </div>
+    <button id="menu-toggle" type="button" class="icon-btn menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sheet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
   </div>
 
-  <nav id="mobile-menu" class="hidden flex-col gap-1 border-t px-5 py-4 md:hidden" aria-label="Primary mobile">
+  <div class="sheet" id="sheet">
     {nav.map((item) => (
-      <a href={item.href} class="rounded px-2 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent)]">
-        {item.label}
-      </a>
+      <a href={item.href} class="sheet-row">{item.label}</a>
     ))}
-    <a
-      href={site.appUrl}
-      class="mt-2 rounded-full px-4 py-2.5 text-center text-sm font-medium"
-      style="background: var(--accent); color: var(--accent-contrast);"
-    >
-      Log in
-    </a>
-  </nav>
+    <a href={site.appUrl} class="sheet-row sheet-cta">Log in</a>
+  </div>
 </header>
 
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    padding-top: env(safe-area-inset-top);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav.solid {
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    border-bottom-color: var(--border);
+  }
+
+  @media (min-width: 761px) {
+    .nav.solid { backdrop-filter: blur(14px); }
+  }
+
+  .bar {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.05rem, 4vw, 2rem);
+    height: 3.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .grow { flex: 1; }
+
+  .brand { display: flex; align-items: center; }
+
+  .logo {
+    height: 1.9rem;
+    width: auto;
+    display: block;
+  }
+
+  .logo-dark { display: none; }
+  :root.dark .logo-light { display: none; }
+  :root.dark .logo-dark { display: block; }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.1rem, 2.4vw, 2rem);
+    margin-right: 0.75rem;
+  }
+
+  .link {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.18s ease;
+  }
+
+  .link:hover { color: var(--accent); }
+  .link.current { color: var(--text); }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    height: 2.15rem;
+    width: 2.15rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+
+  .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .icon-btn svg { height: 1rem; width: 1rem; }
+  .hidden { display: none; }
+
+  .cta {
+    margin-left: 0.4rem;
+    padding: 0.5rem 1.05rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: transform 0.18s ease, filter 0.18s ease;
+  }
+
+  .cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+  .menu-btn { display: none; }
+
+  /* Links crowd before the phone breakpoint, so the sheet takes over at 920. */
+  @media (max-width: 920px) {
+    .links { display: none; }
+    .cta { display: none; }
+    .menu-btn { display: grid; }
+  }
+
+  /* Top sheet, not a side drawer — it drops from under the bar. */
+  .sheet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding-top: calc(3.75rem + env(safe-area-inset-top) + 0.5rem);
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1),
+      visibility 0s linear 0.34s;
+  }
+
+  .sheet.open {
+    transform: translateY(0);
+    visibility: visible;
+    transition:
+      transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1),
+      visibility 0s;
+  }
+
+  .sheet-row {
+    padding: 0.95rem clamp(1.05rem, 4vw, 2rem);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .sheet-row:hover { color: var(--accent); }
+
+  .sheet-cta {
+    color: var(--accent);
+    font-weight: 500;
+  }
+</style>
+
 <script>
+  const root = document.documentElement;
+  const navEl = document.getElementById("nav");
   const themeToggle = document.getElementById("theme-toggle");
   const iconSun = document.getElementById("icon-sun");
   const iconMoon = document.getElementById("icon-moon");
-  const root = document.documentElement;
 
   function syncIcon() {
     const isDark = root.classList.contains("dark");
@@ -99,10 +218,15 @@ const path = Astro.url.pathname;
   });
 
   const menuToggle = document.getElementById("menu-toggle");
-  const mobileMenu = document.getElementById("mobile-menu");
+  const sheet = document.getElementById("sheet");
   menuToggle?.addEventListener("click", () => {
-    const isOpen = mobileMenu?.classList.toggle("flex");
-    mobileMenu?.classList.toggle("hidden");
-    menuToggle.setAttribute("aria-expanded", String(!!isOpen));
+    const open = sheet?.classList.toggle("open") ?? false;
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
+
+  // Solid once the first screen is behind us.
+  const onScroll = () => navEl?.classList.toggle("solid", window.scrollY > window.innerHeight * 0.85);
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 </script>

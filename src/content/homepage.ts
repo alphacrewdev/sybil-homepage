@@ -177,9 +177,40 @@ export const instructor = {
 export const footer = {
   // TODO(karen): confirm public contact address — see questionnaire E3
   contactEmail: "contact@sybildigitallearning.com",
+  blurb:
+    "Animated radiology board-review courses for residents and residency programs — written, storyboarded and reviewed by a practising radiologist.",
   legacyPlatform: {
     // TODO(karen): confirm this should stay live until legacy students finish (~Jan/Feb per Sept 16 meeting)
     label: "Existing student on the previous platform?",
     href: "#",
   },
+  columns: [
+    {
+      title: "Courses",
+      links: [
+        { label: "Nuclear Medicine", href: withBase("/courses#nuclear-medicine") },
+        { label: "Board Review Questions", href: withBase("/courses#board-review") },
+        { label: "All courses", href: withBase("/courses") },
+      ],
+    },
+    {
+      title: "For programs",
+      links: [
+        { label: "Program directors", href: withBase("/program-directors") },
+        { label: "Request pricing", href: withBase("/contact") },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About", href: withBase("/about") },
+        { label: "Contact", href: withBase("/contact") },
+      ],
+    },
+  ],
+  // TODO(karen): confirm whether these pages are needed before launch
+  legal: [
+    { label: "Privacy", href: withBase("/privacy") },
+    { label: "Terms", href: withBase("/terms") },
+  ],
 };

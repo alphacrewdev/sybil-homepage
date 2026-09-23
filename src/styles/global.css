@@ -3,49 +3,57 @@
 /* Manual dark mode: toggled via .dark class on <html>, see ThemeToggle inline script. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Palette sampled directly from the Sybil logo: the wordmark and outer arcs
+   are #022B62, the inner swirl and centre orb peak at #027682, and the mark
+   is a continuous gradient between them (#02426C / #025574 / #02647B are
+   real mid-stops). That navy-to-teal ramp is the brand signature — it drives
+   the accent, the scan animation, and the footer gradient rule. */
 @theme {
   --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-ink-950: #0a1417;
-  --color-ink-900: #0f1c20;
-  --color-ink-800: #14262b;
-  --color-ink-700: #1c3238;
+  --color-navy-900: #011c43;
+  --color-navy-700: #022b62;
+  --color-navy-500: #02426c;
+  --color-teal-700: #025574;
+  --color-teal-500: #027682;
+  --color-teal-300: #3fb3c2;
+  --color-teal-200: #7fd3dc;
 
-  --color-paper-050: #eff3f1;
-  --color-paper-000: #fbfdfc;
+  --color-ink-950: #03142b;
+  --color-ink-900: #051c37;
+  --color-ink-800: #072742;
+  --color-ink-700: #0d3352;
 
-  --color-signal-300: #6fd0c4;
-  --color-signal-500: #1f7a70;
-  --color-signal-600: #17615a;
-
-  --color-mark-400: #f0ae4d;
-  --color-mark-600: #b9750f;
+  --color-paper-050: #f1f5f7;
+  --color-paper-000: #ffffff;
 }
 
 :root {
   color-scheme: light;
   --bg: var(--color-paper-050);
   --surface: var(--color-paper-000);
-  --text: #10201f;
-  --text-muted: #45605c;
-  --border: #c7d6d2;
-  --accent: var(--color-signal-500);
+  --text: var(--color-navy-700);
+  --text-muted: #4e6e80;
+  --border: #cfdde4;
+  --accent: var(--color-teal-500);
   --accent-contrast: #ffffff;
-  --mark: var(--color-mark-600);
+  --mark: #b06d10;
+  --brand-gradient: linear-gradient(115deg, var(--color-navy-700), var(--color-teal-500));
 }
 
 :root.dark {
   color-scheme: dark;
   --bg: var(--color-ink-950);
   --surface: var(--color-ink-800);
-  --text: #e7eeec;
-  --text-muted: #9fb4b0;
-  --border: #23393e;
-  --accent: var(--color-signal-300);
-  --accent-contrast: #08201d;
-  --mark: var(--color-mark-400);
+  --text: #e4eef3;
+  --text-muted: #94b0bf;
+  --border: #143b55;
+  --accent: var(--color-teal-300);
+  --accent-contrast: var(--color-ink-950);
+  --mark: #e8a944;
+  --brand-gradient: linear-gradient(115deg, var(--color-teal-500), var(--color-teal-300));
 }
 
 @layer base {
@@ -62,7 +70,10 @@
     color: var(--text);
     font-family: var(--font-body);
     transition: background-color 0.2s ease, color 0.2s ease;
-    overflow-x: hidden;
+    /* `clip`, never `hidden`: overflow-x:hidden makes body a scroll container,
+       which breaks position:sticky in several mobile browsers — and the scan
+       sequence depends on sticky. */
+    overflow-x: clip;
   }
 
   h1, h2, h3 {
@@ -82,7 +93,30 @@
       transition-duration: 0.001ms !important;
       scroll-behavior: auto !important;
     }
+    html { scroll-behavior: auto; }
+    .rv { opacity: 1 !important; transform: none !important; }
   }
+}
+
+/* Reveal-on-enter. Observer adds .in once, then unobserves — one pass, no
+   repeat animation on scroll-back. */
+@layer components {
+  .rv {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 0.9, 0.28, 1),
+      transform 0.75s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+
+  .rv.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .rv-d1 { transition-delay: 0.08s; }
+  .rv-d2 { transition-delay: 0.16s; }
+  .rv-d3 { transition-delay: 0.24s; }
 }
 
 /* Bracket-frame: the site's one recurring signature device — a viewfinder /

@@ -1,35 +1,172 @@
 ---
-import { site, nav, footer } from "../content/homepage";
-const year = new Date().getFullYear();
+import { site, footer } from "../content/homepage";
+import { withBase } from "../lib/base";
 ---
 
-<footer class="border-t">
-  <div class="mx-auto max-w-6xl px-5 py-14 md:px-8">
-    <div class="flex flex-col gap-10 md:flex-row md:justify-between">
-      <div>
-        <p class="font-[family-name:var(--font-display)] text-base font-semibold">{site.name}</p>
-        <a
-          href={`mailto:${footer.contactEmail}`}
-          class="mt-2 inline-block text-sm text-[var(--text-muted)] hover:text-[var(--accent)]"
-        >
-          {footer.contactEmail}
-        </a>
+<footer class="sitefoot">
+  <div class="wrap">
+    <div class="top">
+      <div class="brandblock">
+        <img class="flogo flogo-light" src={withBase("/brand/sybil-logo-color.png")} alt={site.name} width="838" height="283" />
+        <img class="flogo flogo-dark" src={withBase("/brand/sybil-logo-white.png")} alt={site.name} width="838" height="283" />
+        <p class="fdesc">{footer.blurb}</p>
+        <a class="fmail" href={`mailto:${footer.contactEmail}`}>{footer.contactEmail}</a>
       </div>
 
-      <nav class="flex flex-wrap gap-x-8 gap-y-2" aria-label="Footer">
-        {nav.map((item) => (
-          <a href={item.href} class="text-sm text-[var(--text-muted)] hover:text-[var(--accent)]">
-            {item.label}
-          </a>
+      <div class="cols">
+        {footer.columns.map((col) => (
+          <nav class="col" aria-label={col.title}>
+            <p class="coltitle">{col.title}</p>
+            {col.links.map((link) => (
+              <a class="collink" href={link.href}>{link.label}</a>
+            ))}
+          </nav>
         ))}
-      </nav>
+      </div>
     </div>
 
-    <div class="mt-12 flex flex-col gap-3 border-t pt-6 text-xs text-[var(--text-muted)] md:flex-row md:items-center md:justify-between">
-      <p>© {year} {site.name}. All rights reserved.</p>
-      <a href={footer.legacyPlatform.href} class="hover:text-[var(--accent)]">
-        {footer.legacyPlatform.label}
-      </a>
+    <a class="legacy" href={footer.legacyPlatform.href}>{footer.legacyPlatform.label}</a>
+
+    <div class="legalbar">
+      <span>© <span id="fyear">2026</span> {site.name}. All rights reserved.</span>
+      <nav class="legallinks" aria-label="Legal">
+        {footer.legal.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+      <span>Developed by <a href="https://alphacrewstudio.com" rel="noopener">AlphaCrew Studio</a></span>
     </div>
   </div>
 </footer>
+
+<style>
+  .sitefoot {
+    position: relative;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 3.25rem 0 3rem;
+  }
+
+  /* The logo's navy-to-teal ramp, used as a hairline rather than a slab. */
+  .sitefoot::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--brand-gradient);
+  }
+
+  .wrap {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.05rem, 4vw, 2rem);
+  }
+
+  .top {
+    display: grid;
+    gap: 2.75rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .top { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 4rem; }
+  }
+
+  .flogo {
+    height: 2.1rem;
+    width: auto;
+    display: block;
+  }
+
+  .flogo-dark { display: none; }
+  :root.dark .flogo-light { display: none; }
+  :root.dark .flogo-dark { display: block; }
+
+  .fdesc {
+    margin: 1.1rem 0 0;
+    max-width: 52ch;
+    line-height: 1.7;
+  }
+
+  .fmail {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+    transition: color 0.18s ease;
+  }
+
+  .fmail:hover { color: var(--accent); }
+
+  .cols {
+    display: grid;
+    gap: 1.6rem 1.4rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    line-height: 1.75;
+  }
+
+  .col { display: flex; flex-direction: column; }
+
+  .coltitle {
+    margin: 0 0 0.6rem;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .collink {
+    color: var(--text-muted);
+    transition: color 0.18s ease;
+  }
+
+  .collink:hover { color: var(--accent); }
+
+  /* Deliberately quiet: a handful of legacy students still need it, and Karen
+     doesn't want it competing with the real login. */
+  .legacy {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.75;
+    transition: opacity 0.18s ease, color 0.18s ease;
+  }
+
+  .legacy:hover { opacity: 1; color: var(--accent); }
+
+  .legalbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    margin-top: 1.6rem;
+    padding-top: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .legallinks {
+    display: flex;
+    gap: 1.2rem;
+  }
+
+  .legalbar a {
+    color: inherit;
+    transition: color 0.18s ease;
+  }
+
+  .legalbar a:hover { color: var(--accent); }
+</style>
+
+<script>
+  const year = document.getElementById("fyear");
+  if (year) year.textContent = String(new Date().getFullYear());
+</script>

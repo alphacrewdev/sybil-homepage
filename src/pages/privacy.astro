@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PagePlaceholder from "../components/PagePlaceholder.astro";
+---
+
+<BaseLayout title="Privacy">
+  <PagePlaceholder
+    eyebrow="LEGAL"
+    heading="Privacy policy"
+    body="Placeholder so the footer link doesn't 404. Needs real policy text before launch — the platform handles student records and institutional data, so this should be reviewed rather than templated."
+    pending={["Privacy policy text", "Confirm what student data the platform stores", "Cookie/analytics disclosure for GA4"]}
+  />
+</BaseLayout>
