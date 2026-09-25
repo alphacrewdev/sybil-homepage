@@ -16,9 +16,10 @@ const isActive = (href: string) => path === href || path === `${href}/`;
     <span class="grow"></span>
 
     <nav class="links" aria-label="Primary">
-      {nav.map((item) => (
+      {nav.links.map((item) => (
         <a href={item.href} class:list={["link", isActive(item.href) && "current"]}>{item.label}</a>
       ))}
+      <a href={nav.account.href} class="link acct">{nav.account.label}</a>
     </nav>
 
     <button id="theme-toggle" type="button" class="icon-btn" aria-label="Toggle dark mode">
@@ -31,7 +32,7 @@ const isActive = (href: string) => path === href || path === `${href}/`;
       </svg>
     </button>
 
-    <a class="cta" href={site.appUrl}>Log in</a>
+    <a class="btn btn-primary cta" href={nav.primary.href}>{nav.primary.label}</a>
 
     <button id="menu-toggle" type="button" class="icon-btn menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sheet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -41,10 +42,11 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   </div>
 
   <div class="sheet" id="sheet">
-    {nav.map((item) => (
+    {nav.links.map((item) => (
       <a href={item.href} class="sheet-row">{item.label}</a>
     ))}
-    <a href={site.appUrl} class="sheet-row sheet-cta">Log in</a>
+    <a href={nav.account.href} class="sheet-row">{nav.account.label}</a>
+    <a href={nav.primary.href} class="sheet-row sheet-cta">{nav.primary.label}</a>
   </div>
 </header>
 
@@ -80,15 +82,9 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   }
 
   .grow { flex: 1; }
-
   .brand { display: flex; align-items: center; }
 
-  .logo {
-    height: 1.9rem;
-    width: auto;
-    display: block;
-  }
-
+  .logo { height: 1.9rem; width: auto; display: block; }
   .logo-dark { display: none; }
   :root.dark .logo-light { display: none; }
   :root.dark .logo-dark { display: block; }
@@ -96,7 +92,7 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   .links {
     display: flex;
     align-items: center;
-    gap: clamp(1.1rem, 2.4vw, 2rem);
+    gap: clamp(1rem, 2vw, 1.75rem);
     margin-right: 0.75rem;
   }
 
@@ -111,6 +107,7 @@ const isActive = (href: string) => path === href || path === `${href}/`;
 
   .link:hover { color: var(--accent); }
   .link.current { color: var(--text); }
+  .acct { color: var(--text); }
 
   .icon-btn {
     display: grid;
@@ -129,26 +126,12 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   .icon-btn svg { height: 1rem; width: 1rem; }
   .hidden { display: none; }
 
-  .cta {
-    margin-left: 0.4rem;
-    padding: 0.5rem 1.05rem;
-    border-radius: 999px;
-    background: var(--accent);
-    color: var(--accent-contrast);
-    font-size: 0.82rem;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: transform 0.18s ease, filter 0.18s ease;
-  }
-
-  .cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
-
+  .cta { margin-left: 0.4rem; padding-block: 0.58rem; font-size: 0.84rem; }
   .menu-btn { display: none; }
 
-  /* Links crowd before the phone breakpoint, so the sheet takes over at 920. */
-  @media (max-width: 920px) {
-    .links { display: none; }
-    .cta { display: none; }
+  /* Four links plus two actions crowd well before the phone breakpoint. */
+  @media (max-width: 1000px) {
+    .links, .cta { display: none; }
     .menu-btn { display: grid; }
   }
 
@@ -166,17 +149,13 @@ const isActive = (href: string) => path === href || path === `${href}/`;
     padding-top: calc(3.75rem + env(safe-area-inset-top) + 0.5rem);
     transform: translateY(-100%);
     visibility: hidden;
-    transition:
-      transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1),
-      visibility 0s linear 0.34s;
+    transition: transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1), visibility 0s linear 0.34s;
   }
 
   .sheet.open {
     transform: translateY(0);
     visibility: visible;
-    transition:
-      transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1),
-      visibility 0s;
+    transition: transform 0.34s cubic-bezier(0.22, 0.9, 0.28, 1), visibility 0s;
   }
 
   .sheet-row {
@@ -190,11 +169,7 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   }
 
   .sheet-row:hover { color: var(--accent); }
-
-  .sheet-cta {
-    color: var(--accent);
-    font-weight: 500;
-  }
+  .sheet-cta { color: var(--accent); font-weight: 500; }
 </style>
 
 <script>
@@ -225,7 +200,6 @@ const isActive = (href: string) => path === href || path === `${href}/`;
     menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
 
-  // Solid once the first screen is behind us.
   const onScroll = () => navEl?.classList.toggle("solid", window.scrollY > window.innerHeight * 0.85);
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();

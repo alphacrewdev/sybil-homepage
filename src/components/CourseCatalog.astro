@@ -1,0 +1,32 @@
+---
+import { courses } from "../content/homepage";
+import { withBase } from "../lib/base";
+---
+
+<section class="wrap section">
+  <div class="rv max-w-2xl">
+    <h2 class="section-title">{courses.heading}</h2>
+    <p class="section-lede">{courses.intro}</p>
+  </div>
+
+  <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {courses.items.map((course, i) => (
+      <a href={withBase(`/courses#${course.slug}`)} class:list={["bracket-frame lift rv block", i > 0 && `rv-d${Math.min(i, 5)}`]}>
+        <span class="bf-corner" aria-hidden="true"></span>
+        <span class="bf-corner" aria-hidden="true"></span>
+        <div class="relative flex h-full flex-col justify-between bg-[var(--surface)] p-6">
+          <div>
+            <span class="tag-mono">{course.tag.toUpperCase()}</span>
+            <h3 class="mt-2.5 text-[15.5px] font-semibold">{course.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.body}</p>
+          </div>
+          <span class="link-accent mt-6 w-fit">{course.link}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <div class="rv mt-10">
+    <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
+  </div>
+</section>

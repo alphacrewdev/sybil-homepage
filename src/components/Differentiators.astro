@@ -1,15 +1,36 @@
 ---
-import { differentiators } from "../content/homepage";
+import { why } from "../content/homepage";
 ---
 
-<section class="mx-auto max-w-6xl px-5 py-20 md:px-8">
-  <h2 class="rv max-w-lg text-2xl font-semibold tracking-tight md:text-3xl">
-    Most of this material is still taught on a whiteboard.
-  </h2>
-  <div class="mt-12 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
-    {differentiators.map((item, i) => (
-      <div class:list={["rv border-t pt-5", i === 1 && "rv-d1", i === 2 && "rv-d2"]}>
-        <h3 class="text-[15px] font-semibold">{item.title}</h3>
+<section class="wrap section">
+  <h2 class="rv section-title">{why.heading}</h2>
+
+  <div class="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+    {why.items.map((item, i) => (
+      <div class:list={["rv border-t pt-6", i === 1 && "rv-d1", i === 2 && "rv-d2"]}>
+        <div class="mb-5 grid h-10 w-10 place-items-center border" style="border-color: var(--border); color: var(--accent);">
+          {item.icon === "animation" && (
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="8" width="13" height="10" rx="1.5"></rect>
+              <path d="M7 5h13v10"></path>
+              <path d="M8.5 11v4l3.5-2z" fill="currentColor" stroke="none"></path>
+            </svg>
+          )}
+          {item.icon === "time" && (
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="8.5"></circle>
+              <path d="M12 7.5V12l3 2"></path>
+            </svg>
+          )}
+          {item.icon === "lead" && (
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"></circle>
+              <path d="M7.5 7.5a6.4 6.4 0 0 0 0 9M16.5 7.5a6.4 6.4 0 0 1 0 9"></path>
+              <path d="M4.5 4.5a10.6 10.6 0 0 0 0 15M19.5 4.5a10.6 10.6 0 0 1 0 15"></path>
+            </svg>
+          )}
+        </div>
+        <h3 class="text-[15.5px] font-semibold">{item.title}</h3>
         <p class="mt-2.5 text-sm leading-relaxed text-[var(--text-muted)]">{item.body}</p>
       </div>
     ))}

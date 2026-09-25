@@ -1,26 +1,115 @@
 ---
-import { modalityPath } from "../content/homepage";
+import { path } from "../content/homepage";
 ---
 
 <section class="border-y bg-[var(--surface)]">
-  <div class="mx-auto max-w-6xl px-5 py-20 md:px-8">
-    <h2 class="max-w-lg text-2xl font-semibold tracking-tight md:text-3xl">
-      The order residents actually take it in.
-    </h2>
-    <p class="mt-3 max-w-md text-sm text-[var(--text-muted)]">
-      Coursework follows the rotation, not a semester — residents move through modalities as their program schedules them.
-    </p>
+  <div class="wrap section">
+    <div class="rv max-w-2xl">
+      <h2 class="section-title">{path.heading}</h2>
+      <p class="section-lede">{path.body}</p>
+    </div>
 
-    <ol class="mt-12 flex flex-col md:flex-row md:items-stretch">
-      {modalityPath.map((step, i) => (
-        <li class="relative flex-1 border-t py-5 md:border-l md:border-t-0 md:py-0 md:pl-6" style="border-color: var(--border);">
-          <span class="tag-mono">{String(step.order).padStart(2, "0")}</span>
-          <p class="mt-1.5 text-[15px] font-medium">{step.modality}</p>
-          <p class="mt-1 text-xs text-[var(--text-muted)]">
-            {step.status === "available" ? "Course available" : "In production"}
-          </p>
+    <!-- The one place numbering is earned: residents genuinely move through
+         these subjects in this order. Each segment runs from a node to the
+         next and draws itself in, staggered, on reveal. -->
+    <ol class="path rv">
+      {path.subjects.map((subject, i) => (
+        <li class="node">
+          <span class="dot"><span class="tag-mono num">{String(i + 1).padStart(2, "0")}</span></span>
+          <span class="label">{subject}</span>
         </li>
       ))}
     </ol>
   </div>
 </section>
+
+<style>
+  .path {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    margin: 3.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .node {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Segment from this node to the next. Vertical on phones: spans the gap. */
+  .node:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(1.25rem - 1px);
+    top: 2.5rem;
+    width: 2px;
+    height: 1.6rem;
+    background: var(--brand-gradient);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+
+  .path.in .node::after { transform: scaleY(1); }
+  .path.in .node:nth-child(1)::after { transition-delay: 0.15s; }
+  .path.in .node:nth-child(2)::after { transition-delay: 0.4s; }
+  .path.in .node:nth-child(3)::after { transition-delay: 0.65s; }
+  .path.in .node:nth-child(4)::after { transition-delay: 0.9s; }
+
+  .dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    border: 2px solid var(--accent);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .num { color: var(--accent); }
+
+  .label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  @media (min-width: 900px) {
+    .path {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 0;
+    }
+
+    .node {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.9rem;
+      flex: 1;
+    }
+
+    .node:last-child { flex: 0 0 auto; }
+
+    /* Horizontal: from the dot's right edge to where the next node begins. */
+    .node:not(:last-child)::after {
+      left: 2.5rem;
+      right: 0;
+      top: calc(1.25rem - 1px);
+      width: auto;
+      height: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    .path.in .node::after { transform: scaleX(1); }
+    .label { font-size: 0.98rem; }
+  }
+</style>

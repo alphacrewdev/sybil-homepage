@@ -117,6 +117,150 @@
   .rv-d1 { transition-delay: 0.08s; }
   .rv-d2 { transition-delay: 0.16s; }
   .rv-d3 { transition-delay: 0.24s; }
+  .rv-d4 { transition-delay: 0.32s; }
+  .rv-d5 { transition-delay: 0.4s; }
+
+  /* Section heading system — every section opens the same way so the page
+     reads as one voice: optional caption, display title, lede. */
+  .eyebrow {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    font-size: clamp(1.65rem, 3.3vw, 2.4rem);
+    text-wrap: balance;
+    max-width: 24ch;
+    margin: 0;
+  }
+
+  .section-lede {
+    margin: 1rem 0 0;
+    max-width: 42rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-size: 1rem;
+  }
+
+  .wrap {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.05rem, 4vw, 2rem);
+  }
+
+  .section {
+    padding-block: clamp(4.5rem, 9vw, 7.5rem);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.72rem 1.35rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition: transform 0.18s ease, filter 0.18s ease, border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+  }
+
+  .btn:hover { transform: translateY(-1px); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  .btn-primary:hover { filter: brightness(1.07); }
+
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Text link with an accent underline — used for "View course" etc. */
+  .link-accent {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+    transition: color 0.18s ease;
+  }
+
+  .link-accent:hover { color: var(--accent); }
+
+  /* Cards that lift on hover. Kept separate from bracket-frame so the two
+     can combine. */
+  .lift {
+    transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+
+  .lift:hover { transform: translateY(-3px); }
+
+  /* When a card both reveals and lifts, the two transition declarations
+     would otherwise clobber each other: keep the slow fade, settle the
+     translate quickly so hover stays snappy afterwards. */
+  .rv.lift {
+    transition: opacity 0.75s cubic-bezier(0.22, 0.9, 0.28, 1), transform 0.75s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+
+  .rv.lift.in {
+    transition: opacity 0.75s cubic-bezier(0.22, 0.9, 0.28, 1), transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+
+  /* Full-bleed dark product band. Re-scopes the theme tokens so every child
+     component renders correctly on it in both site themes. */
+  .band-dark {
+    --bg: var(--color-ink-900);
+    --surface: var(--color-ink-800);
+    --text: #e4eef3;
+    --text-muted: #9fb8c6;
+    --border: #16405c;
+    --accent: var(--color-teal-300);
+    --accent-contrast: var(--color-ink-950);
+    background: var(--bg);
+    color: var(--text);
+    color-scheme: dark;
+  }
+
+  :root.dark .band-dark {
+    --bg: var(--color-ink-900);
+    --border: #1a4864;
+  }
+
+  /* Brand-gradient hairline across the top of a section. */
+  .rule-gradient {
+    position: relative;
+  }
+
+  .rule-gradient::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--brand-gradient);
+  }
 }
 
 /* Bracket-frame: the site's one recurring signature device — a viewfinder /

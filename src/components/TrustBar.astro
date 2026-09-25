@@ -1,37 +1,37 @@
 ---
-import { trust } from "../content/homepage";
+import { outreach } from "../content/homepage";
 
-const showRating = trust.averageRating >= 4;
+const showRating = outreach.averageRating >= 4;
 ---
 
 <section class="border-y bg-[var(--surface)]">
-  <div class="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-10 md:flex-row md:items-center md:justify-between md:px-8">
-    <div class="flex flex-wrap items-center gap-x-10 gap-y-4">
-      {trust.partners.map((partner) => (
-        <div class="max-w-[220px]">
-          <p class="font-[family-name:var(--font-display)] text-sm font-semibold">{partner.name}</p>
-          <p class="mt-0.5 text-xs leading-snug text-[var(--text-muted)]">{partner.blurb}</p>
+  <div class="wrap flex flex-col gap-8 py-10 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-6 sm:flex-row sm:gap-10">
+      {outreach.partners.map((partner, i) => (
+        <div class:list={["rv flex items-center gap-4", i === 1 && "rv-d1"]}>
+          <!-- Typeset wordmark stands in until the real logo file arrives -->
+          <div class="bracket-frame shrink-0">
+            <span class="bf-corner" aria-hidden="true"></span>
+            <span class="bf-corner" aria-hidden="true"></span>
+            <div class="grid h-12 w-32 place-items-center bg-[var(--bg)] font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
+              {partner.name}
+            </div>
+          </div>
+          <p class="max-w-[16rem] text-xs leading-snug text-[var(--text-muted)]">{partner.blurb}</p>
         </div>
       ))}
     </div>
 
     {showRating && (
-      <div class="flex items-center gap-2">
+      <div class="rv rv-d2 flex items-center gap-2">
         <div class="flex" aria-hidden="true">
           {Array.from({ length: 5 }).map((_, i) => (
-            <svg
-              viewBox="0 0 20 20"
-              class="h-4 w-4"
-              fill={i < Math.round(trust.averageRating) ? "var(--mark)" : "none"}
-              stroke="var(--mark)"
-            >
+            <svg viewBox="0 0 20 20" class="h-4 w-4" fill={i < Math.round(outreach.averageRating) ? "var(--mark)" : "none"} stroke="var(--mark)">
               <path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L1.3 7.7l6.1-.6L10 1.5z"></path>
             </svg>
           ))}
         </div>
-        <p class="tag-mono">
-          {trust.averageRating.toFixed(1)} avg · {trust.ratingCount} ratings
-        </p>
+        <p class="tag-mono whitespace-nowrap">{outreach.averageRating.toFixed(1)} avg · {outreach.ratingCount} ratings</p>
       </div>
     )}
   </div>

@@ -1,0 +1,38 @@
+---
+import ToolVignette from "./ToolVignette.astro";
+import { tools } from "../content/homepage";
+---
+
+<section class="band-dark rule-gradient section">
+  <div class="wrap">
+    <div class="rv max-w-2xl">
+      <span class="eyebrow">{tools.eyebrow}</span>
+      <h2 class="section-title">{tools.heading}</h2>
+      <p class="section-lede">{tools.intro}</p>
+    </div>
+
+    <div class="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {tools.items.map((item, i) => (
+        <article class:list={["tool rv lift", i > 0 && `rv-d${Math.min(i, 5)}`]}>
+          <ToolVignette kind={item.kind} />
+          <div class="p-6">
+            <h3 class="text-[15.5px] font-semibold">{item.title}</h3>
+            <p class="mt-2.5 text-sm leading-relaxed text-[var(--text-muted)]">{item.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p class="rv mt-10 text-xs text-[var(--text-muted)]">{tools.availability}</p>
+  </div>
+</section>
+
+<style>
+  .tool {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .tool:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+</style>

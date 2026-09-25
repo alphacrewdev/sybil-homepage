@@ -2,32 +2,25 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import TrustBar from "../components/TrustBar.astro";
+import ScanSequence from "../components/ScanSequence.astro";
 import Differentiators from "../components/Differentiators.astro";
+import StudyTools from "../components/StudyTools.astro";
 import ModalityPath from "../components/ModalityPath.astro";
-import CourseCatalog from "../components/CourseCatalog";
+import CourseCatalog from "../components/CourseCatalog.astro";
 import AudienceSplit from "../components/AudienceSplit.astro";
 import InstructorBio from "../components/InstructorBio.astro";
-import ScanSequence from "../components/ScanSequence.astro";
-import { courses } from "../content/homepage";
+import ClosingCta from "../components/ClosingCta.astro";
 ---
 
-<BaseLayout title="Radiology board review, animated">
+<BaseLayout title="Make sense of the science behind the image">
   <Hero />
   <TrustBar />
   <ScanSequence />
   <Differentiators />
+  <StudyTools />
   <ModalityPath />
-
-  <section class="mx-auto max-w-6xl px-5 py-20 md:px-8">
-    <h2 class="max-w-lg text-2xl font-semibold tracking-tight md:text-3xl">Courses</h2>
-    <p class="mt-3 max-w-md text-sm text-[var(--text-muted)]">
-      Buy a single course or the full bundle. Residency programs get preferential per-resident pricing — see the courses page for details.
-    </p>
-    <div class="mt-10">
-      <CourseCatalog client:visible courses={courses} />
-    </div>
-  </section>
-
+  <CourseCatalog />
   <AudienceSplit />
   <InstructorBio />
+  <ClosingCta />
 </BaseLayout>

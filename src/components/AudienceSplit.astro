@@ -1,23 +1,45 @@
 ---
-import { audiences } from "../content/homepage";
+import { ways } from "../content/homepage";
 ---
 
-<section class="mx-auto max-w-6xl px-5 py-20 md:px-8">
-  <div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-6">
-    {audiences.map((a, i) => (
-      <div class:list={["rv flex flex-col justify-between border p-7", i === 1 && "rv-d1"]} style="border-color: var(--border);">
-        <div>
-          <h3 class="font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight">{a.title}</h3>
-          <p class="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">{a.body}</p>
+<section class="border-t bg-[var(--surface)]">
+  <div class="wrap section">
+    <h2 class="rv section-title">{ways.heading}</h2>
+
+    <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+      {ways.items.map((way, i) => (
+        <div class:list={["way rv lift", i === 1 && "rv-d1"]}>
+          <div class="flex h-full flex-col justify-between p-8">
+            <div>
+              <h3 class="font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight">{way.title}</h3>
+              <p class="mt-3.5 text-sm leading-relaxed text-[var(--text-muted)]">{way.body}</p>
+            </div>
+            <a href={way.cta.href} class="btn btn-primary mt-8 w-fit">{way.cta.label}</a>
+          </div>
         </div>
-        <a
-          href={a.cta.href}
-          class="mt-7 inline-block w-fit border-b text-sm font-medium transition-colors hover:text-[var(--accent)]"
-          style="border-color: var(--accent);"
-        >
-          {a.cta.label}
-        </a>
-      </div>
-    ))}
+      ))}
+    </div>
   </div>
 </section>
+
+<style>
+  .way {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  .way::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--brand-gradient);
+    opacity: 0;
+    transition: opacity 0.28s ease;
+  }
+
+  .way:hover::before { opacity: 1; }
+</style>

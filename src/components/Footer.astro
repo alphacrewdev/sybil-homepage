@@ -3,7 +3,7 @@ import { site, footer } from "../content/homepage";
 import { withBase } from "../lib/base";
 ---
 
-<footer class="sitefoot">
+<footer class="sitefoot rule-gradient">
   <div class="wrap">
     <div class="top">
       <div class="brandblock">
@@ -39,28 +39,10 @@ import { withBase } from "../lib/base";
 
 <style>
   .sitefoot {
-    position: relative;
     background: var(--surface);
     color: var(--text-muted);
     font-size: 0.9rem;
     padding: 3.25rem 0 3rem;
-  }
-
-  /* The logo's navy-to-teal ramp, used as a hairline rather than a slab. */
-  .sitefoot::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--brand-gradient);
-  }
-
-  .wrap {
-    max-width: 72rem;
-    margin-inline: auto;
-    padding-inline: clamp(1.05rem, 4vw, 2rem);
   }
 
   .top {
@@ -73,21 +55,12 @@ import { withBase } from "../lib/base";
     .top { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 4rem; }
   }
 
-  .flogo {
-    height: 2.1rem;
-    width: auto;
-    display: block;
-  }
-
+  .flogo { height: 2.1rem; width: auto; display: block; }
   .flogo-dark { display: none; }
   :root.dark .flogo-light { display: none; }
   :root.dark .flogo-dark { display: block; }
 
-  .fdesc {
-    margin: 1.1rem 0 0;
-    max-width: 52ch;
-    line-height: 1.7;
-  }
+  .fdesc { margin: 1.1rem 0 0; max-width: 52ch; line-height: 1.7; }
 
   .fmail {
     display: inline-block;
@@ -117,11 +90,7 @@ import { withBase } from "../lib/base";
     font-weight: 600;
   }
 
-  .collink {
-    color: var(--text-muted);
-    transition: color 0.18s ease;
-  }
-
+  .collink { color: var(--text-muted); transition: color 0.18s ease; }
   .collink:hover { color: var(--accent); }
 
   /* Deliberately quiet: a handful of legacy students still need it, and Karen
@@ -153,16 +122,8 @@ import { withBase } from "../lib/base";
     color: var(--text-muted);
   }
 
-  .legallinks {
-    display: flex;
-    gap: 1.2rem;
-  }
-
-  .legalbar a {
-    color: inherit;
-    transition: color 0.18s ease;
-  }
-
+  .legallinks { display: flex; gap: 1.2rem; }
+  .legalbar a { color: inherit; transition: color 0.18s ease; }
   .legalbar a:hover { color: var(--accent); }
 </style>
 
