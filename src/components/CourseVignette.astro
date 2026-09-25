@@ -1,0 +1,226 @@
+---
+// One drawn image per course, each in its modality's real visual grammar so
+// the six read as different studies rather than six copies of one icon.
+// Always a dark viewer, like the hero: these are images, not illustrations
+// of images. Swapped out per-course by setting `image` in content.
+interface Props {
+  kind: string;
+}
+const { kind } = Astro.props;
+
+const FILM = "#04070c";
+const BONE = "#d8e0e6";
+const SOFT = "#8b98a3";
+const ACCENT = "#3fb3c2";
+const MUTED = "#6f8796";
+
+// --- Radiograph: PA hand. Fingers fan from the carpus; segments shorten
+// distally; the thumb has no middle phalanx.
+const gap = 2.5;
+const fingers = [
+  { bx: 64, by: 104, angle: -34, segs: [24, 16, 12], w: [6.5, 5.5, 4.5] },
+  { bx: 80, by: 100, angle: -11, segs: [34, 24, 15, 11], w: [7, 6, 5, 4.5] },
+  { bx: 94, by: 98, angle: -3, segs: [36, 26, 17, 12], w: [7, 6, 5, 4.5] },
+  { bx: 108, by: 99, angle: 5, segs: [34, 24, 16, 11], w: [7, 6, 5, 4.5] },
+  { bx: 121, by: 102, angle: 13, segs: [29, 19, 13, 10], w: [6, 5.5, 4.5, 4] },
+].map((f) => {
+  let y = f.by;
+  const rects = f.segs.map((len, k) => {
+    y -= len;
+    const r = { x: f.bx - f.w[k] / 2, y, w: f.w[k], h: len };
+    y -= gap;
+    return r;
+  });
+  return { ...f, rects, top: y + gap };
+});
+const carpals = [
+  [86, 112, 6, 5], [97, 114, 6, 5], [108, 113, 6, 5], [118, 110, 5, 4.5], [92, 122, 6, 4.5], [104, 123, 6, 4.5],
+];
+
+// --- Nuclear medicine: thyroid uptake on a coarse grid. Cells are coloured
+// on a hot-iron ramp; a cold nodule sits in the right lobe.
+function hash(n: number) {
+  const s = Math.sin(n * 127.1) * 43758.5453123;
+  return s - Math.floor(s);
+}
+const hot = (v: number) => {
+  const c = (x: number) => Math.round(Math.min(1, Math.max(0, x)) * 255);
+  return `rgb(${c(v * 3)},${c(v * 3 - 1)},${c(v * 3 - 2)})`;
+};
+const cell = 7.5;
+const nmCells: { x: number; y: number; fill: string }[] = [];
+const lobes = [
+  { cx: 84, cy: 58, rx: 13, ry: 25 },
+  { cx: 116, cy: 58, rx: 13, ry: 25 },
+  { cx: 100, cy: 74, rx: 19, ry: 5.5 },
+];
+for (let j = 0; j < 16; j++) {
+  for (let i = 0; i < 26; i++) {
+    const x = 2.5 + i * cell;
+    const y = 2.5 + j * cell;
+    const cx = x + cell / 2;
+    const cy = y + cell / 2;
+    let v = 0;
+    for (const l of lobes) {
+      const d = ((cx - l.cx) / l.rx) ** 2 + ((cy - l.cy) / l.ry) ** 2;
+      v = Math.max(v, 1 - d * 0.85);
+    }
+    const nod = Math.exp(-(((cx - 119) ** 2 + (cy - 50) ** 2) / 40));
+    v = v * (1 - 0.8 * nod) + (hash(i * 31 + j * 7) - 0.5) * 0.1;
+    if (v > 0.05) nmCells.push({ x, y, fill: hot(v) });
+  }
+}
+---
+
+<div class="cv" aria-hidden="true">
+  {kind === "radiography" && (
+    <svg viewBox="0 0 200 125">
+      <rect width="200" height="125" fill={FILM}></rect>
+      <!-- Scaled about the top-left then re-centred, so the whole hand sits inside the frame -->
+      <g transform="translate(12 12) scale(0.88)">
+        <ellipse cx="100" cy="110" rx="36" ry="26" fill={SOFT} opacity="0.16"></ellipse>
+        {fingers.map((f) => (
+          <g transform={`rotate(${f.angle} ${f.bx} ${f.by})`}>
+            <rect x={f.bx - (f.w[0] + 8) / 2} y={f.top - 5} width={f.w[0] + 8} height={f.by - f.top + 10} rx={(f.w[0] + 8) / 2} fill={SOFT} opacity="0.14"></rect>
+            {f.rects.map((r) => (
+              <rect x={r.x} y={r.y} width={r.w} height={r.h} rx={r.w / 2} fill={BONE} opacity="0.9"></rect>
+            ))}
+          </g>
+        ))}
+        {carpals.map(([cx, cy, rx, ry]) => (
+          <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={BONE} opacity="0.85"></ellipse>
+        ))}
+      </g>
+      <text x="12" y="20" font-family="var(--font-mono)" font-size="9" fill={ACCENT}>L</text>
+    </svg>
+  )}
+
+  {kind === "mammography" && (
+    <svg viewBox="0 0 200 125">
+      <defs>
+        <radialGradient id="cv-breast" cx="0.15" cy="0.5" r="0.9">
+          <stop offset="0" stop-color="#9aa6b0"></stop>
+          <stop offset="0.55" stop-color="#5d6a75"></stop>
+          <stop offset="1" stop-color="#2c353d"></stop>
+        </radialGradient>
+      </defs>
+      <rect width="200" height="125" fill={FILM}></rect>
+      <path d="M28 8 C 96 10, 158 40, 156 66 C 154 94, 96 118, 28 118 Z" fill="url(#cv-breast)"></path>
+      <path d="M28 8 L 88 8 L 28 74 Z" fill="#aeb9c2" opacity="0.55"></path>
+      <g stroke="#c6d0d8" stroke-width="0.9" fill="none" opacity="0.45">
+        <path d="M40 40 C 70 44, 96 52, 128 62"></path>
+        <path d="M40 58 C 72 58, 100 64, 132 70"></path>
+        <path d="M42 76 C 74 72, 100 74, 128 80"></path>
+        <path d="M46 92 C 76 86, 100 84, 122 90"></path>
+        <path d="M60 30 C 84 36, 108 46, 136 56"></path>
+      </g>
+      <g fill="#f2f6f8">
+        <circle cx="116" cy="70" r="1.2"></circle>
+        <circle cx="120" cy="66" r="1"></circle>
+        <circle cx="122" cy="72" r="1.1"></circle>
+        <circle cx="117" cy="75" r="0.9"></circle>
+        <circle cx="124" cy="68" r="0.8"></circle>
+      </g>
+      <path d="M106 58v-4h4M130 54h4v4M106 82v4h4M134 82v4h-4" stroke={ACCENT} stroke-width="1.3" fill="none" stroke-linecap="round"></path>
+      <text x="164" y="20" font-family="var(--font-mono)" font-size="8" fill={ACCENT}>RMLO</text>
+    </svg>
+  )}
+
+  {kind === "fluoroscopy" && (
+    <svg viewBox="0 0 200 125">
+      <defs>
+        <linearGradient id="cv-barium" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#b9c4cc"></stop>
+          <stop offset="0.5" stop-color="#eef3f6"></stop>
+          <stop offset="1" stop-color="#b9c4cc"></stop>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="125" fill={FILM}></rect>
+      <g fill={BONE} opacity="0.18">
+        {[6, 25, 44, 63, 82, 101].map((y) => (
+          <rect x="62" y={y} width="13" height="13" rx="3"></rect>
+        ))}
+      </g>
+      <path d="M100 4 C 112 28, 88 48, 100 68 S 112 108, 100 124" stroke="url(#cv-barium)" stroke-width="11" stroke-linecap="round" fill="none"></path>
+      <path d="M100 4 C 112 28, 88 48, 100 68 S 112 108, 100 124" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.55"></path>
+      <g stroke="#3a4650" stroke-width="1" opacity="0.8">
+        <path d="M95 34h11M96 52h10M95 84h11M96 102h10"></path>
+      </g>
+      <text x="12" y="20" font-family="var(--font-mono)" font-size="8" fill={MUTED}>FLUORO</text>
+      <text x="152" y="20" font-family="var(--font-mono)" font-size="8" fill={ACCENT}>00:04.2</text>
+    </svg>
+  )}
+
+  {kind === "ct" && (
+    <svg viewBox="0 0 200 125">
+      <rect width="200" height="125" fill={FILM}></rect>
+      <circle cx="100" cy="63" r="56" fill="#070a0f" stroke={ACCENT} stroke-opacity="0.35"></circle>
+      <ellipse cx="100" cy="66" rx="50" ry="42" fill="#525a63"></ellipse>
+      <ellipse cx="100" cy="66" rx="46" ry="38" fill="none" stroke="#2e343b" stroke-width="4"></ellipse>
+      <ellipse cx="74" cy="60" rx="22" ry="18" fill="#7d8790"></ellipse>
+      <ellipse cx="128" cy="56" rx="9" ry="12" fill="#7d8790"></ellipse>
+      <ellipse cx="100" cy="46" rx="14" ry="9" fill="#3a434b"></ellipse>
+      <path d="M78 92 c -8 -2, -10 -10, -6 -14 c 4 -4, 12 -2, 12 6 c 0 6, -2 8, -6 8 z" fill="#b5bec6"></path>
+      <path d="M122 92 c 8 -2, 10 -10, 6 -14 c -4 -4, -12 -2, -12 6 c 0 6, 2 8, 6 8 z" fill="#b5bec6"></path>
+      <circle cx="105" cy="86" r="5" fill="#c2c9d0"></circle>
+      <circle cx="100" cy="98" r="8" fill="#e0e6eb"></circle>
+      <circle cx="100" cy="107" r="2.6" fill="#0a0e14"></circle>
+      <text x="12" y="20" font-family="var(--font-mono)" font-size="8" fill={MUTED}>AXIAL</text>
+      <text x="142" y="20" font-family="var(--font-mono)" font-size="8" fill={ACCENT}>W 400 L 40</text>
+    </svg>
+  )}
+
+  {kind === "nuclear-medicine" && (
+    <svg viewBox="0 0 200 125" shape-rendering="crispEdges">
+      <defs>
+        <linearGradient id="cv-hot" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#000000"></stop>
+          <stop offset="0.33" stop-color="#ff0000"></stop>
+          <stop offset="0.66" stop-color="#ffff00"></stop>
+          <stop offset="1" stop-color="#ffffff"></stop>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="125" fill={FILM}></rect>
+      {nmCells.map((c) => (
+        <rect x={c.x} y={c.y} width={cell} height={cell} fill={c.fill}></rect>
+      ))}
+      <rect x="182" y="24" width="6" height="78" fill="url(#cv-hot)"></rect>
+      <text x="170" y="18" font-family="var(--font-mono)" font-size="7" fill={MUTED}>MAX</text>
+      <text x="184" y="112" font-family="var(--font-mono)" font-size="7" fill={MUTED}>0</text>
+      <text x="12" y="20" font-family="var(--font-mono)" font-size="8" fill={ACCENT}>Tc-99m</text>
+    </svg>
+  )}
+
+  {kind === "board-review" && (
+    <svg viewBox="0 0 200 125">
+      <rect width="200" height="125" fill={FILM}></rect>
+      <rect x="22" y="12" width="156" height="101" rx="7" fill="#0b1c30" stroke="#1b3f5c"></rect>
+      <text x="32" y="28" font-family="var(--font-mono)" font-size="7" fill={MUTED} letter-spacing="0.5">Q 128 / 400</text>
+      <rect x="138" y="20" width="32" height="11" rx="5.5" fill="none" stroke={ACCENT} stroke-width="1"></rect>
+      <text x="145" y="28" font-family="var(--font-mono)" font-size="6.5" fill={ACCENT}>01:20</text>
+      <rect x="32" y="36" width="118" height="5" rx="2.5" fill="#c6d0d8" opacity="0.5"></rect>
+      <rect x="32" y="45" width="84" height="5" rx="2.5" fill="#c6d0d8" opacity="0.5"></rect>
+      {[60, 74, 88, 102].map((y, i) => (
+        <g>
+          <circle cx="38" cy={y} r="4.5" fill={i === 1 ? ACCENT : "none"} stroke={i === 1 ? ACCENT : MUTED} stroke-width="1.2"></circle>
+          <rect x="48" y={y - 2.5} width={[70, 92, 60, 78][i]} height="5" rx="2.5" fill={i === 1 ? ACCENT : "#c6d0d8"} opacity={i === 1 ? 0.7 : 0.35}></rect>
+        </g>
+      ))}
+    </svg>
+  )}
+</div>
+
+<style>
+  .cv {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    overflow: hidden;
+    background: #04070c;
+  }
+
+  .cv svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

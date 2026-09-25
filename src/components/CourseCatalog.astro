@@ -1,4 +1,5 @@
 ---
+import CourseVignette from "./CourseVignette.astro";
 import { courses } from "../content/homepage";
 import { withBase } from "../lib/base";
 ---
@@ -14,13 +15,20 @@ import { withBase } from "../lib/base";
       <a href={withBase(`/courses#${course.slug}`)} class:list={["bracket-frame lift rv block", i > 0 && `rv-d${Math.min(i, 5)}`]}>
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
-        <div class="relative flex h-full flex-col justify-between bg-[var(--surface)] p-6">
-          <div>
-            <span class="tag-mono">{course.tag.toUpperCase()}</span>
-            <h3 class="mt-2.5 text-[15.5px] font-semibold">{course.title}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.body}</p>
+        <div class="relative flex h-full flex-col bg-[var(--surface)]">
+          <div class="media">
+            {course.image
+              ? <img src={course.image} alt="" loading="lazy" />
+              : <CourseVignette kind={course.slug} />}
           </div>
-          <span class="link-accent mt-6 w-fit">{course.link}</span>
+          <div class="flex flex-1 flex-col justify-between p-6">
+            <div>
+              <span class="tag-mono">{course.tag.toUpperCase()}</span>
+              <h3 class="mt-2 text-[15.5px] font-semibold">{course.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.body}</p>
+            </div>
+            <span class="link-accent mt-6 w-fit">{course.link}</span>
+          </div>
         </div>
       </a>
     ))}
@@ -30,3 +38,18 @@ import { withBase } from "../lib/base";
     <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
   </div>
 </section>
+
+<style>
+  .media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+</style>

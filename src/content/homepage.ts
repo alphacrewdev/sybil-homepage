@@ -143,10 +143,21 @@ export const path = {
   subjects: ["Radiography", "Mammography", "Fluoroscopy", "Computed Tomography (CT)", "Nuclear Medicine"],
 };
 
+type Course = {
+  slug: string;
+  tag: string;
+  title: string;
+  body: string;
+  link: string;
+  // TODO(karen): real course stills. Set e.g. image: withBase("/courses/radiography.jpg")
+  // and the drawn vignette for that card is replaced automatically.
+  image?: string;
+};
+
 export const courses = {
   heading: "Find the subject you need to understand next.",
   intro: "Explore individual courses, review questions, and bundle options for your board preparation.",
-  items: [
+  items: <Course[]>[
     {
       slug: "radiography",
       tag: "Course",
