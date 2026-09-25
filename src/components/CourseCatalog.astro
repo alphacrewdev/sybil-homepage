@@ -17,10 +17,10 @@ import { courseList } from "../content/courses";
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
         <div class="relative flex h-full flex-col bg-[var(--surface)]">
-          <div class="media">
+          <div class:list={["media", course.image && "has-photo"]}>
             {course.image
               ? <img src={course.image} alt="" loading="lazy" width="438" height="304" />
-              : <CourseVignette kind={course.slug} />}
+              : <CourseVignette kind={course.slug} light />}
             <span class="tag-mono media-tag">{course.tag.toUpperCase()}</span>
           </div>
           <div class="flex flex-1 flex-col justify-between p-6">
@@ -57,8 +57,9 @@ import { courseList } from "../content/courses";
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border-bottom: 1px solid var(--border);
-    background: #04070c;
   }
+
+  .media.has-photo { background: #04070c; }
 
   .media img {
     width: 100%;
@@ -70,7 +71,8 @@ import { courseList } from "../content/courses";
     filter: saturate(0.85) contrast(1.05);
   }
 
-  .media::after {
+  /* Navy wash for photographs only; a light drawn card must stay light. */
+  .media.has-photo::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -82,9 +84,11 @@ import { courseList } from "../content/courses";
   }
 
   .course:hover .media img { transform: scale(1.08); filter: saturate(1) contrast(1.05); }
-  .course:hover .media::after { opacity: 0.7; }
+  .course:hover .media.has-photo::after { opacity: 0.7; }
 
   .media-tag { position: absolute; top: 0.75rem; left: 0.85rem; z-index: 1; color: #e6eef3; }
+  .media:not(.has-photo) .media-tag { color: var(--text-muted); }
+  :root.dark .media:not(.has-photo) .media-tag { color: #e6eef3; }
 
   .open-btn { background: none; padding: 0 0 1px; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 500; }
 </style>

@@ -251,11 +251,6 @@ export const footer = {
   contactEmail: "contact@sybildigitallearning.com",
   blurb:
     "On-demand radiology courses for residents, with visual explanations for board preparation and live teaching for participating residency programs. Founded by practicing radiologist Dr. Karen Brown.",
-  legacyPlatform: {
-    // TODO(karen): confirm this should stay live until legacy students finish (~Jan/Feb per Sept 16 meeting)
-    label: "Existing student on the previous platform?",
-    href: "#",
-  },
   columns: [
     {
       title: "Learn",
