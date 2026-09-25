@@ -1,18 +1,19 @@
 ---
 import CourseVignette from "./CourseVignette.astro";
+import CourseModal from "./CourseModal.astro";
 import { courses } from "../content/homepage";
-import { withBase } from "../lib/base";
+import { courseList } from "../content/courses";
 ---
 
-<section class="wrap section">
+<section class="wrap section" id="courses">
   <div class="rv max-w-2xl">
     <h2 class="section-title">{courses.heading}</h2>
     <p class="section-lede">{courses.intro}</p>
   </div>
 
   <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {courses.items.map((course, i) => (
-      <a href={withBase(`/courses#${course.slug}`)} class:list={["course bracket-frame lift rv block", i > 0 && `rv-d${Math.min(i, 5)}`]}>
+    {courseList.map((course, i) => (
+      <article class:list={["course bracket-frame lift rv", i > 0 && `rv-d${Math.min(i, 5)}`]} data-open={course.slug} tabindex="-1">
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
         <div class="relative flex h-full flex-col bg-[var(--surface)]">
@@ -25,21 +26,32 @@ import { withBase } from "../lib/base";
           <div class="flex flex-1 flex-col justify-between p-6">
             <div>
               <h3 class="text-[15.5px] font-semibold">{course.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.body}</p>
+              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.blurb}</p>
             </div>
-            <span class="link-accent mt-6 w-fit">{course.link}</span>
+            <div class="mt-6 flex items-center justify-between gap-3">
+              <button type="button" class="link-accent open-btn" data-open={course.slug} aria-haspopup="dialog" aria-controls={`cm-${course.slug}`}>Learn more</button>
+              {(course.rating || course.students) && (
+                <span class="tag-mono whitespace-nowrap">
+                  {course.rating && <span style="color: var(--mark);">★</span>} {course.rating}{course.students && ` · ${course.students} students`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </a>
+      </article>
     ))}
   </div>
 
   <div class="rv mt-10">
     <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
   </div>
+
+  {courseList.map((course) => <CourseModal course={course} />)}
 </section>
 
 <style>
+  .course { cursor: pointer; }
+
   .media {
     position: relative;
     aspect-ratio: 16 / 10;
@@ -58,8 +70,6 @@ import { withBase } from "../lib/base";
     filter: saturate(0.85) contrast(1.05);
   }
 
-  /* Navy wash keeps the stock photography on-brand and gives the tag a
-     legible corner, without hiding the image. */
   .media::after {
     content: "";
     position: absolute;
@@ -74,11 +84,43 @@ import { withBase } from "../lib/base";
   .course:hover .media img { transform: scale(1.08); filter: saturate(1) contrast(1.05); }
   .course:hover .media::after { opacity: 0.7; }
 
-  .media-tag {
-    position: absolute;
-    top: 0.75rem;
-    left: 0.85rem;
-    z-index: 1;
-    color: #e6eef3;
-  }
+  .media-tag { position: absolute; top: 0.75rem; left: 0.85rem; z-index: 1; color: #e6eef3; }
+
+  .open-btn { background: none; padding: 0 0 1px; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 500; }
 </style>
+
+<script>
+  const root = document.documentElement;
+  let openDialog: HTMLDialogElement | null = null;
+
+  function open(slug: string) {
+    const dialog = document.getElementById(`cm-${slug}`) as HTMLDialogElement | null;
+    if (!dialog) return;
+    dialog.showModal();
+    openDialog = dialog;
+    root.style.overflow = "hidden";
+  }
+
+  function close(dialog: HTMLDialogElement) {
+    dialog.close();
+  }
+
+  // Whole card opens the course; the "Learn more" button is the accessible control.
+  document.querySelectorAll<HTMLElement>("[data-open]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) return;
+      e.stopPropagation();
+      open(el.dataset.open!);
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>("dialog.cm").forEach((dialog) => {
+    dialog.querySelector("[data-close]")?.addEventListener("click", () => close(dialog));
+    // Click on the backdrop (outside the panel) closes.
+    dialog.addEventListener("click", (e) => { if (e.target === dialog) close(dialog); });
+    dialog.addEventListener("close", () => {
+      if (openDialog === dialog) openDialog = null;
+      root.style.overflow = "";
+    });
+  });
+</script>

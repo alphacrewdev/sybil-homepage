@@ -1,0 +1,273 @@
+---
+// Course detail as a native <dialog>: focus trapping, Esc-to-close and the
+// backdrop come free, and it needs no framework. One per course, opened by
+// the matching card via data-open.
+import CourseVignette from "./CourseVignette.astro";
+import type { CourseInfo } from "../content/courses";
+import { withBase } from "../lib/base";
+
+interface Props {
+  course: CourseInfo;
+}
+const { course } = Astro.props;
+const meta = [
+  course.rating && `★ ${course.rating}`,
+  course.students && `${course.students} students`,
+  course.modules.length > 0 && `${course.modules.length} modules`,
+  course.duration,
+].filter(Boolean);
+---
+
+<dialog class="cm" id={`cm-${course.slug}`} aria-labelledby={`cm-title-${course.slug}`}>
+  <div class="cm-panel">
+    <button type="button" class="cm-close" data-close aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+
+    <div class="cm-hero">
+      {course.image ? <img src={course.image} alt="" width="438" height="304" /> : <CourseVignette kind={course.slug} />}
+      <div class="cm-hero-text">
+        <span class="tag-mono cm-meta">{meta.join("  ·  ")}</span>
+        <h3 class="cm-title" id={`cm-title-${course.slug}`}>{course.title}</h3>
+      </div>
+    </div>
+
+    <div class="cm-body">
+      <div class="cm-main">
+        {course.instructors.length > 0 && (
+          <p class="tag-mono cm-taught">TAUGHT BY {course.instructors.map((i) => i.name).join(" · ").toUpperCase()}</p>
+        )}
+        {course.description.map((p) => <p class="cm-p">{p}</p>)}
+
+        {course.learn.length > 0 && (
+          <>
+            <h4 class="cm-h">What you will learn</h4>
+            <ul class="cm-list">{course.learn.map((l) => <li>{l}</li>)}</ul>
+          </>
+        )}
+
+        {course.features.length > 0 && (
+          <>
+            <h4 class="cm-h">Included</h4>
+            <ul class="cm-chips">{course.features.map((f) => <li class="tag-mono">{f}</li>)}</ul>
+          </>
+        )}
+
+        {(course.duration || course.requirements.length > 0) && (
+          <>
+            <h4 class="cm-h">Time and requirements</h4>
+            <ul class="cm-list">
+              {course.duration && <li>{course.duration}</li>}
+              {course.requirements.map((r) => <li>{r}</li>)}
+            </ul>
+          </>
+        )}
+      </div>
+
+      {course.modules.length > 0 && (
+        <aside class="cm-side">
+          <h4 class="cm-h cm-h-first">Curriculum</h4>
+          <ol class="cm-modules">
+            {course.modules.map((m) => <li>{m.replace(/^Module\s+\d+\s*[–:-]\s*/i, "")}</li>)}
+          </ol>
+        </aside>
+      )}
+    </div>
+
+    <div class="cm-actions">
+      <a href={course.enrollUrl} class="btn btn-primary" rel="noopener">Enroll now</a>
+      <a href={withBase("/program-directors")} class="btn btn-ghost">Ask about program access</a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .cm {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: min(60rem, calc(100vw - 2rem));
+    max-height: min(92vh, calc(100vh - 2rem));
+    width: 100%;
+    margin: auto;
+    overflow: visible;
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 0.9, 0.28, 1), overlay 0.32s allow-discrete, display 0.32s allow-discrete;
+  }
+
+  .cm[open] { opacity: 1; transform: none; }
+
+  @starting-style {
+    .cm[open] { opacity: 0; transform: translateY(14px) scale(0.985); }
+  }
+
+  .cm::backdrop {
+    background: rgba(3, 20, 43, 0.62);
+    backdrop-filter: blur(6px);
+    transition: opacity 0.3s ease;
+  }
+
+  .cm-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-height: min(92vh, calc(100vh - 2rem));
+    overflow: auto;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    overscroll-behavior: contain;
+  }
+
+  .cm-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(3, 20, 43, 0.55);
+    color: #ffffff;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .cm-close:hover { background: rgba(3, 20, 43, 0.85); transform: rotate(90deg); }
+  .cm-close svg { width: 1rem; height: 1rem; }
+
+  .cm-hero {
+    position: relative;
+    aspect-ratio: 16 / 6;
+    min-height: 12rem;
+    overflow: hidden;
+    background: #04070c;
+    flex-shrink: 0;
+  }
+
+  .cm-hero img,
+  .cm-hero :global(.cv) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.85);
+  }
+
+  .cm-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(3, 20, 43, 0.92) 0%, rgba(3, 20, 43, 0.35) 55%, rgba(2, 43, 98, 0.25) 100%);
+  }
+
+  .cm-hero-text {
+    position: absolute;
+    left: clamp(1.25rem, 4vw, 2.25rem);
+    right: 4rem;
+    bottom: clamp(1rem, 3vw, 1.75rem);
+    z-index: 1;
+    color: #ffffff;
+  }
+
+  .cm-meta { color: #7fd3dc; display: block; margin-bottom: 0.5rem; }
+
+  .cm-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    font-size: clamp(1.5rem, 3.4vw, 2.3rem);
+  }
+
+  .cm-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: clamp(1.25rem, 4vw, 2.25rem);
+  }
+
+  @media (min-width: 820px) {
+    .cm-body { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr); gap: 3rem; }
+  }
+
+  .cm-p { margin: 0 0 1rem; color: var(--text-muted); line-height: 1.7; font-size: 0.97rem; }
+  .cm-taught { display: block; margin: 0 0 1rem; color: var(--accent); }
+
+  .cm-h {
+    margin: 1.75rem 0 0.7rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cm-h-first { margin-top: 0; }
+
+  .cm-list { margin: 0; padding-left: 1.15rem; color: var(--text-muted); line-height: 1.65; font-size: 0.95rem; }
+  .cm-list li { margin-bottom: 0.35rem; }
+  .cm-list li::marker { color: var(--accent); }
+
+  .cm-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+  .cm-chips li { border: 1px solid var(--border); padding: 0.3rem 0.6rem; }
+
+  /* The one earned numbered list: modules are taken in order. */
+  .cm-modules {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: mod;
+    border-top: 1px solid var(--border);
+  }
+
+  .cm-modules li {
+    counter-increment: mod;
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.93rem;
+    line-height: 1.4;
+  }
+
+  .cm-modules li::before {
+    content: counter(mod, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+
+  .cm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2rem);
+  }
+
+  /* Phones: a full-height sheet rising from the bottom. */
+  @media (max-width: 640px) {
+    .cm {
+      max-width: 100vw;
+      max-height: 100vh;
+      height: 100vh;
+      margin: 0;
+      transform: translateY(24px);
+    }
+    .cm-panel { max-height: 100vh; height: 100vh; border: 0; }
+    .cm-hero { aspect-ratio: auto; height: 14rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cm, .cm::backdrop { transition: none; }
+  }
+</style>
