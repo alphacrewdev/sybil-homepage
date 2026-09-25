@@ -1,0 +1,690 @@
+---
+// Hero animation: one chest, rendered in the four modalities residents train
+// on — radiograph, ultrasound, CT, nuclear medicine — cycling continuously.
+//
+// Recognition comes from each modality's real display grammar rather than
+// from anatomical detail: the rectangular film with a side marker, the
+// ultrasound fan with a depth scale, the circular CT field of view with a
+// window/level readout, the nuclear-medicine hot-iron ring with a colour bar.
+// Each one also enters the way its physics does: the radiograph develops out
+// of grain, the ultrasound sweeps in, the CT irises open, the NM image
+// accumulates counts (noisy first, smoothing as it acquires).
+//
+// Display conventions are kept correct — patient's left on the viewer's
+// right, ventricles at the top of an apical four-chamber echo, aorta lateral
+// to the spine on the CT — because the audience will notice.
+---
+
+<div class="mc" id="mc">
+  <canvas class="mc-canvas" id="mc-canvas" aria-hidden="true"></canvas>
+  <div class="mc-hud" aria-hidden="true">
+    <span class="mc-tech" id="mc-tech">RADIOGRAPHY · PA CHEST</span>
+    <div class="mc-dots" id="mc-dots"><i></i><i></i><i></i><i></i></div>
+    <span class="mc-name" id="mc-name">Radiography</span>
+  </div>
+  <p class="sr-only">
+    One chest shown in the four imaging modalities residents train on: radiography, ultrasound, CT and nuclear medicine.
+  </p>
+</div>
+
+<style>
+  .mc {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    background: #04070c;
+    overflow: hidden;
+  }
+
+  .mc-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .mc-hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: #e6eef3;
+  }
+
+  .mc-tech {
+    position: absolute;
+    top: clamp(0.55rem, 2.6%, 0.8rem);
+    left: clamp(0.65rem, 3%, 0.9rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.58rem, 1.9vw, 0.68rem);
+    letter-spacing: 0.06em;
+    color: #7fd3dc;
+  }
+
+  .mc-name {
+    position: absolute;
+    left: clamp(0.65rem, 3%, 0.9rem);
+    bottom: clamp(0.5rem, 2.6%, 0.75rem);
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-size: clamp(1rem, 3.4vw, 1.45rem);
+    line-height: 1.1;
+    text-shadow: 0 1px 8px rgba(4, 7, 12, 0.85);
+  }
+
+  .mc-dots {
+    position: absolute;
+    top: clamp(0.65rem, 3%, 0.9rem);
+    right: clamp(0.65rem, 3%, 0.9rem);
+    display: flex;
+    gap: 4px;
+  }
+
+  .mc-dots i {
+    display: block;
+    width: 14px;
+    height: 3px;
+    background: rgba(230, 238, 243, 0.22);
+    transition: background-color 0.3s ease;
+  }
+
+  .mc-dots i.on { background: #3fb3c2; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  const host = document.getElementById("mc");
+  const canvas = document.getElementById("mc-canvas") as HTMLCanvasElement | null;
+  const techEl = document.getElementById("mc-tech");
+  const nameEl = document.getElementById("mc-name");
+  const dotEls = Array.from(document.querySelectorAll<HTMLElement>("#mc-dots i"));
+
+  if (host && canvas) {
+    const W = 400;
+    const H = 300;
+    const FILM = "#04070c";
+    const TEAL = "#3fb3c2";
+    const HOLD = 3.4;
+    const TRANS = 1.1;
+    const PERIOD = HOLD + TRANS;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const main = canvas.getContext("2d")!;
+
+    // Each scene renders into its own opaque layer so two can be composited
+    // with independent alpha during a transition.
+    const layers = [document.createElement("canvas"), document.createElement("canvas")];
+    const lctx = layers.map((c) => c.getContext("2d")!);
+
+    let scale = 1;
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const cw = canvas!.clientWidth;
+      const ch = canvas!.clientHeight;
+      canvas!.width = Math.round(cw * dpr);
+      canvas!.height = Math.round(ch * dpr);
+      layers.forEach((l) => { l.width = canvas!.width; l.height = canvas!.height; });
+      scale = canvas!.width / W;
+      main.setTransform(scale, 0, 0, canvas!.height / H, 0, 0);
+      lctx.forEach((g) => g.setTransform(scale, 0, 0, canvas!.height / H, 0, 0));
+    }
+
+    // ---- deterministic helpers ------------------------------------------
+    function hash(n: number) {
+      const s = Math.sin(n * 127.1) * 43758.5453123;
+      return s - Math.floor(s);
+    }
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+    const easeOut = (v: number) => 1 - Math.pow(1 - clamp01(v), 3);
+    const smooth = (v: number) => { v = clamp01(v); return v * v * (3 - 2 * v); };
+
+    // Pre-rendered textures: ultrasound speckle and film grain. Built once.
+    function makeTexture(seed: number, count: number, size: number, alpha: number) {
+      const c = document.createElement("canvas");
+      c.width = 800;
+      c.height = 600;
+      const g = c.getContext("2d")!;
+      for (let i = 0; i < count; i++) {
+        const x = hash(seed + i * 3.1) * 800;
+        const y = hash(seed + i * 7.7) * 600;
+        const v = 150 + hash(seed + i * 11.3) * 105;
+        g.fillStyle = `rgba(${v},${v + 6},${v + 12},${alpha * hash(seed + i * 13.9)})`;
+        g.fillRect(x, y, size, size);
+      }
+      return c;
+    }
+    const speckle = makeTexture(1, 14000, 2, 0.9);
+    const speckle2 = makeTexture(2, 9000, 3, 0.55);
+    const grain = makeTexture(3, 26000, 1.5, 0.8);
+
+    function ellipse(g: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, rot = 0) {
+      g.beginPath();
+      g.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2);
+    }
+
+    function mono(g: CanvasRenderingContext2D, size: number) {
+      g.font = `${size}px "IBM Plex Mono", ui-monospace, monospace`;
+    }
+
+    // ---- 1. Radiograph: PA chest ------------------------------------------
+    // Patient's right is on the viewer's left, so the side marker "R" sits
+    // top-left and the cardiac silhouette lies to the viewer's right of the
+    // spine with its apex pointing down and right.
+    function drawRadiograph(g: CanvasRenderingContext2D, _t: number, k: number) {
+      g.fillStyle = FILM;
+      g.fillRect(0, 0, W, H);
+      const dev = smooth(k);
+
+      g.save();
+      g.globalAlpha = dev;
+
+      // Soft-tissue thorax
+      const torso = g.createLinearGradient(0, 20, 0, H);
+      torso.addColorStop(0, "rgba(120,132,142,0.55)");
+      torso.addColorStop(1, "rgba(120,132,142,0.35)");
+      g.fillStyle = torso;
+      g.beginPath();
+      g.roundRect(58, 22, 284, 300, 70);
+      g.fill();
+
+      // Lungs (air = dark)
+      g.fillStyle = "rgba(6,9,14,0.88)";
+      ellipse(g, 142, 152, 60, 96);
+      g.fill();
+      ellipse(g, 258, 152, 60, 96);
+      g.fill();
+
+      // Diaphragm domes; right hemidiaphragm (viewer's left) sits higher.
+      g.fillStyle = "rgba(128,140,150,0.6)";
+      g.beginPath();
+      g.moveTo(80, 300);
+      g.quadraticCurveTo(142, 196, 200, 246);
+      g.lineTo(200, 300);
+      g.closePath();
+      g.fill();
+      g.beginPath();
+      g.moveTo(320, 300);
+      g.quadraticCurveTo(258, 212, 200, 254);
+      g.lineTo(200, 300);
+      g.closePath();
+      g.fill();
+
+      // Spine
+      g.fillStyle = "rgba(160,172,182,0.42)";
+      g.fillRect(187, 26, 26, 280);
+      g.fillStyle = "rgba(210,220,228,0.55)";
+      for (let i = 0; i < 12; i++) {
+        g.beginPath();
+        g.roundRect(190, 34 + i * 22, 20, 14, 3);
+        g.fill();
+      }
+
+      // Cardiac silhouette
+      g.fillStyle = "rgba(150,162,172,0.62)";
+      g.beginPath();
+      g.moveTo(196, 118);
+      g.bezierCurveTo(214, 104, 246, 116, 256, 150);
+      g.bezierCurveTo(266, 186, 250, 212, 224, 218);
+      g.bezierCurveTo(206, 222, 194, 206, 190, 180);
+      g.bezierCurveTo(186, 156, 184, 130, 196, 118);
+      g.closePath();
+      g.fill();
+
+      // Posterior ribs: slope down and laterally from the spine.
+      g.strokeStyle = "rgba(226,234,240,0.5)";
+      g.lineWidth = 3;
+      g.lineCap = "round";
+      for (let i = 0; i < 8; i++) {
+        const y0 = 44 + i * 26;
+        g.beginPath();
+        g.moveTo(196, y0);
+        g.quadraticCurveTo(140, y0 - 10, 80, y0 + 30);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(204, y0);
+        g.quadraticCurveTo(260, y0 - 10, 320, y0 + 30);
+        g.stroke();
+      }
+      // Anterior ribs, fainter, sloping down and medially.
+      g.strokeStyle = "rgba(226,234,240,0.22)";
+      g.lineWidth = 2.5;
+      for (let i = 0; i < 6; i++) {
+        const y0 = 96 + i * 26;
+        g.beginPath();
+        g.moveTo(84, y0);
+        g.quadraticCurveTo(120, y0 + 24, 172, y0 + 34);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(316, y0);
+        g.quadraticCurveTo(280, y0 + 24, 228, y0 + 34);
+        g.stroke();
+      }
+      // Clavicles
+      g.strokeStyle = "rgba(232,238,244,0.62)";
+      g.lineWidth = 4;
+      g.beginPath();
+      g.moveTo(198, 50);
+      g.quadraticCurveTo(150, 36, 96, 44);
+      g.stroke();
+      g.beginPath();
+      g.moveTo(202, 50);
+      g.quadraticCurveTo(250, 36, 304, 44);
+      g.stroke();
+
+      // Side marker
+      mono(g, 15);
+      g.fillStyle = TEAL;
+      g.fillText("R", 20, 62);
+      g.restore();
+
+      // Develops out of grain
+      g.globalAlpha = 1 - dev;
+      g.drawImage(grain, 0, 0, W, H);
+      g.globalAlpha = 1;
+    }
+
+    // ---- 2. Ultrasound: apical four-chamber echo ---------------------------
+    // Transducer at the apex of the fan; ventricles nearest the probe (top),
+    // atria below, left ventricle on the viewer's right. The heart beats.
+    const APEX_X = 200;
+    const APEX_Y = 32;
+    const FAN_R = 238;
+    const FAN_HALF = 0.66;
+
+    function sectorPath(g: CanvasRenderingContext2D, from: number, to: number) {
+      g.beginPath();
+      g.moveTo(APEX_X, APEX_Y);
+      g.arc(APEX_X, APEX_Y, FAN_R, Math.PI / 2 + from, Math.PI / 2 + to);
+      g.closePath();
+    }
+
+    function drawUltrasound(g: CanvasRenderingContext2D, t: number, k: number) {
+      g.fillStyle = FILM;
+      g.fillRect(0, 0, W, H);
+
+      const entering = k < 1;
+      const reveal = -FAN_HALF + 2 * FAN_HALF * easeOut(k);
+      const sweep = -FAN_HALF + 2 * FAN_HALF * ((t * 0.42) % 1);
+      const line = entering ? reveal : sweep;
+
+      // Heartbeat, ~70 bpm: fast systole, slower diastole.
+      const ph = (t * 70 / 60) % 1;
+      const sys = ph < 0.16 ? ph / 0.16 : Math.max(0, 1 - (ph - 0.16) / 0.42);
+      const squeeze = 1 - 0.13 * sys;
+
+      g.save();
+      sectorPath(g, -FAN_HALF, entering ? reveal : FAN_HALF);
+      g.clip();
+
+      const field = g.createRadialGradient(APEX_X, APEX_Y, 10, APEX_X, APEX_Y, FAN_R);
+      field.addColorStop(0, "#232b34");
+      field.addColorStop(1, "#141a21");
+      g.fillStyle = field;
+      g.fillRect(0, 0, W, H);
+
+      g.globalAlpha = 0.5;
+      g.drawImage(speckle, (t * 3) % 6 - 6, 0, W + 6, H);
+      g.globalAlpha = 0.32;
+      g.drawImage(speckle2, 0, (t * 2) % 5 - 5, W, H + 5);
+      g.globalAlpha = 1;
+
+      // Myocardium: a tapered outline with the apex toward the probe, mid-grey
+      // and translucent so the speckle field shows through it.
+      const heart = () => {
+        g.beginPath();
+        g.moveTo(200, 84);
+        g.bezierCurveTo(176, 84, 142, 110, 138, 160);
+        g.bezierCurveTo(134, 205, 150, 244, 200, 248);
+        g.bezierCurveTo(252, 244, 270, 205, 266, 160);
+        g.bezierCurveTo(262, 110, 226, 84, 200, 84);
+        g.closePath();
+      };
+      heart();
+      g.fillStyle = "rgba(140,150,158,0.55)";
+      g.fill();
+      g.save();
+      heart();
+      g.clip();
+      g.globalAlpha = 0.45;
+      g.drawImage(speckle2, (t * 1.5) % 4, 0, W, H);
+      g.restore();
+
+      // Chambers (blood = anechoic): thin septum and AV plane, large cavities.
+      // Ventricles contract, atria fill.
+      const fill = 1 + 0.05 * sys;
+      g.fillStyle = "#05080c";
+      ellipse(g, 172, 138, 20 * squeeze, 38 * squeeze, 0.12);
+      g.fill();
+      ellipse(g, 226, 140, 28 * squeeze, 42 * squeeze, -0.08);
+      g.fill();
+      ellipse(g, 172, 208, 22 * fill, 24 * fill);
+      g.fill();
+      ellipse(g, 226, 212, 26 * fill, 24 * fill);
+      g.fill();
+
+      // Endocardial edges
+      g.strokeStyle = "rgba(225,233,238,0.32)";
+      g.lineWidth = 1.1;
+      ellipse(g, 172, 138, 20 * squeeze, 38 * squeeze, 0.12);
+      g.stroke();
+      ellipse(g, 226, 140, 28 * squeeze, 42 * squeeze, -0.08);
+      g.stroke();
+
+      // Sweep line with a soft trailing wedge
+      sectorPath(g, line - 0.22, line);
+      const wedge = g.createLinearGradient(APEX_X - 80, 0, APEX_X + 80, 0);
+      wedge.addColorStop(0, "rgba(63,179,194,0)");
+      wedge.addColorStop(1, "rgba(63,179,194,0.16)");
+      g.fillStyle = "rgba(63,179,194,0.09)";
+      g.fill();
+      g.strokeStyle = entering ? TEAL : "rgba(63,179,194,0.55)";
+      g.lineWidth = entering ? 1.6 : 1;
+      g.beginPath();
+      g.moveTo(APEX_X, APEX_Y);
+      g.lineTo(APEX_X + Math.cos(Math.PI / 2 + line) * FAN_R, APEX_Y + Math.sin(Math.PI / 2 + line) * FAN_R);
+      g.stroke();
+      g.restore();
+
+      // Depth scale, cm, with a focal-zone marker
+      g.strokeStyle = "rgba(200,212,220,0.5)";
+      g.lineWidth = 1;
+      mono(g, 9);
+      g.fillStyle = "rgba(200,212,220,0.7)";
+      const cm = FAN_R / 16;
+      for (let i = 0; i <= 16; i++) {
+        const y = APEX_Y + i * cm;
+        const major = i % 5 === 0;
+        g.beginPath();
+        g.moveTo(374, y);
+        g.lineTo(major ? 382 : 379, y);
+        g.stroke();
+        if (major && i > 0) g.fillText(String(i), 385, y + 3);
+      }
+      g.fillStyle = TEAL;
+      g.beginPath();
+      g.moveTo(366, APEX_Y + cm * 9);
+      g.lineTo(372, APEX_Y + cm * 9 - 4);
+      g.lineTo(372, APEX_Y + cm * 9 + 4);
+      g.closePath();
+      g.fill();
+    }
+
+    // ---- 3. CT: axial chest, mediastinal window ----------------------------
+    // Anterior at the top, spine posterior; patient's left on the viewer's
+    // right, so the descending aorta sits to the viewer's right of the spine.
+    function drawCT(g: CanvasRenderingContext2D, t: number, k: number) {
+      g.fillStyle = FILM;
+      g.fillRect(0, 0, W, H);
+      const R = 138;
+      const iris = easeOut(k);
+      const drift = 1 + 0.05 * Math.sin(t * 0.7);
+
+      g.save();
+      g.beginPath();
+      g.arc(200, 150, R * iris, 0, Math.PI * 2);
+      g.clip();
+
+      // Field of view background is near-black air.
+      g.fillStyle = "#070a0f";
+      g.fillRect(0, 0, W, H);
+
+      // Body wall + subcutaneous fat
+      g.fillStyle = "#525a63";
+      ellipse(g, 200, 158, 128, 106);
+      g.fill();
+      g.strokeStyle = "#2e343b";
+      g.lineWidth = 9;
+      ellipse(g, 200, 158, 121, 99);
+      g.stroke();
+
+      // Lungs
+      g.fillStyle = "#0a0e14";
+      ellipse(g, 147, 152, 56, 74);
+      g.fill();
+      ellipse(g, 253, 152, 56, 74);
+      g.fill();
+      // Pulmonary vessels: curve and taper out from each hilum, with a short
+      // branch, so they read as vasculature rather than spokes.
+      g.strokeStyle = "rgba(150,160,170,0.4)";
+      g.lineCap = "round";
+      for (let i = 0; i < 5; i++) {
+        const a = -0.95 + i * 0.47;
+        const len = 46 + hash(i * 3.3) * 12;
+        for (const s of [-1, 1]) {
+          const hx = 200 + s * 24;
+          const ex = hx + s * Math.cos(a) * len;
+          const ey = 156 + Math.sin(a) * len * 1.05;
+          const cx = hx + s * Math.cos(a - 0.35 * s) * len * 0.55;
+          const cy = 156 + Math.sin(a - 0.2) * len * 0.5;
+          g.lineWidth = 1.7;
+          g.beginPath();
+          g.moveTo(hx, 156);
+          g.quadraticCurveTo(cx, cy, ex, ey);
+          g.stroke();
+          g.lineWidth = 1;
+          g.beginPath();
+          g.moveTo(cx, cy);
+          g.lineTo(cx + s * 10, cy + (i % 2 ? 9 : -9));
+          g.stroke();
+        }
+      }
+      g.lineCap = "butt";
+
+      // Heart, contrast-enhanced chambers brighter than myocardium
+      g.fillStyle = "#6c747c";
+      ellipse(g, 206, 152, 46 * drift, 40 * drift, -0.35);
+      g.fill();
+      g.fillStyle = "#b9c1c8";
+      ellipse(g, 220, 160, 17 * drift, 15 * drift);
+      g.fill();
+      ellipse(g, 194, 146, 14 * drift, 12 * drift);
+      g.fill();
+      ellipse(g, 224, 132, 11 * drift, 9 * drift);
+      g.fill();
+      ellipse(g, 198, 172, 10 * drift, 9 * drift);
+      g.fill();
+
+      // Sternum
+      g.fillStyle = "#e4eaef";
+      g.beginPath();
+      g.roundRect(188, 58, 24, 8, 3);
+      g.fill();
+
+      // Vertebral body, canal, posterior elements
+      g.fillStyle = "#e0e6eb";
+      g.beginPath();
+      g.arc(200, 228, 17, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = "#0a0e14";
+      g.beginPath();
+      g.arc(200, 247, 5.5, 0, Math.PI * 2);
+      g.fill();
+      g.strokeStyle = "#dfe5ea";
+      g.lineWidth = 4;
+      g.beginPath();
+      g.arc(200, 247, 11, 0.15, Math.PI - 0.15);
+      g.stroke();
+
+      // Descending aorta, contrast-filled
+      g.fillStyle = "#c2c9d0";
+      g.beginPath();
+      g.arc(226, 214, 12, 0, Math.PI * 2);
+      g.fill();
+
+      // Ribs around the wall
+      g.fillStyle = "#e0e6eb";
+      for (let i = 0; i < 12; i++) {
+        const a = Math.PI * 0.12 + (i / 11) * Math.PI * 0.76;
+        for (const s of [-1, 1]) {
+          const x = 200 + s * Math.cos(a) * 120;
+          const y = 158 + Math.sin(a) * 98 * (s === 1 ? 1 : 1);
+          ellipse(g, x, y, 7, 3.6, a * s);
+          g.fill();
+        }
+      }
+      g.restore();
+
+      // FOV edge
+      g.strokeStyle = "rgba(63,179,194,0.35)";
+      g.lineWidth = 1;
+      g.beginPath();
+      g.arc(200, 150, R * iris, 0, Math.PI * 2);
+      g.stroke();
+    }
+
+    // ---- 4. Nuclear medicine: myocardial perfusion, short axis -------------
+    // Rendered at low resolution and upscaled without smoothing so the pixels
+    // are honest. Counts accumulate over the entrance: noisy first, smoother
+    // as the acquisition runs. A mild inferior-wall defect is left in, since
+    // spotting one is exactly the skill being taught.
+    const nm = document.createElement("canvas");
+    nm.width = 64;
+    nm.height = 48;
+    const nmg = nm.getContext("2d")!;
+    const nmImg = nmg.createImageData(64, 48);
+
+    function hot(v: number) {
+      v = clamp01(v);
+      return [clamp01(v * 3) * 255, clamp01(v * 3 - 1) * 255, clamp01(v * 3 - 2) * 255];
+    }
+
+    function drawNuclear(g: CanvasRenderingContext2D, t: number, k: number) {
+      g.fillStyle = FILM;
+      g.fillRect(0, 0, W, H);
+
+      const acquire = easeOut(k);
+      const noiseAmp = 0.55 * (1 - acquire) + 0.07;
+      const frameSeed = Math.floor(t * 8);
+      const d = nmImg.data;
+      for (let y = 0; y < 48; y++) {
+        for (let x = 0; x < 64; x++) {
+          const dx = x - 31.5;
+          const dy = y - 23.5;
+          const r = Math.sqrt(dx * dx + dy * dy);
+          const ang = Math.atan2(dy, dx);
+          const band = smooth((r - 8.5) / 2.2) * (1 - smooth((r - 15.5) / 2.2));
+          // Inferior wall (bottom of the ring) with reduced uptake
+          const defect = 1 - 0.45 * Math.exp(-Math.pow((ang - Math.PI / 2) / 0.55, 2));
+          const noise = (hash(x * 12.9898 + y * 78.233 + frameSeed * 37.719) - 0.5) * noiseAmp;
+          const v = band * defect * acquire + noise * band;
+          const [rr, gg, bb] = hot(v);
+          const i = (y * 64 + x) * 4;
+          d[i] = rr; d[i + 1] = gg; d[i + 2] = bb; d[i + 3] = 255;
+        }
+      }
+      nmg.putImageData(nmImg, 0, 0);
+
+      g.save();
+      g.imageSmoothingEnabled = false;
+      g.drawImage(nm, 72, 54, 256, 192);
+      g.restore();
+
+      // Colour bar
+      const bar = g.createLinearGradient(0, 230, 0, 62);
+      for (let i = 0; i <= 8; i++) {
+        const [rr, gg, bb] = hot(i / 8);
+        bar.addColorStop(i / 8, `rgb(${rr | 0},${gg | 0},${bb | 0})`);
+      }
+      g.fillStyle = bar;
+      g.fillRect(366, 62, 9, 168);
+      mono(g, 9);
+      g.fillStyle = "rgba(200,212,220,0.8)";
+      g.fillText("MAX", 352, 56);
+      g.fillText("0", 368, 244);
+    }
+
+    // ---- sequence ----------------------------------------------------------
+    const scenes = [
+      { name: "Radiography", tech: () => "RADIOGRAPHY · PA CHEST", draw: drawRadiograph },
+      { name: "Ultrasound", tech: () => "ULTRASOUND · APICAL 4-CHAMBER · 70 BPM", draw: drawUltrasound },
+      { name: "CT", tech: (t: number) => `CT · AXIAL · W 400 L 40 · SLICE ${String(46 + Math.floor((t % HOLD) * 2)).padStart(3, "0")}`, draw: drawCT },
+      { name: "Nuclear medicine", tech: () => "NUCLEAR MEDICINE · SPECT PERFUSION · SHORT AXIS", draw: drawNuclear },
+    ];
+
+    let shown = -1;
+    function setHud(i: number, t: number) {
+      if (techEl) techEl.textContent = scenes[i].tech(t);
+      if (i === shown) return;
+      shown = i;
+      if (nameEl) nameEl.textContent = scenes[i].name;
+      dotEls.forEach((d, j) => d.classList.toggle("on", j === i));
+    }
+
+    function frame(rawTime: number) {
+      // rAF timestamps can precede the performance.now() taken at play(), so
+      // the first frame's elapsed time may be slightly negative — clamp, or
+      // Math.floor turns it into a negative scene index.
+      const time = Math.max(0, rawTime);
+      const idx = Math.floor(time / PERIOD) % scenes.length;
+      const phase = time % PERIOD;
+      const prev = (idx + scenes.length - 1) % scenes.length;
+      const k = phase < TRANS ? phase / TRANS : 1;
+      const local = phase;
+
+      scenes[idx].draw(lctx[0], local, k);
+      main.setTransform(1, 0, 0, 1, 0, 0);
+      main.clearRect(0, 0, canvas!.width, canvas!.height);
+      main.drawImage(layers[0], 0, 0);
+
+      if (k < 1) {
+        scenes[prev].draw(lctx[1], HOLD + local, 1);
+        main.globalAlpha = Math.pow(1 - k, 1.6);
+        main.drawImage(layers[1], 0, 0);
+        main.globalAlpha = 1;
+      }
+      setHud(idx, local);
+    }
+
+    resize();
+
+    if (reduced) {
+      // Static radiograph; the sr-only copy still names all four modalities.
+      frame(TRANS + 0.2);
+      window.addEventListener("resize", () => { resize(); frame(TRANS + 0.2); }, { passive: true });
+    } else {
+      let running = false;
+      let visible = true;
+      let start = performance.now();
+      let paused = 0;
+
+      function loop(now: number) {
+        if (!running) return;
+        frame((now - start) / 1000);
+        requestAnimationFrame(loop);
+      }
+      function play() {
+        if (running || !visible || document.hidden) return;
+        running = true;
+        start = performance.now() - paused;
+        requestAnimationFrame(loop);
+      }
+      function pause() {
+        if (!running) return;
+        running = false;
+        paused = performance.now() - start;
+      }
+
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        visible ? play() : pause();
+      }, { threshold: 0.05 }).observe(host);
+
+      document.addEventListener("visibilitychange", () => (document.hidden ? pause() : play()));
+      window.addEventListener("resize", resize, { passive: true });
+      play();
+    }
+  }
+</script>

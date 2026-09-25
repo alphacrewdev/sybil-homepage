@@ -27,8 +27,7 @@ export const hero = {
     "Short, on-demand video courses covering the material residents are tested on — written, storyboarded, and reviewed personally by Dr. Karen Brown before a single frame ships.",
   primaryCta: { label: "Browse courses", href: withBase("/courses") },
   secondaryCta: { label: "Bringing this to your program?", href: withBase("/program-directors") },
-  mediaCaption: "NUCLEAR MEDICINE · MOD 12 / 29",
-  // TODO(karen/amanda): swap for a real course clip or hero image — see questionnaire A3
+  mediaCaption: "ONE CHEST · THE FOUR MODALITIES RESIDENTS TRAIN ON",
 };
 
 export const trust = {

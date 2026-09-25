@@ -1,5 +1,6 @@
 ---
 import BracketFrame from "./BracketFrame.astro";
+import ModalityCycle from "./ModalityCycle.astro";
 import { hero } from "../content/homepage";
 ---
 
@@ -29,28 +30,11 @@ import { hero } from "../content/homepage";
       </div>
     </div>
 
-    <BracketFrame label={hero.mediaCaption} class="frame-intro min-w-0">
-      <div class="flex aspect-[4/3] items-center justify-center overflow-hidden bg-[var(--surface)]">
-        <!-- Abstract placeholder — swap for real course footage/still, see questionnaire A3 -->
-        <svg viewBox="0 0 320 240" class="h-full w-full" role="img" aria-label="Cross-sectional course preview illustration">
-          <rect width="320" height="240" fill="var(--surface)"></rect>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ellipse
-              cx="160"
-              cy={70 + i * 22}
-              rx={110 - i * 6}
-              ry={16 - i * 0.6}
-              fill="none"
-              stroke="var(--accent)"
-              stroke-width="1.2"
-              opacity={0.85 - i * 0.11}
-            ></ellipse>
-          ))}
-          <line x1="30" y1="20" x2="30" y2="220" stroke="var(--border)" stroke-width="1"></line>
-          <line x1="20" y1="30" x2="40" y2="30" stroke="var(--border)" stroke-width="1"></line>
-          <line x1="20" y1="210" x2="40" y2="210" stroke="var(--border)" stroke-width="1"></line>
-        </svg>
-      </div>
-    </BracketFrame>
+    <div class="min-w-0">
+      <BracketFrame class="frame-intro">
+        <ModalityCycle />
+      </BracketFrame>
+      <p class="tag-mono mt-3">{hero.mediaCaption}</p>
+    </div>
   </div>
 </section>
