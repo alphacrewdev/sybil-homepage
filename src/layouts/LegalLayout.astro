@@ -1,0 +1,62 @@
+---
+// Prose layout for the legal/support pages carried over from the previous
+// site. Markdown pages point at it via `layout:` in their frontmatter.
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  frontmatter: { title: string; updated?: string; description?: string };
+}
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <article class="wrap legal">
+    <header class="legal-head rv">
+      <h1 class="section-title">{frontmatter.title}</h1>
+      {frontmatter.updated && <p class="tag-mono mt-4">LAST UPDATED {frontmatter.updated.toUpperCase()}</p>}
+    </header>
+    <!-- No reveal on the body: the observer needs 12% of an element in view,
+         and a document this tall can never satisfy that. -->
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: 46rem;
+    padding-block: clamp(3.5rem, 8vw, 6rem) clamp(4rem, 9vw, 7rem);
+  }
+
+  .legal-head {
+    padding-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prose {
+    color: var(--text-muted);
+    font-size: 0.97rem;
+    line-height: 1.75;
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 2.4rem 0 0.8rem;
+    line-height: 1.25;
+  }
+
+  .prose :global(h2) { font-size: 1.35rem; }
+  .prose :global(h3) { font-size: 1.05rem; }
+  .prose :global(p) { margin: 0 0 1rem; }
+  .prose :global(ul) { margin: 0 0 1.1rem; padding-left: 1.25rem; }
+  .prose :global(li) { margin-bottom: 0.4rem; }
+  .prose :global(li::marker) { color: var(--accent); }
+  .prose :global(a) { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+</style>

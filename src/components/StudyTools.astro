@@ -11,7 +11,7 @@ import { tools } from "../content/homepage";
       <p class="section-lede">{tools.intro}</p>
     </div>
 
-    <div class="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" id="tools-grid">
       {tools.items.map((item, i) => (
         <article class:list={["tool rv lift", i > 0 && `rv-d${Math.min(i, 5)}`]}>
           <ToolVignette kind={item.kind} />
@@ -29,10 +29,40 @@ import { tools } from "../content/homepage";
 
 <style>
   .tool {
+    position: relative;
     background: var(--surface);
     border: 1px solid var(--border);
     overflow: hidden;
   }
 
   .tool:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+
+  /* Cursor spotlight: a soft teal pool that follows the pointer across the
+     card. --mx/--my are set per card from the grid's pointermove. */
+  .tool::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(63, 179, 194, 0.24), transparent 62%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .tool:hover::before { opacity: 1; }
+  .tool > * { position: relative; z-index: 1; }
 </style>
+
+<script>
+  const grid = document.getElementById("tools-grid");
+  if (grid && window.matchMedia("(hover: hover)").matches) {
+    grid.addEventListener("pointermove", (e) => {
+      for (const card of Array.from(grid.children) as HTMLElement[]) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        card.style.setProperty("--my", `${e.clientY - r.top}px`);
+      }
+    }, { passive: true });
+  }
+</script>

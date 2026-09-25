@@ -1,0 +1,29 @@
+---
+// Technical support, at the same slug as the previous site so links from the
+// platform keep working. Copy is the previous page's, verbatim.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site, footer } from "../content/homepage";
+---
+
+<BaseLayout title="Contact Support" description="Technical support for Sybil Digital Learning.">
+  <section class="wrap support">
+    <div class="rv max-w-2xl">
+      <span class="eyebrow">Technical support</span>
+      <h1 class="section-title">Contact Support</h1>
+      <p class="section-lede">
+        We want to ensure that you have a positive experience with us, so please feel free to contact us if there is anything we can help out with.
+      </p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href={`mailto:${footer.contactEmail}?subject=Technical%20support`} class="btn btn-primary">Email support</a>
+        <a href={site.appUrl} class="btn btn-ghost">Log in to the platform</a>
+      </div>
+      <p class="mt-8 text-sm text-[var(--text-muted)]">
+        Include the course or lesson you were in and what you expected to happen — it helps us sort it out faster.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .support { padding-block: clamp(3.5rem, 8vw, 6rem) clamp(5rem, 11vw, 9rem); }
+</style>

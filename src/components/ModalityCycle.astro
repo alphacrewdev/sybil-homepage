@@ -19,8 +19,14 @@
   <canvas class="mc-canvas" id="mc-canvas" aria-hidden="true"></canvas>
   <div class="mc-hud" aria-hidden="true">
     <span class="mc-tech" id="mc-tech">RADIOGRAPHY · PA CHEST</span>
-    <div class="mc-dots" id="mc-dots"><i></i><i></i><i></i><i></i></div>
     <span class="mc-name" id="mc-name">Radiography</span>
+  </div>
+  <!-- Outside the hidden HUD so they stay interactive: click to jump to a modality. -->
+  <div class="mc-dots" id="mc-dots" role="group" aria-label="Choose imaging modality">
+    <button type="button" class="mc-dot on" aria-label="Show radiography"></button>
+    <button type="button" class="mc-dot" aria-label="Show ultrasound"></button>
+    <button type="button" class="mc-dot" aria-label="Show CT"></button>
+    <button type="button" class="mc-dot" aria-label="Show nuclear medicine"></button>
   </div>
   <p class="sr-only">
     One chest shown in the four imaging modalities residents train on: radiography, ultrasound, CT and nuclear medicine.
@@ -75,21 +81,35 @@
 
   .mc-dots {
     position: absolute;
-    top: clamp(0.65rem, 3%, 0.9rem);
-    right: clamp(0.65rem, 3%, 0.9rem);
+    top: clamp(0.35rem, 2%, 0.6rem);
+    right: clamp(0.5rem, 2.4%, 0.75rem);
     display: flex;
-    gap: 4px;
+    gap: 2px;
   }
 
-  .mc-dots i {
+  .mc-dot {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .mc-dot::after {
+    content: "";
     display: block;
     width: 14px;
     height: 3px;
     background: rgba(230, 238, 243, 0.22);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
-  .mc-dots i.on { background: #3fb3c2; }
+  .mc-dot:hover::after { transform: scaleY(1.6); background: rgba(230, 238, 243, 0.5); }
+  .mc-dot.on::after { background: #3fb3c2; }
+  .mc-dot:focus-visible { outline: 2px solid #3fb3c2; outline-offset: 1px; }
 
   .sr-only {
     position: absolute;
@@ -109,7 +129,7 @@
   const canvas = document.getElementById("mc-canvas") as HTMLCanvasElement | null;
   const techEl = document.getElementById("mc-tech");
   const nameEl = document.getElementById("mc-name");
-  const dotEls = Array.from(document.querySelectorAll<HTMLElement>("#mc-dots i"));
+  const dotEls = Array.from(document.querySelectorAll<HTMLElement>("#mc-dots .mc-dot"));
 
   if (host && canvas) {
     const W = 400;
@@ -651,22 +671,36 @@
     resize();
 
     if (reduced) {
-      // Static radiograph; the sr-only copy still names all four modalities.
-      frame(TRANS + 0.2);
-      window.addEventListener("resize", () => { resize(); frame(TRANS + 0.2); }, { passive: true });
+      // Static frames; the dots still switch modality, without motion.
+      let current = 0;
+      const show = () => frame(current * PERIOD + TRANS + 0.2);
+      show();
+      dotEls.forEach((d, i) => d.addEventListener("click", () => { current = i; show(); }));
+      window.addEventListener("resize", () => { resize(); show(); }, { passive: true });
     } else {
       let running = false;
       let visible = true;
+      let hovered = false;
+      let settling = false;
       let start = performance.now();
       let paused = 0;
 
       function loop(now: number) {
         if (!running) return;
-        frame((now - start) / 1000);
+        const t = (now - start) / 1000;
+        frame(t);
+        // A seek made while hovering plays its entrance, then honours the
+        // hover-pause once the scene has fully arrived.
+        if (settling && hovered && t % PERIOD >= TRANS + 0.05) {
+          settling = false;
+          pause();
+          return;
+        }
         requestAnimationFrame(loop);
       }
-      function play() {
+      function play(force = false) {
         if (running || !visible || document.hidden) return;
+        if (hovered && !force) return;
         running = true;
         start = performance.now() - paused;
         requestAnimationFrame(loop);
@@ -675,6 +709,23 @@
         if (!running) return;
         running = false;
         paused = performance.now() - start;
+      }
+      // Jump to the start of a scene so its entrance plays — even mid-hover,
+      // since clicking a dot is itself a hover.
+      function seek(i: number) {
+        pause();
+        paused = i * PERIOD * 1000;
+        settling = true;
+        play(true);
+      }
+
+      dotEls.forEach((d, i) => d.addEventListener("click", () => seek(i)));
+
+      // Pause while hovered, on devices that actually hover — a tap on a
+      // phone must never freeze it.
+      if (window.matchMedia("(hover: hover)").matches) {
+        host.addEventListener("pointerenter", () => { hovered = true; pause(); });
+        host.addEventListener("pointerleave", () => { hovered = false; play(); });
       }
 
       new IntersectionObserver((entries) => {

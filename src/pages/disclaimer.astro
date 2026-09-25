@@ -1,0 +1,16 @@
+---
+// Same slug as the previous site so platform links keep working. The
+// previous page had no body content at all (only the site footer), so there
+// was nothing to carry over — this holds the slot until Karen supplies text.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PagePlaceholder from "../components/PagePlaceholder.astro";
+---
+
+<BaseLayout title="Disclaimer">
+  <PagePlaceholder
+    eyebrow="LEGAL"
+    heading="Disclaimer"
+    body="The disclaimer page on the previous site was empty, so there was no text to bring across. This page keeps the /disclaimer/ address live for links from the platform until the real disclaimer is written."
+    pending={["Disclaimer text from Karen — educational content, not medical advice; no CME claim"]}
+  />
+</BaseLayout>

@@ -160,6 +160,7 @@ export const courses = {
   items: <Course[]>[
     {
       slug: "radiography",
+      image: withBase("/images/courses/radiography.png"),
       tag: "Course",
       title: "Radiography",
       body: "Build your understanding of radiography concepts as part of your radiology board preparation.",
@@ -167,6 +168,7 @@ export const courses = {
     },
     {
       slug: "mammography",
+      image: withBase("/images/courses/mammography.png"),
       tag: "Course",
       title: "Mammography",
       body: "Work through mammography concepts with focused lessons you can revisit as you study.",
@@ -174,6 +176,7 @@ export const courses = {
     },
     {
       slug: "fluoroscopy",
+      image: withBase("/images/courses/fluoroscopy.png"),
       tag: "Course",
       title: "Fluoroscopy",
       body: "Develop your understanding of fluoroscopy with lessons organized for focused study and review.",
@@ -181,6 +184,7 @@ export const courses = {
     },
     {
       slug: "ct",
+      image: withBase("/images/courses/ct.png"),
       tag: "Course",
       title: "Computed Tomography (CT)",
       body: "Study CT concepts through on-demand lessons that fit around your clinical responsibilities.",
@@ -188,6 +192,7 @@ export const courses = {
     },
     {
       slug: "nuclear-medicine",
+      image: withBase("/images/courses/nuclear-medicine.png"),
       tag: "Course",
       title: "Nuclear Medicine",
       body: "Study nuclear medicine concepts through on-demand course lessons.",
@@ -273,8 +278,11 @@ export const footer = {
       links: [{ label: "Log in", href: site.appUrl }],
     },
   ],
+  // Same slugs as the previous site — the platform links out to these.
   legal: [
-    { label: "Privacy Policy", href: withBase("/privacy") },
-    { label: "Terms of Use", href: withBase("/terms") },
+    { label: "Privacy Policy", href: withBase("/privacy-policy") },
+    { label: "Terms & Conditions", href: withBase("/terms-conditions") },
+    { label: "Disclaimer", href: withBase("/disclaimer") },
+    { label: "Technical Support", href: withBase("/contact-support") },
   ],
 };

@@ -41,6 +41,8 @@ const isActive = (href: string) => path === href || path === `${href}/`;
     </button>
   </div>
 
+  <span class="progress" id="nav-progress" aria-hidden="true"></span>
+
   <div class="sheet" id="sheet">
     {nav.links.map((item) => (
       <a href={item.href} class="sheet-row">{item.label}</a>
@@ -129,6 +131,22 @@ const isActive = (href: string) => path === href || path === `${href}/`;
   .cta { margin-left: 0.4rem; padding-block: 0.58rem; font-size: 0.84rem; }
   .menu-btn { display: none; }
 
+  /* Reading-progress hairline along the bottom edge of the bar. */
+  .progress {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 100%;
+    background: var(--brand-gradient);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .nav.solid .progress { opacity: 1; }
+
   /* Four links plus two actions crowd well before the phone breakpoint. */
   @media (max-width: 1000px) {
     .links, .cta { display: none; }
@@ -200,7 +218,14 @@ const isActive = (href: string) => path === href || path === `${href}/`;
     menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
 
-  const onScroll = () => navEl?.classList.toggle("solid", window.scrollY > window.innerHeight * 0.85);
+  const progress = document.getElementById("nav-progress");
+  const onScroll = () => {
+    navEl?.classList.toggle("solid", window.scrollY > window.innerHeight * 0.85);
+    if (progress) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+    }
+  };
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 </script>

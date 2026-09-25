@@ -12,19 +12,19 @@ import { withBase } from "../lib/base";
 
   <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {courses.items.map((course, i) => (
-      <a href={withBase(`/courses#${course.slug}`)} class:list={["bracket-frame lift rv block", i > 0 && `rv-d${Math.min(i, 5)}`]}>
+      <a href={withBase(`/courses#${course.slug}`)} class:list={["course bracket-frame lift rv block", i > 0 && `rv-d${Math.min(i, 5)}`]}>
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
         <div class="relative flex h-full flex-col bg-[var(--surface)]">
           <div class="media">
             {course.image
-              ? <img src={course.image} alt="" loading="lazy" />
+              ? <img src={course.image} alt="" loading="lazy" width="438" height="304" />
               : <CourseVignette kind={course.slug} />}
+            <span class="tag-mono media-tag">{course.tag.toUpperCase()}</span>
           </div>
           <div class="flex flex-1 flex-col justify-between p-6">
             <div>
-              <span class="tag-mono">{course.tag.toUpperCase()}</span>
-              <h3 class="mt-2 text-[15.5px] font-semibold">{course.title}</h3>
+              <h3 class="text-[15.5px] font-semibold">{course.title}</h3>
               <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.body}</p>
             </div>
             <span class="link-accent mt-6 w-fit">{course.link}</span>
@@ -41,9 +41,11 @@ import { withBase } from "../lib/base";
 
 <style>
   .media {
+    position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border-bottom: 1px solid var(--border);
+    background: #04070c;
   }
 
   .media img {
@@ -51,5 +53,32 @@ import { withBase } from "../lib/base";
     height: 100%;
     object-fit: cover;
     display: block;
+    transform: scale(1.02);
+    transition: transform 0.7s cubic-bezier(0.22, 0.9, 0.28, 1), filter 0.7s ease;
+    filter: saturate(0.85) contrast(1.05);
+  }
+
+  /* Navy wash keeps the stock photography on-brand and gives the tag a
+     legible corner, without hiding the image. */
+  .media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, rgba(2, 43, 98, 0.35), transparent 45%),
+      linear-gradient(to top, rgba(3, 20, 43, 0.55), transparent 55%);
+    transition: opacity 0.5s ease;
+  }
+
+  .course:hover .media img { transform: scale(1.08); filter: saturate(1) contrast(1.05); }
+  .course:hover .media::after { opacity: 0.7; }
+
+  .media-tag {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.85rem;
+    z-index: 1;
+    color: #e6eef3;
   }
 </style>

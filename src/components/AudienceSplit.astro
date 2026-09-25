@@ -1,10 +1,14 @@
 ---
 import { ways } from "../content/homepage";
+import { withBase } from "../lib/base";
 ---
 
-<section class="border-t bg-[var(--surface)]">
-  <div class="wrap section">
-    <h2 class="rv section-title">{ways.heading}</h2>
+<section class="ways-band" id="ways">
+  <!-- Parallax photo from the existing site, washed in brand navy so the two
+       offers sit on something with depth rather than a flat surface. -->
+  <img class="ways-bg" id="ways-bg" src={withBase("/images/courses/nuclear-medicine.png")} alt="" aria-hidden="true" width="438" height="304" />
+  <div class="wrap section ways-content">
+    <h2 class="rv section-title ways-title">{ways.heading}</h2>
 
     <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
       {ways.items.map((way, i) => (
@@ -23,9 +27,39 @@ import { ways } from "../content/homepage";
 </section>
 
 <style>
+  .ways-band {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-ink-950);
+  }
+
+  .ways-bg {
+    position: absolute;
+    left: 0;
+    top: -12%;
+    width: 100%;
+    height: 124%;
+    object-fit: cover;
+    opacity: 0.32;
+    filter: saturate(0.6);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  .ways-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(1, 28, 67, 0.92) 0%, rgba(2, 43, 98, 0.78) 55%, rgba(2, 118, 130, 0.55) 100%);
+    pointer-events: none;
+  }
+
+  .ways-content { position: relative; }
+  .ways-title { color: #ffffff; }
+
   .way {
     position: relative;
-    background: var(--bg);
+    background: var(--surface);
     border: 1px solid var(--border);
   }
 
@@ -43,3 +77,22 @@ import { ways } from "../content/homepage";
 
   .way:hover::before { opacity: 1; }
 </style>
+
+<script>
+  const band = document.getElementById("ways");
+  const bg = document.getElementById("ways-bg");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (band && bg && !reduced) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = band.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      const p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+      bg.style.transform = `translateY(${(p - 0.5) * -70}px)`;
+    };
+    addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+</script>

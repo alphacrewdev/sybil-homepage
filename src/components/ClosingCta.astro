@@ -3,8 +3,8 @@ import { closing } from "../content/homepage";
 import { withBase } from "../lib/base";
 ---
 
-<section class="cta-band">
-  <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="watermark" aria-hidden="true" />
+<section class="cta-band" id="cta-band">
+  <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="watermark" id="cta-mark" aria-hidden="true" />
   <div class="wrap section rv">
     <h2 class="section-title title">{closing.heading}</h2>
     <p class="section-lede lede">{closing.body}</p>
@@ -55,3 +55,23 @@ import { withBase } from "../lib/base";
 
   .wrap { position: relative; }
 </style>
+
+<script>
+  // The mark drifts slowly against the scroll, so the band has depth.
+  const band = document.getElementById("cta-band");
+  const mark = document.getElementById("cta-mark");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (band && mark && !reduced) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = band.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      const p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+      mark.style.transform = `translateY(calc(-50% + ${(p - 0.5) * -80}px)) rotate(${-8 + (p - 0.5) * 6}deg)`;
+    };
+    addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+</script>
