@@ -1,0 +1,82 @@
+---
+// "Watch a sample lesson" is Karen's chosen secondary action. Until she
+// supplies an embed, this is a bracket-framed player slot with a play
+// affordance — swapping in the real lesson is a one-line content change.
+import BracketFrame from "./BracketFrame.astro";
+import { sample } from "../content/homepage";
+---
+
+<section class="wrap section" id="sample">
+  <div class="grid grid-cols-1 items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-14">
+    <div class="rv min-w-0">
+      <span class="eyebrow">{sample.eyebrow}</span>
+      <h2 class="section-title">{sample.heading}</h2>
+      <p class="section-lede">{sample.body}</p>
+    </div>
+
+    <div class="rv rv-d1 min-w-0">
+      <BracketFrame>
+        <div class="player">
+          {sample.videoUrl ? (
+            <iframe src={sample.videoUrl} title="Sample lesson" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          ) : (
+            <div class="placeholder" role="img" aria-label="Sample lesson video, coming soon">
+              <span class="tag-mono caption">{sample.caption}</span>
+              <span class="play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>
+              </span>
+              <span class="tag-mono hint">LESSON PREVIEW COMING SOON</span>
+            </div>
+          )}
+        </div>
+      </BracketFrame>
+    </div>
+  </div>
+</section>
+
+<style>
+  .player {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #04070c;
+    overflow: hidden;
+  }
+
+  .player iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(60% 70% at 50% 50%, rgba(2, 118, 130, 0.22), transparent 70%),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+      #04070c;
+    color: #e6eef3;
+  }
+
+  .caption { position: absolute; top: 0.85rem; left: 1rem; color: #7fd3dc; }
+  .hint { position: absolute; bottom: 0.85rem; left: 1rem; color: rgba(230, 238, 243, 0.55); }
+
+  .play {
+    display: grid;
+    place-items: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    border-radius: 999px;
+    border: 1.5px solid rgba(127, 211, 220, 0.7);
+    background: rgba(3, 20, 43, 0.6);
+    color: #7fd3dc;
+    transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1), background-color 0.28s ease;
+  }
+
+  .play svg { width: 1.6rem; height: 1.6rem; margin-left: 0.2rem; }
+  :global(.bracket-frame:hover) .play { transform: scale(1.08); background: rgba(2, 118, 130, 0.55); }
+</style>

@@ -3,6 +3,21 @@ import CourseVignette from "./CourseVignette.astro";
 import CourseModal from "./CourseModal.astro";
 import { courses } from "../content/homepage";
 import { courseList } from "../content/courses";
+import { withBase } from "../lib/base";
+
+// Karen's catalogue order, then the question bank.
+const order = [
+  "radiography-physics",
+  "mammography-physics",
+  "fluoroscopy-physics",
+  "ct-physics",
+  "nuclear-medicine",
+  "radiation-biology-safety-dose",
+  "ultrasound-physics",
+  "mri-basic-physics",
+  "board-review",
+];
+const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).filter(Boolean) as typeof courseList;
 ---
 
 <section class="wrap section" id="courses">
@@ -12,7 +27,7 @@ import { courseList } from "../content/courses";
   </div>
 
   <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {courseList.map((course, i) => (
+    {ordered.map((course, i) => (
       <article class:list={["course bracket-frame lift rv", i > 0 && `rv-d${Math.min(i, 5)}`]} data-open={course.slug} tabindex="-1">
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
@@ -42,11 +57,22 @@ import { courseList } from "../content/courses";
     ))}
   </div>
 
+  <!-- The bundle: everything above in one purchase. -->
+  <div class="bundle rv mt-6">
+    <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="bundle-mark" aria-hidden="true" />
+    <div class="bundle-text">
+      <span class="tag-mono bundle-tag">BUNDLE</span>
+      <h3 class="bundle-title">{courses.bundle.title}</h3>
+      <p class="bundle-body">{courses.bundle.body}</p>
+    </div>
+    <a href={courses.bundle.cta.href} class="btn btn-light" rel="noopener">{courses.bundle.cta.label}</a>
+  </div>
+
   <div class="rv mt-10">
     <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
   </div>
 
-  {courseList.map((course) => <CourseModal course={course} />)}
+  {ordered.map((course) => <CourseModal course={course} />)}
 </section>
 
 <style>
@@ -91,6 +117,41 @@ import { courseList } from "../content/courses";
   :root.dark .media:not(.has-photo) .media-tag { color: #e6eef3; }
 
   .open-btn { background: none; padding: 0 0 1px; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 500; }
+
+  .bundle {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #ffffff;
+  }
+
+  @media (min-width: 820px) {
+    .bundle { grid-template-columns: 1fr auto; gap: 2.5rem; }
+  }
+
+  .bundle-mark {
+    position: absolute;
+    right: -4%;
+    top: 50%;
+    width: 18rem;
+    max-width: none;
+    transform: translateY(-50%) rotate(-10deg);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .bundle-text { position: relative; max-width: 44rem; }
+  .bundle-tag { color: #7fd3dc; }
+  .bundle-title { margin: 0.4rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.25rem, 2.6vw, 1.7rem); letter-spacing: -0.015em; }
+  .bundle-body { margin: 0.6rem 0 0; color: rgba(255, 255, 255, 0.82); font-size: 0.95rem; line-height: 1.6; }
+
+  .btn-light { position: relative; background: #ffffff; color: var(--color-navy-700); }
+  .btn-light:hover { filter: brightness(0.97); }
 </style>
 
 <script>
@@ -109,7 +170,9 @@ import { courseList } from "../content/courses";
     dialog.close();
   }
 
-  // Whole card opens the course; the "Learn more" button is the accessible control.
+  // Whole card opens the course; the "Learn more" button is the accessible
+  // control. Any other [data-open] on the page (e.g. the scroll sequence's
+  // CTA) opens the same dialogs.
   document.querySelectorAll<HTMLElement>("[data-open]").forEach((el) => {
     el.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).closest("a")) return;
@@ -120,7 +183,6 @@ import { courseList } from "../content/courses";
 
   document.querySelectorAll<HTMLDialogElement>("dialog.cm").forEach((dialog) => {
     dialog.querySelector("[data-close]")?.addEventListener("click", () => close(dialog));
-    // Click on the backdrop (outside the panel) closes.
     dialog.addEventListener("click", (e) => { if (e.target === dialog) close(dialog); });
     dialog.addEventListener("close", () => {
       if (openDialog === dialog) openDialog = null;

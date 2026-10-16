@@ -55,10 +55,14 @@ import { path } from "../content/homepage";
   }
 
   .path.in .node::after { transform: scaleY(1); }
-  .path.in .node:nth-child(1)::after { transition-delay: 0.15s; }
-  .path.in .node:nth-child(2)::after { transition-delay: 0.4s; }
-  .path.in .node:nth-child(3)::after { transition-delay: 0.65s; }
-  .path.in .node:nth-child(4)::after { transition-delay: 0.9s; }
+  /* One delay per segment so the line draws node to node, in order. */
+  .path.in .node:nth-child(1)::after { transition-delay: 0.1s; }
+  .path.in .node:nth-child(2)::after { transition-delay: 0.28s; }
+  .path.in .node:nth-child(3)::after { transition-delay: 0.46s; }
+  .path.in .node:nth-child(4)::after { transition-delay: 0.64s; }
+  .path.in .node:nth-child(5)::after { transition-delay: 0.82s; }
+  .path.in .node:nth-child(6)::after { transition-delay: 1s; }
+  .path.in .node:nth-child(7)::after { transition-delay: 1.18s; }
 
   .dot {
     position: relative;

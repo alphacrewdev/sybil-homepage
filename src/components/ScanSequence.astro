@@ -40,7 +40,9 @@ const stages = scan.stages;
           <figcaption class="tag-mono scan-kicker">{stage.kicker}</figcaption>
           <p class="scan-line">{stage.line}</p>
           <p class="scan-sub">{stage.sub}</p>
-          {stage.cta && <a class="btn btn-ghost scan-cta" href={stage.cta.href}>{stage.cta.label}</a>}
+          {stage.cta && (
+            <button type="button" class="btn btn-ghost scan-cta" data-open={stage.cta.open} aria-haspopup="dialog">{stage.cta.label}</button>
+          )}
         </figure>
       ))}
     </div>

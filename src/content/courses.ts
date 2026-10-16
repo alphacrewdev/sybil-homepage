@@ -30,7 +30,7 @@ export const courseList: CourseInfo[] = [
     slug: "radiography-physics",
     title: "Radiography Physics",
     tag: "Course",
-    blurb: "Build your understanding of radiography concepts as part of your radiology board preparation.",
+    blurb: "Understand core radiography physics principles relevant for clinical practice.",
     image: withBase("/images/courses/radiography.png"),
     url: "https://sybildigitallearning.com/radiography-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -49,7 +49,7 @@ export const courseList: CourseInfo[] = [
     slug: "ultrasound-physics",
     title: "Ultrasound Physics",
     tag: "Course",
-    blurb: "How transducers work, B-mode, M-mode and Doppler imaging, the factors that shape image quality, and bioeffects and safety.",
+    blurb: "Understand core ultrasound physics principles relevant for clinical practice.",
     image: withBase("/images/courses/ultrasound.png"),
     url: "https://sybildigitallearning.com/ultrasound-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -68,7 +68,7 @@ export const courseList: CourseInfo[] = [
     slug: "nuclear-medicine",
     title: "Nuclear Medicine Physics",
     tag: "Course",
-    blurb: "Study nuclear medicine concepts through on-demand course lessons.",
+    blurb: "Understand core nuclear medicine physics principles relevant for clinical practice.",
     image: withBase("/images/courses/nuclear-medicine.png"),
     url: "https://sybildigitallearning.com/nuclear-medicine/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -85,9 +85,9 @@ export const courseList: CourseInfo[] = [
   },
   {
     slug: "mri-basic-physics",
-    title: "MRI Physics",
+    title: "Basic MRI Physics",
     tag: "Course",
-    blurb: "From putting the patient in the magnet to k-space, pulse sequences, tissue suppression and image quality.",
+    blurb: "Understand core MRI physics principles relevant for clinical practice.",
     image: withBase("/images/courses/mri.png"),
     url: "https://sybildigitallearning.com/mri-basic-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -104,9 +104,9 @@ export const courseList: CourseInfo[] = [
   },
   {
     slug: "ct-physics",
-    title: "Computed Tomography Physics",
+    title: "CT Physics",
     tag: "Course",
-    blurb: "Study CT concepts through on-demand lessons that fit around your clinical responsibilities.",
+    blurb: "Understand core CT physics principles relevant for clinical practice.",
     image: withBase("/images/courses/ct.png"),
     url: "https://sybildigitallearning.com/ct-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -125,7 +125,7 @@ export const courseList: CourseInfo[] = [
     slug: "fluoroscopy-physics",
     title: "Fluoroscopy Physics",
     tag: "Course",
-    blurb: "Develop your understanding of fluoroscopy with lessons organized for focused study and review.",
+    blurb: "Understand core fluoroscopy physics principles relevant for clinical practice.",
     image: withBase("/images/courses/fluoroscopy.png"),
     url: "https://sybildigitallearning.com/fluoroscopy-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -144,7 +144,7 @@ export const courseList: CourseInfo[] = [
     slug: "mammography-physics",
     title: "Mammography Physics",
     tag: "Course",
-    blurb: "Work through mammography concepts with focused lessons you can revisit as you study.",
+    blurb: "Understand core mammography physics principles relevant for clinical practice.",
     image: withBase("/images/courses/mammography.png"),
     url: "https://sybildigitallearning.com/mammography-physics/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -161,9 +161,9 @@ export const courseList: CourseInfo[] = [
   },
   {
     slug: "radiation-biology-safety-dose",
-    title: "Radiation Biology, Safety, & Dose",
+    title: "Radiation Biology, Safety, and Dose",
     tag: "Course",
-    blurb: "Mechanisms of biological damage, types of effects, radiation protection principles, and dose metrics and units.",
+    blurb: "Understand radiation biology, typical radiation doses, and safety practices relevant for clinical practice.",
     image: withBase("/images/courses/radiation-biology.png"),
     url: "https://sybildigitallearning.com/radiation-biology-safety-dose/",
     // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
@@ -180,16 +180,17 @@ export const courseList: CourseInfo[] = [
   },
   {
     slug: "board-review",
-    title: "Board Review Questions",
+    // Karen's chosen public name for the former "quiz app".
+    title: "Core Physics Practice Questions",
     tag: "Question bank",
-    blurb: "Review what you have learned with a question bank for radiology board preparation.",
+    blurb: "Preparation for the ABR Core Exam: over 300 exam-style physics questions.",
     url: "https://sybildigitallearning.com/",
-    // TODO: point at the platform once Board Review Questions is sold there.
+    // TODO: point at the platform once the question bank is sold there.
     enrollUrl: "https://sybildigitallearning.com/",
-    description: ["Over 300 exam-style questions for radiology board preparation. Practice beyond the lessons, review the questions you missed, and return to them as you study."],
+    description: ["Over 300 exam-style physics questions for ABR Core Exam preparation. Practice beyond the lessons, review the questions you missed, and return to them as you study."],
     learn: [],
     modules: [],
-    features: ["300+ exam-style questions", "Included with the full course bundle", "Available on its own."],
+    features: ["300+ exam-style questions", "Included with the Radiology Physics Course Bundle", "Available on its own"],
     requirements: [],
     instructors: [],
   },

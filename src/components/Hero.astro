@@ -18,6 +18,9 @@ import { hero } from "../content/homepage";
         <a href={hero.primaryCta.href} class="btn btn-primary">{hero.primaryCta.label}</a>
         <a href={hero.secondaryCta.href} class="btn btn-ghost">{hero.secondaryCta.label}</a>
       </div>
+      <p class="mt-5 text-sm text-[var(--text-muted)]">
+        {hero.programLine.text} <a href={hero.programLine.href} class="link-accent text-sm">{hero.programLine.label}</a>
+      </p>
     </div>
 
     <div class="min-w-0">
