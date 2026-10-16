@@ -12,7 +12,7 @@ export const site = {
   // TODO(karen): confirm the auth app's URL once it's on its own subdomain
   appUrl: "https://app.sybildigitallearning.com",
   description:
-    "On-demand radiology physics courses for residents and residency programs, covering the physics on the ABR Core Exam. Founded by medical physicist Karen Brown.",
+    "On-demand radiology physics courses for residents and residency programs, covering the physics on the ABR Core Exam.",
 };
 
 export const nav = {
@@ -223,7 +223,7 @@ export const footer = {
   // Used by the Contact Support page.
   contactEmail: "contact@sybildigitallearning.com",
   blurb:
-    "On-demand radiology physics courses for residents, with animated explanations for ABR Core Exam preparation and live review sessions for participating residency programs. Founded by medical physicist Karen Brown.",
+    "On-demand radiology physics courses for residents, with animated explanations for ABR Core Exam preparation and live review sessions for participating residency programs.",
   columns: [
     {
       title: "Learn",
