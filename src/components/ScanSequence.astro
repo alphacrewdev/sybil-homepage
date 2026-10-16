@@ -22,15 +22,8 @@ const stages = scan.stages;
   <div class="scan-sticky">
     <canvas id="scan-canvas" aria-hidden="true"></canvas>
 
-    <!-- Viewer overlay, following DICOM readout conventions -->
+    <!-- Slice-position rail only; the text readouts were removed by request -->
     <div class="scan-hud" aria-hidden="true">
-      <div class="hud-tl">
-        <span class="tag-mono" id="hud-series">SERIES 3 · AXIAL</span>
-        <span class="tag-mono" id="hud-mode">CT · W 400 L 40</span>
-      </div>
-      <div class="hud-tr">
-        <span class="tag-mono" id="hud-slice">SLICE 001 / 120</span>
-      </div>
       <div class="hud-rail"><div class="hud-rail-thumb" id="hud-thumb"></div></div>
     </div>
 
@@ -92,17 +85,6 @@ const stages = scan.stages;
     z-index: 2;
     pointer-events: none;
   }
-
-  .hud-tl,
-  .hud-tr {
-    position: absolute;
-    top: clamp(4.75rem, 9vh, 7rem);
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  .hud-tl { left: clamp(1.25rem, 4vw, 3rem); }
-  .hud-tr { right: clamp(1.25rem, 4vw, 3rem); text-align: right; }
 
   .hud-rail {
     position: absolute;
@@ -198,8 +180,6 @@ const stages = scan.stages;
   const section = document.querySelector<HTMLElement>(".scan");
   const canvas = document.getElementById("scan-canvas") as HTMLCanvasElement | null;
   const thumb = document.getElementById("hud-thumb");
-  const sliceLabel = document.getElementById("hud-slice");
-  const modeLabel = document.getElementById("hud-mode");
   const stageEls = Array.from(document.querySelectorAll<HTMLElement>(".scan-stage"));
 
   if (section && canvas) {
@@ -405,10 +385,7 @@ const stages = scan.stages;
       ctx.stroke();
       ctx.globalAlpha = 1;
 
-      // HUD text
-      const sliceNo = String(Math.round(1 + p * (TOTAL_SLICES - 1))).padStart(3, "0");
-      if (sliceLabel) sliceLabel.textContent = `SLICE ${sliceNo} / ${TOTAL_SLICES}`;
-      if (modeLabel) modeLabel.textContent = bloom > 0.45 ? "NM · TRACER UPTAKE" : "CT · W 400 L 40";
+      // Slice-position rail
       if (thumb) thumb.style.transform = `translateY(${p * (thumb.parentElement!.clientHeight - thumb.clientHeight)}px)`;
 
       // Stage copy cross-fades on the same grid cell.
