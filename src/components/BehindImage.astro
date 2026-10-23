@@ -1,0 +1,340 @@
+---
+// "Behind the image": a scroll-driven journey from an illustrative bone scan
+// to the gamma camera that records one. The 3D runtime (three.js) is loaded
+// only when the section approaches, WebGL works and motion is allowed;
+// otherwise the section shows rendered stills with the same copy.
+//
+// Content: src/content/behindImage.ts
+// Scene configuration: src/scripts/behind-image/config.ts
+// Geometry and materials: src/scripts/behind-image/scene.ts
+// Runtime (scroll, camera, labels): src/scripts/behind-image/index.ts
+// Science notes and review flags: docs/behind-the-image.md
+import { behindImage as c } from "../content/behindImage";
+import { withBase } from "../lib/base";
+
+const posterA = withBase("/images/behind-image/scene-a.jpg");
+const posterB = withBase("/images/behind-image/scene-b.jpg");
+const posterAMobile = withBase("/images/behind-image/scene-a-mobile.jpg");
+const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
+---
+
+<section class="bi band-dark" id="behind-the-image" aria-labelledby="bi-heading">
+  <h2 id="bi-heading" class="sr-only">{c.label}: {c.headline}</h2>
+  <p class="sr-only">{c.intro} {c.description}</p>
+
+  <div class="bi-sticky">
+    <picture class="bi-poster" aria-hidden="true">
+      <source media="(max-width: 899px)" srcset={posterAMobile} />
+      <img src={posterA} alt="" width="1600" height="1000" decoding="async" />
+    </picture>
+    <canvas class="bi-canvas" aria-hidden="true"></canvas>
+
+    <div class="bi-labels" aria-hidden="true">
+      <span class="bi-tag tag-mono" data-anchor="imageTag"><span>{c.imageTag}</span><span>{c.imageMeta}</span></span>
+      <span class="bi-tag bi-fovtag tag-mono" data-anchor="fovTag"><span>{c.fovTag}</span></span>
+      {Object.entries(c.labels).map(([key, text]) => (
+        <span class="bi-label" data-label={key}><i></i><b>{text}</b></span>
+      ))}
+    </div>
+    <p class="bi-note tag-mono" aria-hidden="true">{c.simplified}</p>
+
+    <div class="bi-copy" aria-hidden="true">
+      <div class="bi-beat" data-beat="0">
+        <span class="eyebrow">{c.label}</span>
+        <p class="bi-headline">{c.headline}</p>
+        <p class="bi-sub">{c.intro}</p>
+      </div>
+      {c.beats.map((b, i) => (
+        <div class="bi-beat" data-beat={i + 1}>
+          <span class="eyebrow">{b.kicker}</span>
+          <p class="bi-line">{b.line}</p>
+          {b.question && <p class="bi-question">{b.question}</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Static version: reduced motion, no WebGL, or before the scene loads. -->
+  <div class="bi-static wrap">
+    <span class="eyebrow">{c.label}</span>
+    <p class="bi-headline">{c.headline}</p>
+    <p class="bi-sub">{c.intro}</p>
+    <div class="bi-static-grid">
+      {c.beats.map((b, i) => (
+        <figure class="bi-static-fig">
+          <picture>
+            <source media="(max-width: 899px)" srcset={i === 0 ? posterAMobile : posterBMobile} />
+            <img src={i === 0 ? posterA : posterB} alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+          </picture>
+          <figcaption>
+            <span class="eyebrow">{b.kicker}</span>
+            <span class="bi-line">{b.line}</span>
+            {b.question && <span class="bi-question">{b.question}</span>}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+    <p class="tag-mono">{c.imageTag} · {c.simplified}</p>
+  </div>
+</section>
+
+<style>
+  .bi {
+    position: relative;
+    height: 440vh;
+    background: var(--color-ink-950);
+  }
+
+  .bi-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .bi-canvas,
+  .bi-poster,
+  .bi-poster img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bi-poster img { object-fit: cover; }
+  .bi-canvas { opacity: 0; transition: opacity 0.6s ease; }
+  .bi.bi-live .bi-canvas { opacity: 1; }
+
+  /* Scrim under the copy column only, so the scene stays clean elsewhere. */
+  .bi-sticky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-ink-950) 82%, transparent) 0%, transparent 46%);
+  }
+
+  .bi-copy {
+    position: absolute;
+    z-index: 2;
+    left: max(clamp(1.05rem, 4vw, 2rem), calc((100vw - 72rem) / 2 + 2rem));
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(27rem, 40vw);
+    display: grid;
+  }
+
+  .bi-beat {
+    grid-area: 1 / 1;
+    align-self: center;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* Before the runtime takes over, show the opening beat. */
+  .bi:not(.bi-live) .bi-beat[data-beat="0"] { opacity: 1; visibility: visible; }
+
+  .bi-headline {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.06;
+    font-size: clamp(2rem, 4.2vw, 3.3rem);
+    text-wrap: balance;
+  }
+
+  .bi-sub {
+    margin: 1.1rem 0 0;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    max-width: 30rem;
+  }
+
+  .bi-line {
+    display: block;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.18;
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    text-wrap: balance;
+  }
+
+  .bi-question {
+    display: block;
+    margin: 1rem 0 0;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-teal-300);
+    color: var(--color-teal-200);
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  /* Tags pinned beside points on the image (projected from 3D). The text
+     block hangs up and to the right of its anchor. */
+  .bi-tag {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    gap: 0.3rem;
+    width: max-content;
+    max-width: 15rem;
+    color: var(--color-teal-200);
+    will-change: transform, opacity;
+  }
+
+  .bi-tag > span {
+    display: block;
+    translate: 0 -100%;
+    white-space: normal;
+  }
+
+  .bi-tag > span + span { color: var(--text-muted); }
+  .bi-tag.flip > span { translate: -100% -100%; text-align: right; }
+  .bi-fovtag { opacity: 0; }
+  .bi-fovtag > span { translate: 0 -50%; }
+  .bi-fovtag.flip > span { translate: -100% -50%; }
+
+  .bi-note {
+    position: absolute;
+    z-index: 2;
+    right: clamp(1.05rem, 3vw, 2.2rem);
+    bottom: clamp(1.5rem, 5vh, 3rem);
+    margin: 0;
+    opacity: 0;
+  }
+
+  .bi-labels {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .bi-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  .bi-label i {
+    width: 7px;
+    height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+    border-radius: 50%;
+    background: var(--color-teal-200);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-teal-300) 25%, transparent);
+    flex: none;
+  }
+
+  .bi-label i::after {
+    content: "";
+    display: block;
+    width: 1.6rem;
+    height: 1px;
+    margin: 3px 0 0 7px;
+    background: color-mix(in srgb, var(--color-teal-200) 70%, transparent);
+  }
+
+  .bi-label.flip { flex-direction: row-reverse; translate: -100% 0; }
+  .bi-label.flip i { margin: -3.5px -3.5px 0 0; }
+  .bi-label.flip i::after { margin: 3px 0 0 -1.6rem; }
+  .bi-label.flip b { margin: 0 1.6rem 0 0; }
+
+  .bi-label b {
+    margin-left: 1.6rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: #e4eef3;
+    background: color-mix(in srgb, var(--color-ink-950) 70%, transparent);
+    padding: 0.2rem 0.45rem;
+  }
+
+  .bi-static { display: none; }
+
+  @media (max-width: 899px) {
+    .bi-sticky::after {
+      background: linear-gradient(0deg, color-mix(in srgb, var(--color-ink-950) 92%, transparent) 0%, color-mix(in srgb, var(--color-ink-950) 60%, transparent) 30%, transparent 52%);
+    }
+    .bi-copy {
+      top: auto;
+      bottom: clamp(1.5rem, 6vh, 3rem);
+      transform: none;
+      width: auto;
+      right: clamp(1.05rem, 4vw, 2rem);
+    }
+    .bi-headline { font-size: clamp(1.75rem, 8vw, 2.3rem); }
+    .bi-sub { font-size: 0.95rem; }
+    .bi-label b { font-size: 0.66rem; }
+    .bi-fovtag, .bi-note { display: none; }
+    /* The "illustrative" notice stays put under the nav on small screens. */
+    .bi-tag[data-anchor="imageTag"] { transform: translate3d(clamp(1.05rem, 4vw, 2rem), 4.6rem, 0) !important; }
+    .bi-tag[data-anchor="imageTag"] > span { translate: none !important; text-align: left !important; }
+    .bi-tag[data-anchor="imageTag"] > span + span { display: none; }
+  }
+
+  /* Static fallback: one viewport of copy plus the two key stills. */
+  .bi.bi-static-mode { height: auto; }
+  .bi.bi-static-mode .bi-sticky { display: none; }
+  .bi.bi-static-mode .bi-static { display: block; padding-block: clamp(4rem, 9vw, 7rem); }
+  .bi-static-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2.5rem 0 1rem;
+  }
+  @media (min-width: 900px) { .bi-static-grid { grid-template-columns: 1fr 1fr; } }
+  .bi-static-fig { margin: 0; }
+  .bi-static-fig img { width: 100%; height: auto; display: block; }
+  .bi-static-fig figcaption { display: grid; gap: 0.4rem; margin-top: 1rem; }
+  .bi-static-fig .bi-line { font-size: 1.2rem; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".bi");
+  if (root) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const probe = document.createElement("canvas");
+    const gl = probe.getContext("webgl2") || probe.getContext("webgl");
+    if (reduced || !gl) {
+      root.classList.add("bi-static-mode");
+    } else {
+      // Fetch three.js only as the section approaches.
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) return;
+          io.disconnect();
+          import("../scripts/behind-image/index")
+            .then((m) => m.start(root))
+            .catch(() => root.classList.add("bi-static-mode"));
+        },
+        { rootMargin: "150% 0px" },
+      );
+      io.observe(root);
+    }
+  }
+</script>
