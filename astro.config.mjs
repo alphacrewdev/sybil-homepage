@@ -19,5 +19,6 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  integrations: [react(), sitemap()]
+  // /preview/ is a review build, not a public page, so keep it out of the sitemap.
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/preview/') })]
 });
