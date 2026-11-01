@@ -1,0 +1,29 @@
+---
+// Learner entry point. The static site holds no session, so this page never
+// shows a signed-in state; it hands off to the platform, whose "/" route
+// sends a signed-out visitor to sign-in and a signed-in one to their home.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/page/PageHero.astro";
+import { links } from "../content/homepage";
+---
+
+<BaseLayout title="My courses" description="Sign in to access your enrolled courses and continue where you left off." noindex>
+  <PageHero
+    title="Continue your physics learning."
+    intro="Sign in to access your enrolled courses and continue where you left off."
+  >
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href={links.dashboard} class="btn btn-primary">Log in to My courses</a>
+      <a href={links.courses} class="btn btn-ghost">Browse courses</a>
+    </div>
+    <p class="help mt-10">
+      Expecting access through your program? Use the email address associated with your invitation.
+      <a class="text-link" href={links.support}>Contact support</a> if your courses are missing.
+    </p>
+  </PageHero>
+  <div class="h-20"></div>
+</BaseLayout>
+
+<style>
+  .help { max-width: 38rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+</style>

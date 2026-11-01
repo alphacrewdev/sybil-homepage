@@ -7,55 +7,55 @@ description: "Terms and conditions for using Sybil Digital Learning."
 
 ### Table of contents
 
-1. AGREEMENT TO TERMS
+1. [AGREEMENT TO TERMS](#1-agreement-to-terms)
 
-2. INTELLECTUAL PROPERTY RIGHTS
+2. [INTELLECTUAL PROPERTY RIGHTS](#2-intellectual-property-rights)
 
-3. USER REPRESENTATIONS
+3. [USER REPRESENTATIONS](#3-user-representations)
 
-4. USER REGISTRATION
+4. [USER REGISTRATION](#4-user-registration)
 
-5. PROHIBITED ACTIVITIES
+5. [PROHIBITED ACTIVITIES](#5-prohibited-activities)
 
-6. USER GENERATED CONTRIBUTIONS
+6. [USER GENERATED CONTRIBUTIONS](#6-user-generated-contributions)
 
-7. CONTRIBUTION LICENSE
+7. [CONTRIBUTION LICENSE](#7-contribution-license)
 
-8. GUIDELINES FOR REVIEWS
+8. [GUIDELINES FOR REVIEWS](#8-guidelines-for-reviews)
 
-9. SUBMISSIONS
+9. [SUBMISSIONS](#9-submissions)
 
-10. THIRD-PARTY WEBSITE AND CONTENT
+10. [THIRD-PARTY WEBSITE AND CONTENT](#10-third-party-website-and-content)
 
-11. SITE MANAGEMENT
+11. [SITE MANAGEMENT](#11-site-management)
 
-12. PRIVACY POLICY
+12. [PRIVACY POLICY](#12-privacy-policy)
 
-13. TERM AND TERMINATION
+13. [TERM AND TERMINATION](#13-term-and-termination)
 
-14. MODIFICATIONS AND INTERRUPTIONS
+14. [MODIFICATIONS AND INTERRUPTIONS](#14-modifications-and-interruptions)
 
-15. GOVERNING LAW
+15. [GOVERNING LAW](#15-governing-law)
 
-16. DISPUTE RESOLUTION
+16. [DISPUTE RESOLUTION](#16-dispute-resolution)
 
-17. CORRECTIONS
+17. [CORRECTIONS](#17-corrections)
 
-18. DISCLAIMER
+18. [DISCLAIMER](#18-disclaimer)
 
-19. LIMITATIONS OF LIABILITY
+19. [LIMITATIONS OF LIABILITY](#19-limitations-of-liability)
 
-20. INDEMNIFICATION
+20. [INDEMNIFICATION](#20-indemnification)
 
-21. USER DATA
+21. [USER DATA](#21-user-data)
 
-22. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES
+22. [ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES](#22-electronic-communications-transactions-and-signatures)
 
-23. CALIFORNIA USERS AND RESIDENTS
+23. [CALIFORNIA USERS AND RESIDENTS](#23-california-users-and-residents)
 
-24. MISCELLANEOUS
+24. [MISCELLANEOUS](#24-miscellaneous)
 
-25. CONTACT US
+25. [CONTACT US](#25-contact-us)
 
 ## 1. AGREEMENT TO TERMS
 

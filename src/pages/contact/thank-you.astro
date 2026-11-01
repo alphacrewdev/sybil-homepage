@@ -1,0 +1,28 @@
+---
+// Reached only after the form service accepts a submission. Carries no
+// personal data; ?type=program adds the consult line.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import { links } from "../../content/homepage";
+import { withBase } from "../../lib/base";
+---
+
+<BaseLayout title="Message sent" noindex>
+  <PageHero
+    title="Thanks for getting in touch."
+    intro="Your message has been sent. We’ll reply using the email address you provided."
+  >
+    <p class="page-intro" id="consult-line" hidden>We’ll coordinate a time by email.</p>
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href={links.courses} class="btn btn-primary">Browse courses</a>
+      <a href={withBase("/")} class="btn btn-ghost">Back to home</a>
+    </div>
+  </PageHero>
+  <div class="h-24"></div>
+</BaseLayout>
+
+<script>
+  if (new URLSearchParams(location.search).get("type") === "program") {
+    document.getElementById("consult-line")?.removeAttribute("hidden");
+  }
+</script>

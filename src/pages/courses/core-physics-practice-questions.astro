@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import EnrollPanel from "../../components/page/EnrollPanel.astro";
+import Faq from "../../components/page/Faq.astro";
+import PromoBanner from "../../components/page/PromoBanner.astro";
+import CourseVignette from "../../components/CourseVignette.astro";
+import { questionBank as bank } from "../../content/courses";
+import { links } from "../../content/homepage";
+
+// No question count, exam modes or scoring features are claimed until the
+// question bank's own behaviour is verified.
+const benefits = [
+  { title: "Practice with a physics focus", body: "Keep your question-based review centered on radiology physics." },
+  { title: "Complement your coursework", body: "Use a dedicated bank alongside the quizzes that accompany individual lessons." },
+  { title: "Choose the access that fits", body: "Explore the question bank on its own or as part of the full course bundle." },
+];
+
+const faq = [
+  { q: "Is this the same as the course quizzes?", a: "No. Course quizzes accompany lessons; Core Physics Practice Questions is a separate resource for exam review." },
+  { q: "Is it included in the bundle?", a: "Yes. The Radiology Physics Course Bundle includes all eight courses and Core Physics Practice Questions." },
+  { q: "Does Sybil offer CME credit?", a: "Sybil does not currently offer CME credit." },
+];
+---
+
+<BaseLayout title={bank.title} description={`${bank.summary} On-demand radiology physics education for residents.`}>
+  <PageHero
+    title={bank.title}
+    eyebrow="Question bank"
+    intro={bank.hero}
+    crumbs={[{ label: "Courses", href: links.courses }, { label: bank.title }]}
+  >
+    <p class="scope mt-6">Covers radiology physics. Clinical exam content is not included.</p>
+    <div class="cover mt-8">
+      <CourseVignette kind="board-review" light />
+    </div>
+    <EnrollPanel product={bank} slot="aside" />
+  </PageHero>
+
+  <div class="wrap">
+    <section class="sub-section" aria-labelledby="h-why">
+      <h2 class="sr-only" id="h-why">Why use the question bank</h2>
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {benefits.map((b) => (
+          <div class="border-t pt-5" style="border-color: var(--border);">
+            <h3 class="h3">{b.title}</h3>
+            <p class="body-muted">{b.body}</p>
+          </div>
+        ))}
+      </div>
+      <a href={links.bundle} class="btn btn-ghost mt-10">Explore the course bundle</a>
+    </section>
+
+    <section class="sub-section">
+      <Faq items={faq} />
+    </section>
+  </div>
+
+  <PromoBanner variant="bundle" />
+</BaseLayout>
+
+<style>
+  .scope { display: inline-block; padding: 0.55rem 0.85rem; border-left: 2px solid var(--accent); background: var(--surface); color: var(--text-muted); font-size: 0.95rem; }
+  .cover { max-width: 40rem; border: 1px solid var(--border); }
+</style>

@@ -1,0 +1,45 @@
+---
+// Compact hero for secondary pages: optional breadcrumb and eyebrow, the
+// page's only h1, a short intro, and an actions slot.
+import { withBase } from "../../lib/base";
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  intro?: string;
+  crumbs?: { label: string; href?: string }[];
+}
+const { title, eyebrow, intro, crumbs } = Astro.props;
+const hasAside = Astro.slots.has("aside");
+---
+
+<section class="page-hero">
+  <div class="wrap">
+    {crumbs && (
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a href={withBase("/")}>Home</a></li>
+          {crumbs.map((c) => (
+            <li>{c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <div class:list={[hasAside && "hero-grid"]}>
+      <div class="min-w-0">
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h1 class="page-title">{title}</h1>
+        {intro && <p class="page-intro">{intro}</p>}
+        <slot />
+      </div>
+      {hasAside && <div class="min-w-0"><slot name="aside" /></div>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-grid { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr); gap: 4rem; }
+  }
+</style>

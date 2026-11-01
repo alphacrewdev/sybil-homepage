@@ -1,0 +1,55 @@
+---
+// Native <details> accordions: keyboard and screen-reader support built in,
+// and the answers stay readable without JavaScript.
+interface Props {
+  heading?: string;
+  items: { q: string; a: string }[];
+}
+const { heading = "Questions", items } = Astro.props;
+---
+
+<div class="faq">
+  <h2 class="section-title faq-h">{heading}</h2>
+  <div class="faq-list">
+    {items.map((item) => (
+      <details class="faq-item">
+        <summary>
+          <span>{item.q}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </summary>
+        <p>{item.a}</p>
+      </details>
+    ))}
+  </div>
+</div>
+
+<style>
+  .faq-h { font-size: clamp(1.4rem, 2.6vw, 1.9rem); }
+  .faq-list { margin-top: 1.75rem; border-top: 1px solid var(--border); }
+  .faq-item { border-bottom: 1px solid var(--border); }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 0.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--accent); }
+  summary svg { width: 1.15rem; height: 1.15rem; flex: none; color: var(--accent); transition: transform 0.2s ease; }
+  details[open] summary svg { transform: rotate(180deg); }
+
+  details p { margin: 0; padding: 0 0.25rem 1.3rem; max-width: 46rem; color: var(--text-muted); line-height: 1.65; }
+
+  @media (prefers-reduced-motion: reduce) {
+    summary svg { transition: none; }
+  }
+</style>

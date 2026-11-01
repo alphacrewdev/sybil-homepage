@@ -1,13 +1,87 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import PageHero from "../components/page/PageHero.astro";
+import BracketFrame from "../components/BracketFrame.astro";
+import { instructors } from "../content/team";
+import { links, outreach } from "../content/homepage";
+import { withBase } from "../lib/base";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+const team = [instructors["karen-brown"], instructors["sam-einstein"]];
+const hasPhoto = (p?: string) => !!p && existsSync(join(process.cwd(), "public", p));
+
+const partners = [
+  { name: "RAD-AID", body: "Sybil provides radiology education to residency programs through RAD-AID." },
+  { name: "WinSPIRE", body: "Sybil supports WinSPIRE’s work to expand access to STEM education." },
+].map((p) => ({ ...p, logo: outreach.partners.find((o) => o.name === p.name)?.logo }));
 ---
 
-<BaseLayout title="About">
-  <PagePlaceholder
-    eyebrow="ABOUT / INSTRUCTOR BIOS"
-    heading="About Sybil"
-    body="This page will carry Dr. Karen Brown's full bio and credentials, and her co-author's if he's credited publicly. Low priority per the developer spec — build once copy and photos are in hand."
-    pending={["Karen's bio + headshot", "Co-author bio, if credited", "Confirm: separate page or homepage section, per content length"]}
+<BaseLayout
+  title="About Sybil"
+  description="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
+>
+  <PageHero
+    title="Physics taught with radiologists in mind."
+    intro="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
   />
+
+  <div class="wrap">
+    <section class="sub-section" aria-labelledby="h-approach">
+      <h2 class="section-title" id="h-approach">Make complex ideas easier to work through.</h2>
+      <p class="section-lede">
+        Radiology residents need physics explained in terms that connect to how they will use it. Sybil breaks the material into manageable lessons and brings coursework, practice, and teaching together.
+      </p>
+    </section>
+
+    <section class="sub-section" id="instructors" aria-labelledby="h-team">
+      <span class="eyebrow">Our instructors</span>
+      <h2 class="section-title" id="h-team">The teaching team</h2>
+      <div class="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2">
+        {team.map((t) => (
+          <article class="flex flex-col gap-6 sm:flex-row sm:items-start">
+            {hasPhoto(t.photo) && (
+              <BracketFrame class="w-fit shrink-0">
+                <img src={withBase(t.photo!)} alt={`Portrait of ${t.name}`} class="portrait" width="180" height="240" loading="lazy" />
+              </BracketFrame>
+            )}
+            <div>
+              <h3 class="h3 text-xl">{t.name}</h3>
+              <p class="tag-mono mt-1">{t.role.toUpperCase()}</p>
+              <p class="body-muted mt-4">{t.bio}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-outreach">
+      <h2 class="section-title" id="h-outreach">Extending access to physics education.</h2>
+      <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {partners.map((p) => (
+          <div class="partner">
+            {p.logo
+              ? <div class="plate"><img src={withBase(p.logo)} alt={p.name} loading="lazy" /></div>
+              : <h3 class="h3">{p.name}</h3>}
+            <p class="body-muted">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-next">
+      <h2 class="section-title" id="h-next">Find the right starting point.</h2>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={links.courses} class="btn btn-primary">Browse courses</a>
+        <a href={links.consult} class="btn btn-ghost">Schedule a consult</a>
+      </div>
+    </section>
+  </div>
 </BaseLayout>
+
+<style>
+  .portrait { display: block; width: 180px; height: 240px; object-fit: cover; }
+  .partner { border: 1px solid var(--border); background: var(--surface); padding: 1.6rem; }
+  .plate { display: grid; place-items: center; width: 12rem; height: 4rem; background: #fff; padding: 0.5rem 1rem; margin-bottom: 0.5rem; }
+  .plate img { max-height: 2.75rem; width: auto; max-width: 100%; object-fit: contain; }
+</style>

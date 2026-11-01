@@ -1,0 +1,161 @@
+---
+// One template for the eight subject courses. Content: src/content/courses.ts.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import EnrollPanel from "../../components/page/EnrollPanel.astro";
+import Faq from "../../components/page/Faq.astro";
+import PromoBanner from "../../components/page/PromoBanner.astro";
+import { courseList, productHref, type Course } from "../../content/courses";
+import { instructors, courseCredit } from "../../content/team";
+import { links, site } from "../../content/homepage";
+import { withBase } from "../../lib/base";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+export function getStaticPaths() {
+  return courseList.map((course) => ({ params: { slug: course.slug }, props: { course } }));
+}
+
+interface Props {
+  course: Course;
+}
+const { course } = Astro.props;
+const team = course.instructors.map((id) => instructors[id]);
+const hasPhoto = (p?: string) => !!p && existsSync(join(process.cwd(), "public", p));
+
+const experience = [
+  { title: "Study on your schedule", body: "Short lessons and visual explanations help you work through the physics." },
+  { title: "Check your understanding", body: "Lesson quizzes and answer explanations help you decide what to revisit." },
+  { title: "Continue where you stopped", body: "Resume videos and revisit completed lessons during your access period." },
+];
+
+const faq = [
+  { q: "Does this include live teaching?", a: "Live teaching depends on your access arrangement. Check the enrollment details or contact us before purchasing." },
+  { q: "Does Sybil offer CME credit?", a: "Sybil does not currently offer CME credit." },
+  { q: "Can my program arrange access?", a: "Yes. Schedule a consult to discuss coursework and live teaching for your residency program." },
+];
+
+const description = `${course.summary} On-demand radiology physics education for residents.`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      name: course.title,
+      description: course.hero,
+      provider: { "@type": "Organization", name: site.name, sameAs: site.url },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: site.url + "/" },
+        { "@type": "ListItem", position: 2, name: "Courses", item: site.url + "/courses/" },
+        { "@type": "ListItem", position: 3, name: course.title, item: `${site.url}/courses/${course.slug}/` },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={course.title} description={description} jsonLd={jsonLd}>
+  <PageHero
+    title={course.title}
+    eyebrow="Course"
+    intro={course.hero}
+    crumbs={[{ label: "Courses", href: links.courses }, { label: course.title }]}
+  >
+    <p class="mt-5 text-[0.95rem] text-[var(--text-muted)]">
+      Designed for radiology residents; also relevant to other medical professionals reviewing imaging physics.
+    </p>
+    <div class="cover mt-8">
+      <img src={course.image} alt="" width="876" height="608" />
+    </div>
+    <EnrollPanel product={course} slot="aside" />
+  </PageHero>
+
+  <div class="wrap">
+    <section class="sub-section" aria-labelledby="h-learn">
+      <h2 class="section-title" id="h-learn">What you’ll learn</h2>
+      <ul class="ticks mt-8 max-w-3xl">
+        {course.outcomes.map((o) => <li>{o}</li>)}
+      </ul>
+
+      <details class="topics mt-10">
+        <summary>
+          <span>Topics covered</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </summary>
+        <ul>
+          {course.topics.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="topics-note">Lessons are short videos, typically 10–15 minutes each.</p>
+      </details>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-exp">
+      <h2 class="sr-only" id="h-exp">How you’ll study</h2>
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {experience.map((x) => (
+          <div class="border-t pt-5" style="border-color: var(--border);">
+            <h3 class="h3">{x.title}</h3>
+            <p class="body-muted">{x.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-team">
+      <h2 class="section-title" id="h-team">{team.length > 1 ? "Instructors" : "Instructor"}</h2>
+      <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+        {team.map((t) => (
+          <div class="flex items-start gap-5">
+            {hasPhoto(t.photo) && <img src={withBase(t.photo!)} alt={`Portrait of ${t.name}`} class="avatar" width="72" height="96" loading="lazy" />}
+            <div>
+              <h3 class="h3">{t.name}</h3>
+              <p class="body-muted">{courseCredit[t.id]}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <a href={links.instructors} class="link-accent mt-8">Meet our instructors</a>
+    </section>
+
+    <section class="sub-section">
+      <Faq heading="Access questions" items={faq} />
+    </section>
+  </div>
+
+  <PromoBanner variant="bundle" />
+</BaseLayout>
+
+<style>
+  .cover { aspect-ratio: 16 / 9; overflow: hidden; background: #04070c; max-width: 40rem; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .avatar { width: 72px; height: 96px; object-fit: cover; flex: none; }
+
+  .topics { border: 1px solid var(--border); background: var(--surface); max-width: 48rem; }
+  .topics summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .topics summary::-webkit-details-marker { display: none; }
+  .topics summary svg { width: 1.15rem; height: 1.15rem; color: var(--accent); transition: transform 0.2s ease; }
+  .topics[open] summary svg { transform: rotate(180deg); }
+  .topics ul { margin: 0; padding: 0 1.35rem 0.5rem 2.6rem; color: var(--text-muted); line-height: 1.65; }
+  .topics li { margin-bottom: 0.55rem; }
+  .topics li::marker { color: var(--accent); }
+  .topics-note { margin: 0; padding: 0.5rem 1.35rem 1.25rem; font-size: 0.9rem; color: var(--text-muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .topics summary svg { transition: none; }
+  }
+</style>

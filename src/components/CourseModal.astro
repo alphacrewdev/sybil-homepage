@@ -1,21 +1,18 @@
 ---
-// Course detail as a native <dialog>: focus trapping, Esc-to-close and the
-// backdrop come free, and it needs no framework. One per course, opened by
-// the matching card via data-open.
+// Quick look at a product as a native <dialog>: focus trapping, Esc-to-close
+// and the backdrop come free. Opened by the matching card via data-open.
+// The product page is the permanent home; this links to it.
 import CourseVignette from "./CourseVignette.astro";
-import type { CourseInfo } from "../content/courses";
-import { withBase } from "../lib/base";
+import type { Course, QuestionBank } from "../content/courses";
+import { enrollInquiryHref, productHref, productLabel } from "../content/courses";
+import { instructors } from "../content/team";
 
 interface Props {
-  course: CourseInfo;
+  course: Course | QuestionBank;
 }
 const { course } = Astro.props;
-const meta = [
-  course.rating && `★ ${course.rating}`,
-  course.students && `${course.students} students`,
-  course.modules.length > 0 && `${course.modules.length} modules`,
-  course.duration,
-].filter(Boolean);
+const isCourse = course.kind === "course";
+const taught = isCourse ? course.instructors.map((id) => instructors[id].name) : [];
 ---
 
 <dialog class="cm" id={`cm-${course.slug}`} aria-labelledby={`cm-title-${course.slug}`}>
@@ -25,67 +22,40 @@ const meta = [
     </button>
 
     <div class="cm-hero">
-      {course.image ? <img src={course.image} alt="" width="438" height="304" /> : <CourseVignette kind={course.slug} />}
+      {isCourse ? <img src={course.image} alt="" width="438" height="304" /> : <CourseVignette kind="board-review" />}
       <div class="cm-hero-text">
-        <span class="tag-mono cm-meta">{meta.join("  ·  ")}</span>
+        <span class="tag-mono cm-meta">{productLabel[course.kind].toUpperCase()}</span>
         <h3 class="cm-title" id={`cm-title-${course.slug}`}>{course.title}</h3>
       </div>
     </div>
 
     <div class="cm-body">
       <div class="cm-main">
-        {course.instructors.length > 0 && (
-          <p class="tag-mono cm-taught">TAUGHT BY {course.instructors.map((i) => i.name).join(" · ").toUpperCase()}</p>
-        )}
-        {course.description.map((p) => <p class="cm-p">{p}</p>)}
-
-        {course.learn.length > 0 && (
+        {taught.length > 0 && <p class="tag-mono cm-taught">TAUGHT BY {taught.join(" · ").toUpperCase()}</p>}
+        <p class="cm-p">{course.hero}</p>
+        {isCourse ? (
           <>
-            <h4 class="cm-h">What you will learn</h4>
-            <ul class="cm-list">{course.learn.map((l) => <li>{l}</li>)}</ul>
+            <h4 class="cm-h">What you’ll learn</h4>
+            <ul class="cm-list">{course.outcomes.map((l) => <li>{l}</li>)}</ul>
           </>
-        )}
-
-        {course.features.length > 0 && (
-          <>
-            <h4 class="cm-h">Included</h4>
-            <ul class="cm-chips">{course.features.map((f) => <li class="tag-mono">{f}</li>)}</ul>
-          </>
-        )}
-
-        {(course.duration || course.requirements.length > 0) && (
-          <>
-            <h4 class="cm-h">Time and requirements</h4>
-            <ul class="cm-list">
-              {course.duration && <li>{course.duration}</li>}
-              {course.requirements.map((r) => <li>{r}</li>)}
-            </ul>
-          </>
-        )}
-
-        {course.instructors.length > 0 && (
-          <>
-            <h4 class="cm-h">Instructors</h4>
-            {course.instructors.map((i) => (
-              <p class="cm-p"><strong class="cm-name">{i.name}.</strong> {i.bio}</p>
-            ))}
-          </>
+        ) : (
+          <p class="cm-p">Covers radiology physics. Clinical exam content is not included. Included in the Radiology Physics Course Bundle.</p>
         )}
       </div>
 
-      {course.modules.length > 0 && (
+      {isCourse && (
         <aside class="cm-side">
-          <h4 class="cm-h cm-h-first">Curriculum</h4>
-          <ol class="cm-modules">
-            {course.modules.map((m) => <li>{m.replace(/^Module\s+\d+\s*[–:-]\s*/i, "")}</li>)}
-          </ol>
+          <h4 class="cm-h cm-h-first">Topics covered</h4>
+          <ul class="cm-topics">
+            {course.topics.map((t) => <li>{t}</li>)}
+          </ul>
         </aside>
       )}
     </div>
 
     <div class="cm-actions">
-      <a href={course.enrollUrl} class="btn btn-primary" rel="noopener">View enrollment options</a>
-      <a href={withBase("/program-directors")} class="btn btn-ghost">Ask about program access</a>
+      <a href={productHref(course)} class="btn btn-primary">{isCourse ? "View course" : "View details"}</a>
+      <a href={enrollInquiryHref(course)} class="btn btn-ghost">Ask about enrollment</a>
     </div>
   </div>
 </dialog>
@@ -209,7 +179,6 @@ const meta = [
 
   .cm-p { margin: 0 0 1rem; color: var(--text-muted); line-height: 1.7; font-size: 0.97rem; }
   .cm-taught { display: block; margin: 0 0 1rem; color: var(--accent); }
-  .cm-name { color: var(--text); font-weight: 600; }
 
   .cm-h {
     margin: 1.75rem 0 0.7rem;
@@ -225,37 +194,9 @@ const meta = [
   .cm-list li { margin-bottom: 0.35rem; }
   .cm-list li::marker { color: var(--accent); }
 
-  .cm-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
-  .cm-chips li { border: 1px solid var(--border); padding: 0.3rem 0.6rem; }
 
-  /* The one earned numbered list: modules are taken in order. */
-  .cm-modules {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: mod;
-    border-top: 1px solid var(--border);
-  }
-
-  .cm-modules li {
-    counter-increment: mod;
-    display: grid;
-    grid-template-columns: 2.25rem 1fr;
-    gap: 0.5rem;
-    align-items: baseline;
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.93rem;
-    line-height: 1.4;
-  }
-
-  .cm-modules li::before {
-    content: counter(mod, decimal-leading-zero);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    color: var(--accent);
-  }
+  .cm-topics { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+  .cm-topics li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; line-height: 1.45; }
 
   .cm-actions {
     display: flex;

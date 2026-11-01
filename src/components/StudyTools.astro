@@ -16,8 +16,8 @@ import { tools } from "../content/homepage";
         <article class:list={["tool rv lift", i > 0 && `rv-d${Math.min(i, 5)}`]}>
           <ToolVignette kind={item.kind} />
           <div class="p-6">
-            <h3 class="text-[15.5px] font-semibold">{item.title}</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-[var(--text-muted)]">{item.body}</p>
+            <h3 class="text-lg font-semibold">{item.title}</h3>
+            <p class="mt-2.5 text-base leading-relaxed text-[var(--text-muted)]">{item.body}</p>
           </div>
         </article>
       ))}

@@ -1,0 +1,30 @@
+---
+// Static stand-in for a server redirect: GitHub Pages can't send 301s, so a
+// moved address gets a tiny page that forwards immediately and links the new
+// location for anyone with refresh disabled. Never indexed. On production
+// hosting, replace these with real 301 rules.
+import { site } from "../../content/homepage";
+
+interface Props {
+  to: string;
+  label: string;
+}
+const { to, label } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <link rel="canonical" href={to} />
+    <title>Redirecting to {label} | {site.name}</title>
+    <script is:inline define:vars={{ to }}>location.replace(to);</script>
+    <style>body{font-family:system-ui,sans-serif;padding:3rem 1.25rem;color:#022b62;background:#f1f5f7}a{color:#027682}</style>
+  </head>
+  <body>
+    <p>This page has moved. <a href={to}>Continue to {label}</a>.</p>
+  </body>
+</html>

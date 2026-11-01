@@ -1,0 +1,74 @@
+---
+// The one contextual banner near the bottom of a content page.
+// "program" → consult; "bundle" → bundle page, with a quiet program link.
+import { withBase } from "../../lib/base";
+import { links } from "../../content/homepage";
+
+interface Props {
+  variant: "program" | "bundle";
+}
+const { variant } = Astro.props;
+
+const copy = {
+  program: {
+    heading: "Bring Sybil to your residency program.",
+    body: "Combine on-demand physics courses with live teaching and a clear view of residents’ progress.",
+    cta: { label: "Schedule a consult", href: links.consult },
+  },
+  bundle: {
+    heading: "Build your physics foundation across all eight subjects.",
+    body: "Explore the full course bundle, including Core Physics Practice Questions.",
+    cta: { label: "Explore the bundle", href: links.bundle },
+  },
+}[variant];
+---
+
+<section class="wrap promo-wrap">
+  <div class="promo">
+    <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="promo-mark" aria-hidden="true" />
+    <div class="promo-text">
+      <h2 class="promo-title">{copy.heading}</h2>
+      <p class="promo-body">{copy.body}</p>
+    </div>
+    <a href={copy.cta.href} class="btn btn-light promo-btn">{copy.cta.label}</a>
+  </div>
+  {variant === "bundle" && (
+    <p class="promo-quiet">Running a residency program? <a class="text-link" href={links.consult}>Schedule a consult</a></p>
+  )}
+</section>
+
+<style>
+  .promo-wrap { padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(4rem, 8vw, 6rem); }
+
+  .promo {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #ffffff;
+  }
+
+  @media (min-width: 820px) {
+    .promo { grid-template-columns: 1fr auto; gap: 2.5rem; }
+  }
+
+  .promo-mark {
+    position: absolute;
+    right: -4%;
+    top: 50%;
+    width: 18rem;
+    max-width: none;
+    transform: translateY(-50%) rotate(-10deg);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .promo-text { position: relative; max-width: 40rem; }
+  .promo-title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 2.6vw, 1.75rem); letter-spacing: -0.015em; line-height: 1.2; color: #fff; }
+  .promo-body { margin: 0.6rem 0 0; color: rgba(255, 255, 255, 0.85); line-height: 1.6; }
+  .promo-btn { position: relative; justify-self: start; }
+  .promo-quiet { margin: 1rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+</style>

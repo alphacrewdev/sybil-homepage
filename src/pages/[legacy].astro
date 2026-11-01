@@ -1,0 +1,21 @@
+---
+// Addresses from the previous WordPress site, kept working when the domain
+// moves. Static pages here because GitHub Pages can't send 301s; on the
+// production host, replace them with real redirect rules.
+import RedirectPage from "../components/page/RedirectPage.astro";
+import { courseList, productHref } from "../content/courses";
+import { links } from "../content/homepage";
+
+export function getStaticPaths() {
+  return [
+    ...courseList.map((c) => ({ params: { legacy: c.slug }, props: { to: productHref(c), label: c.title } })),
+    { params: { legacy: "contact-us" }, props: { to: links.contact, label: "Contact" } },
+    { params: { legacy: "login" }, props: { to: links.login, label: "the Sybil sign-in page" } },
+    { params: { legacy: "my-account" }, props: { to: links.account, label: "your account" } },
+  ];
+}
+
+const { to, label } = Astro.props;
+---
+
+<RedirectPage to={to} label={label} />

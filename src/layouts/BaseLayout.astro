@@ -2,16 +2,29 @@
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../content/homepage";
-import { withBase } from "../lib/base";
+import { withBase, base } from "../lib/base";
 import "../styles/global.css";
 
 interface Props {
   title: string;
   description?: string;
+  // Keep a page out of search results: confirmations, account hand-offs,
+  // redirects, review builds.
+  noindex?: boolean;
+  // Extra JSON-LD for the page (e.g. breadcrumbs), only with real data.
+  jsonLd?: object;
 }
 
-const { title, description = site.description } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description = site.description, noindex = false, jsonLd } = Astro.props;
+
+// Canonicals always name the production domain. The GitHub Pages build is a
+// review copy under a subpath, so it is never indexed.
+const isPreviewBuild = base !== "/";
+const pathNoBase = isPreviewBuild ? Astro.url.pathname.slice(base.replace(/\/$/, "").length) || "/" : Astro.url.pathname;
+const canonicalURL = new URL(pathNoBase, site.url);
+const robots = noindex || isPreviewBuild ? "noindex, nofollow" : null;
+
+// Analytics: none until Karen approves a measurement ID and a consent setup.
 ---
 
 <!doctype html>
@@ -22,7 +35,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{title} · {site.name}</title>
+    <title>{title} | {site.name}</title>
+    {robots && <meta name="robots" content={robots} />}
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
@@ -59,17 +73,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       url: site.url,
       description: site.description,
     })} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-    <!-- TODO: GA4 — replace G-XXXXXXX with the real measurement ID before launch -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXX');
-    </script>
-    -->
   </head>
   <body>
     <Nav />

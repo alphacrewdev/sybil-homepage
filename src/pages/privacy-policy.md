@@ -15,53 +15,53 @@ Questions or concerns? Reading this privacy notice will help you understand your
 
 ### SUMMARY OF KEY POINTS
 
-This summary provides key points from our privacy notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for. You can also click here to go directly to our table of contents.
+This summary provides key points from our privacy notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for. You can also [click here](#table-of-contents) to go directly to our table of contents.
 
-What personal information do we process? When you visit, use, or navigate our Services, we may process personal information depending on how you interact with Sybil Digital Learning LLC and the Services, the choices you make, and the products and features you use. Click here to learn more.
+What personal information do we process? When you visit, use, or navigate our Services, we may process personal information depending on how you interact with Sybil Digital Learning LLC and the Services, the choices you make, and the products and features you use. [Click here](#1-what-information-do-we-collect) to learn more.
 
-Do we process any sensitive personal information? We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law. Click here to learn more.
+Do we process any sensitive personal information? We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law. [Click here](#1-what-information-do-we-collect) to learn more.
 
-Do we receive any information from third parties? We may receive information from public databases, marketing partners, social media platforms, and other outside sources. Click here to learn more.
+Do we receive any information from third parties? We may receive information from public databases, marketing partners, social media platforms, and other outside sources. [Click here](#information-collected-from-other-sources) to learn more.
 
-How do we process your information? We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so. Click here to learn more.
+How do we process your information? We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so. [Click here](#2-how-do-we-process-your-information) to learn more.
 
-In what situations and with which parties do we share personal information? We may share information in specific situations and with specific third parties. Click here to learn more.
+In what situations and with which parties do we share personal information? We may share information in specific situations and with specific third parties. [Click here](#3-when-and-with-whom-do-we-share-your-personal-information) to learn more.
 
-How do we keep your information safe? We have organizational and technical processes and procedures in place to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Click here to learn more.
+How do we keep your information safe? We have organizational and technical processes and procedures in place to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. [Click here](#6-how-do-we-keep-your-information-safe) to learn more.
 
-What are your rights? Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information. Click here to learn more.
+What are your rights? Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information. [Click here](#8-what-are-your-privacy-rights) to learn more.
 
 How do you exercise your rights? The easiest way to exercise your rights is by filling out our data subject request form available here, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.
 
-Want to learn more about what Sybil Digital Learning LLC does with any information we collect? Click here to review the notice in full.
+Want to learn more about what Sybil Digital Learning LLC does with any information we collect? [Click here](#1-what-information-do-we-collect) to review the notice in full.
 
 ### Table of contents
 
-1. WHAT INFORMATION DO WE COLLECT?
+1. [WHAT INFORMATION DO WE COLLECT?](#1-what-information-do-we-collect)
 
-2. HOW DO WE PROCESS YOUR INFORMATION?
+2. [HOW DO WE PROCESS YOUR INFORMATION?](#2-how-do-we-process-your-information)
 
-3. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?
+3. [WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?](#3-when-and-with-whom-do-we-share-your-personal-information)
 
-4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?
+4. [DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?](#4-do-we-use-cookies-and-other-tracking-technologies)
 
-5. HOW LONG DO WE KEEP YOUR INFORMATION?
+5. [HOW LONG DO WE KEEP YOUR INFORMATION?](#5-how-long-do-we-keep-your-information)
 
-6. HOW DO WE KEEP YOUR INFORMATION SAFE?
+6. [HOW DO WE KEEP YOUR INFORMATION SAFE?](#6-how-do-we-keep-your-information-safe)
 
-7. DO WE COLLECT INFORMATION FROM MINORS?
+7. [DO WE COLLECT INFORMATION FROM MINORS?](#7-do-we-collect-information-from-minors)
 
-8. WHAT ARE YOUR PRIVACY RIGHTS?
+8. [WHAT ARE YOUR PRIVACY RIGHTS?](#8-what-are-your-privacy-rights)
 
-9. CONTROLS FOR DO-NOT-TRACK FEATURES
+9. [CONTROLS FOR DO-NOT-TRACK FEATURES](#9-controls-for-do-not-track-features)
 
-10. DO CALIFORNIA RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?
+10. [DO CALIFORNIA RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?](#10-do-california-residents-have-specific-privacy-rights)
 
-11. DO WE MAKE UPDATES TO THIS NOTICE?
+11. [DO WE MAKE UPDATES TO THIS NOTICE?](#11-do-we-make-updates-to-this-notice)
 
-12. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?
+12. [HOW CAN YOU CONTACT US ABOUT THIS NOTICE?](#12-how-can-you-contact-us-about-this-notice)
 
-13. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?
+13. [HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?](#13-how-can-you-review-update-or-delete-the-data-we-collect-from-you)
 
 ## 1. WHAT INFORMATION DO WE COLLECT?
 

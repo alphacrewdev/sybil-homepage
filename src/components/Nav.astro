@@ -220,7 +220,7 @@ const isActive = (href: string) => path === href || path === `${href}/`;
 
   const progress = document.getElementById("nav-progress");
   const onScroll = () => {
-    navEl?.classList.toggle("solid", window.scrollY > window.innerHeight * 0.85);
+    navEl?.classList.toggle("solid", window.scrollY > 8);
     if (progress) {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       progress.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;

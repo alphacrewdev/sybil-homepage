@@ -1,13 +1,134 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import PageHero from "../components/page/PageHero.astro";
+import Faq from "../components/page/Faq.astro";
+import ToolVignette from "../components/ToolVignette.astro";
+import { links } from "../content/homepage";
+import { withBase } from "../lib/base";
+
+const values = [
+  { title: "Support consistent physics learning.", body: "Give residents access to focused lessons across eight physics subjects, with quizzes to check their understanding." },
+  { title: "Make progress visible.", body: "Review course progress, quiz scores, and class attendance to guide follow-up with residents." },
+  { title: "Make coordination simpler.", body: "Build a teaching schedule around your program, with flexible billing and tools to invite your residents." },
+];
+
+const capabilities = ["Course progress", "Quiz scores", "Attendance", "Exportable reports"];
+
+const steps = [
+  { title: "Discuss your goals", body: "Tell us about your residents and current physics teaching." },
+  { title: "Plan the teaching", body: "Discuss course access, live sessions, scheduling, and billing." },
+  { title: "Bring residents on board", body: "Invite residents and follow their progress through the program tools." },
+];
+
+// TODO(karen): confirm the renewal answer matches current program contracts.
+const faq = [
+  { q: "Can residents start at different times?", a: "Yes. Residents can begin coursework at different points in their training." },
+  { q: "Do you work with programs outside the United States?", a: "Yes. Sybil works with residency programs in the United States and internationally." },
+  { q: "Can we arrange live teaching?", a: "Yes. Program arrangements include live teaching or review sessions. Discuss the schedule and scope during your consult." },
+  { q: "What can administrators see?", a: "Course progress, quiz scores, and class attendance, with reports available to export." },
+  { q: "How is access renewed?", a: "Program access can renew each academic year through graduation. Confirm the terms for your program during the consult." },
+  { q: "What does it cost?", a: "Contact us to discuss your program’s course access and teaching needs." },
+];
 ---
 
-<BaseLayout title="For Residency Programs">
-  <PagePlaceholder
-    eyebrow="PROGRAM DIRECTORS"
-    heading="For residency programs"
-    body="Marketing page aimed at hospital decision-makers evaluating Sybil for their residents — per-resident pricing up to 12, live Q&A access, and program-level reporting."
-    pending={["Copy from Karen", "Whether to link/attach her existing services brochure"]}
-  />
+<BaseLayout
+  title="For Residency Programs"
+  description="Give residents a structured way to learn radiology physics, with on-demand coursework, live teaching, and visibility into their progress."
+>
+  <PageHero
+    eyebrow="For residency programs"
+    title="Physics education that fits your residency program."
+    intro="Give residents a structured way to learn physics, with on-demand coursework, live teaching, and visibility into their progress."
+  >
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href={links.consult} class="btn btn-primary">Schedule a consult</a>
+      <a href={links.courses} class="btn btn-ghost">Explore the courses</a>
+    </div>
+  </PageHero>
+
+  <div class="wrap">
+    <section class="sub-section" aria-labelledby="h-value">
+      <h2 class="sr-only" id="h-value">What Sybil gives your program</h2>
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {values.map((v, i) => (
+          <div class:list={["rv border-t pt-6", i && `rv-d${i}`]} style="border-color: var(--border);">
+            <h3 class="h3">{v.title}</h3>
+            <p class="body-muted">{v.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-together">
+      <div class="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-14">
+        <div class="rv">
+          <h2 class="section-title" id="h-together">Coursework and live teaching, working together.</h2>
+          <p class="section-lede">
+            Residents study on demand and take part in scheduled teaching sessions. Recordings support review, while Program Administrators can follow progress and export reports.
+          </p>
+          <ul class="caps mt-7" role="list">
+            {capabilities.map((c) => <li class="tag-mono">{c}</li>)}
+          </ul>
+        </div>
+        <figure class="rv rv-d1 m-0">
+          <div class="illus">
+            <ToolVignette kind="progress" />
+          </div>
+          <figcaption class="tag-mono mt-3">Illustration of program reporting. Not real resident data.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-steps">
+      <h2 class="section-title" id="h-steps">Start with your program’s needs.</h2>
+      <ol class="steps mt-10">
+        {steps.map((s, i) => (
+          <li>
+            <span class="step-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <h3 class="h3">{s.title}</h3>
+            <p class="body-muted">{s.body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="sub-section">
+      <Faq items={faq} />
+    </section>
+  </div>
+
+  <section class="closing">
+    <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="closing-mark" aria-hidden="true" />
+    <div class="wrap section relative">
+      <h2 class="section-title text-white">Let’s plan physics education for your residents.</h2>
+      <a href={links.consult} class="btn btn-light mt-8">Schedule a consult</a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .caps { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-inline: 0; margin-bottom: 0; padding: 0; list-style: none; }
+  .caps li { border: 1px solid var(--border); padding: 0.35rem 0.7rem; color: var(--text); }
+
+  .illus { border: 1px solid var(--border); background: var(--surface); }
+
+  .steps { list-style: none; margin-inline: 0; margin-bottom: 0; padding: 0; display: grid; gap: 2rem; }
+  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step-n { display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 0.75rem; }
+
+  .closing {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 40%, var(--color-teal-500) 100%);
+  }
+  .closing-mark {
+    position: absolute;
+    right: -6%;
+    top: 50%;
+    width: clamp(16rem, 40vw, 32rem);
+    max-width: none;
+    transform: translateY(-50%) rotate(-8deg);
+    opacity: 0.13;
+    pointer-events: none;
+  }
+</style>

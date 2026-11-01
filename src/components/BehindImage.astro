@@ -39,7 +39,6 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
       ))}
     </div>
 
-    <p class="bi-caption tag-mono" aria-hidden="true"><span>{c.caption}</span><span>{c.note}</span></p>
   </div>
 
   <!-- Static version: reduced motion, no WebGL, or the scene failed to load. -->
@@ -59,7 +58,6 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
         </figure>
       ))}
     </div>
-    <p class="tag-mono">{c.caption} · {c.note}</p>
   </div>
 </section>
 
@@ -143,17 +141,6 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
     max-width: 30rem;
   }
 
-  /* Under the copy column, clear of the scene. */
-  .bi-caption {
-    position: absolute;
-    z-index: 2;
-    left: max(clamp(1.05rem, 4vw, 2rem), calc((100vw - 72rem) / 2 + 2rem));
-    bottom: clamp(1rem, 3vh, 2rem);
-    margin: 0;
-    display: grid;
-    gap: 0.25rem;
-    color: var(--text-muted);
-  }
 
   .bi-static { display: none; }
 
@@ -170,15 +157,6 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
     }
     .bi-headline { font-size: clamp(1.7rem, 7.4vw, 2.2rem); }
     .bi-sub { font-size: 1rem; }
-    .bi-caption {
-      top: 4.6rem;
-      bottom: auto;
-      left: clamp(1.05rem, 4vw, 2rem);
-      font-size: 0.62rem;
-      padding: 0.35rem 0.5rem;
-      color: #c9d6de;
-      background: color-mix(in srgb, var(--color-ink-950) 78%, transparent);
-    }
   }
 
   /* Static fallback: one viewport of copy plus the two key stills. */

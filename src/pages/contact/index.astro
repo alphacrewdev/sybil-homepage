@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import ContactForm from "../../components/page/ContactForm.astro";
+import { footer, links } from "../../content/homepage";
+---
+
+<BaseLayout
+  title="Contact"
+  description="Ask about a course, discuss teaching for your residency program, or get help finding the right next step."
+>
+  <PageHero
+    title="Let’s find the right physics education for you."
+    intro="Ask about a course, discuss teaching for your residency program, or get help finding the right next step."
+  />
+
+  <section class="wrap sub-section">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.6fr)] lg:gap-14">
+      <aside class="panel">
+        <h2 class="h3">Prefer email?</h2>
+        <p class="body-muted">
+          <a class="text-link" href={`mailto:${footer.contactEmail}`}>{footer.contactEmail}</a>
+        </p>
+        <h2 class="h3 mt-8">Running a residency program?</h2>
+        <p class="body-muted">Choose “Residency program” in the form to request a consult. We’ll coordinate a time by email.</p>
+        <p class="body-muted mt-8 text-[0.92rem]">
+          Need help with an existing course or account? <a class="text-link" href={links.support}>Visit technical support</a>.
+        </p>
+      </aside>
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .panel { align-self: start; }
+  @media (min-width: 1024px) { .panel { position: sticky; top: 6rem; } }
+</style>

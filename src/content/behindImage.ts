@@ -21,9 +21,6 @@ export const behindImage = {
     },
   ],
 
-  caption: "Illustrative animation · not a course excerpt",
-  note: "Simplified illustration · not patient data",
-
   // Text alternative for the whole sequence (screen readers, no-WebGL).
   description:
     "An illustrative animation: a whole-body bone scan, then the gamma camera beneath it, from the patient up through the collimator, crystal and photomultiplier tubes to the image.",

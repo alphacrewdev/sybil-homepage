@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import EnrollPanel from "../../components/page/EnrollPanel.astro";
+import Faq from "../../components/page/Faq.astro";
+import PromoBanner from "../../components/page/PromoBanner.astro";
+import { bundle, courseList, questionBank, productHref } from "../../content/courses";
+import { links } from "../../content/homepage";
+
+// No discount or access-length claim until real prices and terms exist.
+const reasons = [
+  { title: "Study across subjects", body: "Bring the major imaging physics topics together in one collection." },
+  { title: "Connect learning and review", body: "Work through coursework and use the included question bank for exam preparation." },
+  { title: "Fit study around residency", body: "Study on demand and return to completed lessons during your access period." },
+];
+
+const faq = [
+  { q: "What is included?", a: "All eight radiology physics courses and Core Physics Practice Questions." },
+  { q: "Is this for an entire program?", a: "This page describes the course bundle. For access and teaching arrangements for your residency program, schedule a consult." },
+  { q: "Does Sybil offer CME credit?", a: "Sybil does not currently offer CME credit." },
+];
+---
+
+<BaseLayout title={bundle.title} description={`${bundle.summary} On-demand radiology physics education for residents.`}>
+  <PageHero
+    title={bundle.title}
+    eyebrow="Bundle · 8 courses + question bank"
+    intro={bundle.hero}
+    crumbs={[{ label: "Courses", href: links.courses }, { label: bundle.title }]}
+  >
+    <EnrollPanel product={bundle} includes="8 courses + question bank" slot="aside" />
+  </PageHero>
+
+  <div class="wrap">
+    <section class="sub-section" aria-labelledby="h-incl">
+      <h2 class="section-title" id="h-incl">What’s included</h2>
+      <ul class="incl mt-8">
+        {courseList.map((c) => <li><a class="text-link" href={productHref(c)}>{c.title}</a></li>)}
+        <li><a class="text-link" href={productHref(questionBank)}>{questionBank.title}</a> <span class="tag-mono">QUESTION BANK</span></li>
+      </ul>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-why">
+      <h2 class="section-title" id="h-why">Why choose the bundle?</h2>
+      <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+        {reasons.map((r) => (
+          <div class="border-t pt-5" style="border-color: var(--border);">
+            <h3 class="h3">{r.title}</h3>
+            <p class="body-muted">{r.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sub-section">
+      <Faq items={faq} />
+    </section>
+  </div>
+
+  <PromoBanner variant="program" />
+</BaseLayout>
+
+<style>
+  .incl { list-style: none; margin-inline: 0; margin-bottom: 0; padding: 0; display: grid; gap: 0.9rem 2.5rem; max-width: 48rem; }
+  @media (min-width: 640px) { .incl { grid-template-columns: 1fr 1fr; } }
+  .incl li { padding-bottom: 0.9rem; border-bottom: 1px solid var(--border); font-size: 1.02rem; }
+  .incl .tag-mono { margin-left: 0.4rem; }
+</style>

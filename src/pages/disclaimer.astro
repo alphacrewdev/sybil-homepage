@@ -1,16 +1,33 @@
 ---
-// Same slug as the previous site so platform links keep working. The
-// previous page had no body content at all (only the site footer), so there
-// was nothing to carry over — this holds the slot until Karen supplies text.
+// Same slug as the previous site so platform links keep working.
+// TODO(karen): proposed educational-scope copy from the Nov 1 brief, pending
+// owner/legal review. Don't add ABR affiliation wording without verification.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import { links } from "../content/homepage";
 ---
 
-<BaseLayout title="Disclaimer">
-  <PagePlaceholder
-    eyebrow="LEGAL"
-    heading="Disclaimer"
-    body="The disclaimer page on the previous site was empty, so there was no text to bring across. This page keeps the /disclaimer/ address live for links from the platform until the real disclaimer is written."
-    pending={["Disclaimer text from Karen — educational content, not medical advice; no CME claim"]}
-  />
+<BaseLayout title="Disclaimer" description="The educational scope of Sybil Digital Learning’s radiology physics courses.">
+  <article class="wrap legal">
+    <header class="legal-head">
+      <span class="eyebrow">Disclaimer</span>
+      <h1 class="section-title">Educational scope.</h1>
+    </header>
+    <div class="prose">
+      <p>
+        Sybil Digital Learning provides radiology physics education and review of the physics content on the ABR Core Exam. The courses do not cover clinical exam content and do not replace professional judgment, clinical training, or applicable institutional procedures.
+      </p>
+      <p>Sybil does not currently offer CME credit. Participation or completion does not guarantee an examination result.</p>
+      <p>
+        Questions? <a href={links.contact}>Contact us</a>. See also our <a href={links.terms}>Terms &amp; Conditions</a>.
+      </p>
+    </div>
+  </article>
 </BaseLayout>
+
+<style>
+  .legal { max-width: 46rem; padding-block: clamp(3.5rem, 8vw, 6rem) clamp(4rem, 9vw, 7rem); }
+  .legal-head { padding-bottom: 2rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+  .prose { color: var(--text-muted); font-size: 1rem; line-height: 1.75; }
+  .prose p { margin: 0 0 1rem; }
+  .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+</style>

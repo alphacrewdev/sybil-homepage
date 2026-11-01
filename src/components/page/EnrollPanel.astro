@@ -1,0 +1,49 @@
+---
+// Enrollment panel for a product page. One explicit mode per product: a
+// verified checkout shows the real price and access term; otherwise the
+// honest inquiry route. Never an invented price or term.
+import type { Product } from "../../content/courses";
+import { enrollInquiryHref, productLabel } from "../../content/courses";
+import { links } from "../../content/homepage";
+
+interface Props {
+  product: Product;
+  includes?: string;
+}
+const { product, includes } = Astro.props;
+const e = product.enrollment;
+---
+
+<aside class="enroll" aria-labelledby={`enroll-${product.slug}`}>
+  <span class="tag-mono">{productLabel[product.kind].toUpperCase()}{includes && ` · ${includes.toUpperCase()}`}</span>
+  <h2 class="enroll-h" id={`enroll-${product.slug}`}>Enrollment</h2>
+  {e.mode === "checkout" ? (
+    <>
+      <p class="enroll-price">{e.price}</p>
+      <p class="enroll-note">{e.access}</p>
+      <a href={e.url} class="btn btn-primary enroll-btn">View enrollment options</a>
+    </>
+  ) : (
+    <>
+      <p class="enroll-note">Contact us for current pricing and access details.</p>
+      <a href={enrollInquiryHref(product)} class="btn btn-primary enroll-btn">Ask about enrollment</a>
+    </>
+  )}
+  <p class="enroll-foot">Already enrolled? <a class="text-link" href={links.myCourses}>Go to My courses</a></p>
+  <p class="enroll-foot">For a residency program? <a class="text-link" href={links.consult}>Schedule a consult</a></p>
+</aside>
+
+<style>
+  .enroll {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: clamp(1.4rem, 3vw, 1.9rem);
+  }
+
+  .enroll-h { margin: 0.5rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; }
+  .enroll-price { margin: 0.75rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; }
+  .enroll-note { margin: 0.6rem 0 0; color: var(--text-muted); line-height: 1.6; }
+  .enroll-btn { margin-top: 1.25rem; width: 100%; }
+  .enroll-foot { margin: 1rem 0 0; font-size: 0.92rem; color: var(--text-muted); }
+  .enroll-foot + .enroll-foot { margin-top: 0.45rem; }
+</style>

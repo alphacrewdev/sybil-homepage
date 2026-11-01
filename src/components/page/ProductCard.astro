@@ -1,0 +1,60 @@
+---
+// Catalog card with a permanent link to the product page. The whole card is
+// clickable through the title link's stretched hit area.
+import CourseVignette from "../CourseVignette.astro";
+import type { Product } from "../../content/courses";
+import { productHref, productLabel } from "../../content/courses";
+
+interface Props {
+  product: Product;
+  delay?: number;
+}
+const { product, delay = 0 } = Astro.props;
+const image = product.kind === "course" ? product.image : undefined;
+const action = product.kind === "course" ? "View course" : "View details";
+---
+
+<article class:list={["pcard bracket-frame lift rv", delay > 0 && `rv-d${Math.min(delay, 5)}`]} data-title={product.title.toLowerCase()}>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <div class="relative flex h-full flex-col bg-[var(--surface)]">
+    <div class:list={["pmedia", image && "has-photo"]}>
+      {image ? <img src={image} alt="" loading="lazy" width="438" height="304" /> : <CourseVignette kind="board-review" light />}
+      <span class="tag-mono pmedia-tag">{productLabel[product.kind].toUpperCase()}</span>
+    </div>
+    <div class="flex flex-1 flex-col justify-between p-6">
+      <div>
+        <h3 class="h3"><a href={productHref(product)} class="stretch">{product.title}</a></h3>
+        <p class="body-muted">{product.summary}</p>
+      </div>
+      <span class="link-accent mt-6 w-fit" aria-hidden="true">{action}</span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .pcard { position: relative; }
+  .stretch::after { content: ""; position: absolute; inset: 0; z-index: 2; }
+  .stretch:focus-visible { outline: none; }
+  .pcard:has(.stretch:focus-visible) { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .pcard:hover .h3 { color: var(--accent); }
+
+  .pmedia { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--border); }
+  .pmedia.has-photo { background: #04070c; }
+  .pmedia img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.85) contrast(1.05); transition: transform 0.7s cubic-bezier(0.22, 0.9, 0.28, 1); }
+  .pcard:hover .pmedia img { transform: scale(1.05); }
+  .pmedia.has-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(2, 43, 98, 0.35), transparent 45%), linear-gradient(to top, rgba(3, 20, 43, 0.55), transparent 55%);
+  }
+  .pmedia-tag { position: absolute; top: 0.75rem; left: 0.85rem; z-index: 1; color: #e6eef3; }
+  .pmedia:not(.has-photo) .pmedia-tag { color: var(--text-muted); }
+  :root.dark .pmedia:not(.has-photo) .pmedia-tag { color: #e6eef3; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pmedia img { transition: none; }
+  }
+</style>

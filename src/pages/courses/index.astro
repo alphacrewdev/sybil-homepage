@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/page/PageHero.astro";
+import ProductCard from "../../components/page/ProductCard.astro";
+import PromoBanner from "../../components/page/PromoBanner.astro";
+import { courseList, questionBank, bundle } from "../../content/courses";
+import { links } from "../../content/homepage";
+import { withBase } from "../../lib/base";
+---
+
+<BaseLayout
+  title="Radiology Physics Courses"
+  description="Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. On-demand radiology physics education for residents."
+>
+  <PageHero
+    title="Find the physics you want to understand next."
+    intro="Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. Choose what fits your training."
+    crumbs={[{ label: "Courses" }]}
+  >
+    <p class="mt-6 text-[var(--text-muted)]">
+      Looking for access for your residents? <a class="text-link" href={links.consult}>Schedule a consult</a>
+    </p>
+  </PageHero>
+
+  <div class="wrap">
+    <p class="mt-8 text-[0.95rem] text-[var(--text-muted)]">
+      Already enrolled? <a class="text-link" href={links.myCourses}>Go to My courses</a>
+    </p>
+
+    <section class="sub-section" aria-labelledby="h-courses">
+      <h2 class="section-title" id="h-courses">Physics courses</h2>
+      <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {courseList.map((c, i) => <ProductCard product={c} delay={i % 3} />)}
+      </div>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-practice">
+      <h2 class="section-title" id="h-practice">Practice and bundles</h2>
+      <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <ProductCard product={questionBank} />
+        <div class="bundle-panel rv rv-d1 lg:col-span-2">
+          <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="bundle-mark" aria-hidden="true" />
+          <div class="relative">
+            <span class="tag-mono bundle-tag">BUNDLE · 8 COURSES + QUESTION BANK</span>
+            <h3 class="bundle-title">All eight physics courses. One place to build your understanding.</h3>
+            <p class="bundle-body">The {bundle.title} brings all eight subjects together with Core Physics Practice Questions.</p>
+            <a href={links.bundle} class="btn btn-light mt-7">Explore the bundle</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <PromoBanner variant="program" />
+</BaseLayout>
+
+<style>
+  .bundle-panel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    min-height: 18rem;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #fff;
+  }
+
+  .bundle-mark {
+    position: absolute;
+    right: -6%;
+    top: 40%;
+    width: 20rem;
+    max-width: none;
+    transform: translateY(-50%) rotate(-10deg);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .bundle-tag { color: #7fd3dc; }
+  .bundle-title { margin: 0.6rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 1.9rem); letter-spacing: -0.015em; line-height: 1.2; max-width: 26ch; }
+  .bundle-body { margin: 0.75rem 0 0; color: rgba(255, 255, 255, 0.85); line-height: 1.6; max-width: 38rem; }
+</style>

@@ -2,22 +2,11 @@
 import CourseVignette from "./CourseVignette.astro";
 import CourseModal from "./CourseModal.astro";
 import { courses } from "../content/homepage";
-import { courseList } from "../content/courses";
+import { courseList, questionBank, productHref, productLabel } from "../content/courses";
 import { withBase } from "../lib/base";
 
 // Karen's catalogue order, then the question bank.
-const order = [
-  "radiography-physics",
-  "mammography-physics",
-  "fluoroscopy-physics",
-  "ct-physics",
-  "nuclear-medicine",
-  "radiation-biology-safety-dose",
-  "ultrasound-physics",
-  "mri-basic-physics",
-  "board-review",
-];
-const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).filter(Boolean) as typeof courseList;
+const ordered = [...courseList, questionBank];
 ---
 
 <section class="wrap section" id="courses">
@@ -32,24 +21,20 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
         <span class="bf-corner" aria-hidden="true"></span>
         <span class="bf-corner" aria-hidden="true"></span>
         <div class="relative flex h-full flex-col bg-[var(--surface)]">
-          <div class:list={["media", course.image && "has-photo"]}>
-            {course.image
+          <div class:list={["media", course.kind === "course" && "has-photo"]}>
+            {course.kind === "course"
               ? <img src={course.image} alt="" loading="lazy" width="438" height="304" />
-              : <CourseVignette kind={course.slug} light />}
-            <span class="tag-mono media-tag">{course.tag.toUpperCase()}</span>
+              : <CourseVignette kind="board-review" light />}
+            <span class="tag-mono media-tag">{productLabel[course.kind].toUpperCase()}</span>
           </div>
           <div class="flex flex-1 flex-col justify-between p-6">
             <div>
-              <h3 class="text-[15.5px] font-semibold">{course.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.blurb}</p>
+              <h3 class="text-lg font-semibold"><a href={productHref(course)}>{course.title}</a></h3>
+              <p class="mt-2 text-base leading-relaxed text-[var(--text-muted)]">{course.summary}</p>
             </div>
             <div class="mt-6 flex items-center justify-between gap-3">
-              <button type="button" class="link-accent open-btn" data-open={course.slug} aria-haspopup="dialog" aria-controls={`cm-${course.slug}`}>Learn more</button>
-              {(course.rating || course.students) && (
-                <span class="tag-mono whitespace-nowrap">
-                  {course.rating && <span style="color: var(--mark);">★</span>} {course.rating}{course.students && ` · ${course.students} students`}
-                </span>
-              )}
+              <button type="button" class="link-accent open-btn" data-open={course.slug} aria-haspopup="dialog" aria-controls={`cm-${course.slug}`}>Quick look</button>
+              <a href={productHref(course)} class="link-accent">{course.kind === "course" ? "View course" : "View details"}</a>
             </div>
           </div>
         </div>
@@ -69,7 +54,7 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
       <h3 class="bundle-title">{courses.bundle.title}</h3>
       <p class="bundle-body">{courses.bundle.body}</p>
     </div>
-    <a href={courses.bundle.cta.href} class="btn btn-light" rel="noopener">{courses.bundle.cta.label}</a>
+    <a href={courses.bundle.cta.href} class="btn btn-light">{courses.bundle.cta.label}</a>
   </div>
 
   {ordered.map((course) => <CourseModal course={course} />)}

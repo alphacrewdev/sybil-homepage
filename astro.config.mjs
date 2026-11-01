@@ -10,6 +10,14 @@ import sitemap from '@astrojs/sitemap';
 // build, so both can share this one config file.
 const isGithubPagesBuild = process.env.GITHUB_ACTIONS === 'true';
 
+const excludeFromSitemap = [
+  '/preview/', '/contact/thank-you/', '/my-courses/', '/contact-us/', '/login/', '/my-account/',
+];
+// Old course URLs (the pages now live under /courses/).
+const legacyCourse = /\/(radiography-physics|ultrasound-physics|nuclear-medicine|mri-basic-physics|ct-physics|fluoroscopy-physics|mammography-physics|radiation-biology-safety-dose)\/$/;
+const inSitemap = (page) =>
+  !excludeFromSitemap.some((p) => page.includes(p)) && !(legacyCourse.test(page) && !page.includes('/courses/'));
+
 // https://astro.build/config
 export default defineConfig({
   // TODO(karen): confirm final production domain before launch
@@ -19,6 +27,7 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  // /preview/ is a review build, not a public page, so keep it out of the sitemap.
-  integrations: [react(), sitemap({ filter: (page) => !page.includes('/preview/') })]
+  // Keep review builds, confirmations, account hand-offs and the static
+  // redirect stand-ins for old WordPress addresses out of the sitemap.
+  integrations: [react(), sitemap({ filter: inSitemap })]
 });
