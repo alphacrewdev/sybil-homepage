@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import PromoBanner from "../../components/PromoBanner.astro";
+import CourseSearch from "../../components/CourseSearch.astro";
+import { physicsCourses, questionBank, bundle, productHref } from "../../content/courses";
+import { consultHref } from "../../lib/enroll";
+import { withBase } from "../../lib/base";
+import { site } from "../../content/homepage";
+
+const title = "Courses";
+const description =
+  "Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. On-demand radiology physics education for residents.";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={[
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: new URL(withBase("/"), Astro.site).href },
+        { "@type": "ListItem", position: 2, name: "Courses", item: new URL(withBase("/courses/"), Astro.site).href },
+      ],
+    },
+  ]}
+>
+  <PageHero title="Find the physics you want to understand next." lede="Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. Choose what fits your training.">
+    <a href={withBase("/my-courses/")} class="enrolled">Already enrolled? Go to My courses.</a>
+  </PageHero>
+
+  <section class="wrap catalog">
+    <CourseSearch />
+
+    <div data-group>
+      <h2 class="group-title">Physics courses</h2>
+      <div class="grid" data-grid>
+        {physicsCourses.map((course) => (
+          <div data-card data-text={`${course.title} ${course.summary}`.toLowerCase()}><ProductCard course={course} /></div>
+        ))}
+      </div>
+    </div>
+
+    <div data-group>
+      <h2 class="group-title">Practice and bundles</h2>
+      <div class="grid" data-grid>
+        <div data-card data-text={`${questionBank.title} ${questionBank.summary}`.toLowerCase()}><ProductCard course={questionBank} /></div>
+      </div>
+    </div>
+
+    <p id="no-results" class="empty" hidden>No courses match your search. Clear your search to see all courses.</p>
+
+    <div class="bundle" data-card data-text={`${bundle.title} ${bundle.summary} bundle`.toLowerCase()}>
+      <div class="bundle-text">
+        <span class="tag-mono bundle-tag">BUNDLE</span>
+        <h2 class="bundle-title">All eight physics courses. One place to build your understanding.</h2>
+        <p class="bundle-body">The Radiology Physics Course Bundle brings all eight subjects together with Core Physics Practice Questions.</p>
+      </div>
+      <a href={productHref(bundle)} class="btn btn-light">Explore the bundle</a>
+    </div>
+
+    <p class="program-line">Looking for access for your residents? <a href={consultHref}>Schedule a consult.</a></p>
+  </section>
+
+  <PromoBanner kind="program" />
+</BaseLayout>
+
+<style>
+  .catalog { display: grid; gap: 2.75rem; padding-bottom: 1rem; }
+  .group-title { margin: 0 0 1.25rem; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; }
+  .grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  [data-card] { min-width: 0; }
+  [data-card][hidden], [data-group][hidden] { display: none; }
+  .empty { color: var(--text-muted); }
+  .enrolled { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .program-line { margin: 0; color: var(--text-muted); }
+  .program-line a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  .bundle {
+    display: grid; gap: 1.5rem; align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #fff;
+  }
+  @media (min-width: 820px) { .bundle { grid-template-columns: 1fr auto; gap: 2.5rem; } }
+  .bundle-tag { color: #7fd3dc; }
+  .bundle-title { margin: 0.4rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.25rem, 2.6vw, 1.7rem); letter-spacing: -0.015em; }
+  .bundle-body { margin: 0.6rem 0 0; max-width: 44rem; color: rgba(255, 255, 255, 0.86); line-height: 1.6; }
+  .btn-light { background: #fff; color: var(--color-navy-700); }
+</style>

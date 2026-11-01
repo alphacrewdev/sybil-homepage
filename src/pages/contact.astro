@@ -1,13 +1,41 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import PageHero from "../components/PageHero.astro";
+import ContactForm from "../components/ContactForm.astro";
+import { footer } from "../content/homepage";
+import { withBase } from "../lib/base";
 ---
 
-<BaseLayout title="Contact">
-  <PagePlaceholder
-    eyebrow="CONTACT"
-    heading="Get in touch"
-    body="Simple contact form — name, email, title, company — delivered via SendGrid. No live chat: it sets a response-time expectation that doesn't match how support actually works here."
-    pending={["Confirm form fields with Karen", "Confirm destination email/routing"]}
+<BaseLayout
+  title="Contact"
+  description="Ask about a course, discuss teaching for your residency program, or get help finding the right next step."
+>
+  <PageHero
+    title="Let’s find the right physics education for you."
+    lede="Ask about a course, discuss teaching for your residency program, or get help finding the right next step."
   />
+
+  <section class="wrap grid">
+    <aside class="panel" aria-label="Other ways to reach us">
+      <p class="tag-mono">PREFER EMAIL?</p>
+      <p class="mail"><a href={`mailto:${footer.contactEmail}`}>{footer.contactEmail}</a></p>
+      <p class="help">
+        Need help with an existing course or account?{" "}
+        <a href={withBase("/contact-support/")}>Visit technical support.</a>
+      </p>
+    </aside>
+
+    <ContactForm />
+  </section>
 </BaseLayout>
+
+<style>
+  .grid { display: grid; gap: 2.5rem; padding-bottom: clamp(3.5rem, 8vw, 6rem); }
+  @media (min-width: 900px) {
+    .grid { grid-template-columns: 18rem minmax(0, 1fr); gap: 4rem; align-items: start; }
+  }
+  .panel { padding: 1.5rem; border: 1px solid var(--border); background: var(--surface); display: grid; gap: 0.75rem; }
+  .mail { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; overflow-wrap: anywhere; }
+  .mail a, .help a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .help { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+</style>

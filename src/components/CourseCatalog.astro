@@ -2,7 +2,7 @@
 import CourseVignette from "./CourseVignette.astro";
 import CourseModal from "./CourseModal.astro";
 import { courses } from "../content/homepage";
-import { courseList } from "../content/courses";
+import { courseList, productHref } from "../content/courses";
 import { withBase } from "../lib/base";
 
 // Karen's catalogue order, then the question bank.
@@ -15,7 +15,7 @@ const order = [
   "radiation-biology-safety-dose",
   "ultrasound-physics",
   "mri-basic-physics",
-  "board-review",
+  "core-physics-practice-questions",
 ];
 const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).filter(Boolean) as typeof courseList;
 ---
@@ -35,21 +35,17 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
           <div class:list={["media", course.image && "has-photo"]}>
             {course.image
               ? <img src={course.image} alt="" loading="lazy" width="438" height="304" />
-              : <CourseVignette kind={course.slug} light />}
+              : <CourseVignette kind={course.vignette} light />}
             <span class="tag-mono media-tag">{course.tag.toUpperCase()}</span>
           </div>
           <div class="flex flex-1 flex-col justify-between p-6">
             <div>
-              <h3 class="text-[15.5px] font-semibold">{course.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.blurb}</p>
+              <h3 class="text-[15.5px] font-semibold"><a href={productHref(course)} class="title-link">{course.title}</a></h3>
+              <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{course.summary}</p>
             </div>
             <div class="mt-6 flex items-center justify-between gap-3">
-              <button type="button" class="link-accent open-btn" data-open={course.slug} aria-haspopup="dialog" aria-controls={`cm-${course.slug}`}>Learn more</button>
-              {(course.rating || course.students) && (
-                <span class="tag-mono whitespace-nowrap">
-                  {course.rating && <span style="color: var(--mark);">★</span>} {course.rating}{course.students && ` · ${course.students} students`}
-                </span>
-              )}
+              <a href={productHref(course)} class="link-accent" aria-label={`${course.kind === "course" ? "View course" : "View details"}: ${course.title}`}>{course.kind === "course" ? "View course" : "View details"}</a>
+              <button type="button" class="link-accent open-btn" data-open={course.slug} aria-haspopup="dialog" aria-controls={`cm-${course.slug}`}>Quick preview</button>
             </div>
           </div>
         </div>
@@ -77,6 +73,8 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
 
 <style>
   .course { cursor: pointer; }
+  .title-link { color: inherit; text-decoration: none; }
+  .title-link:hover { color: var(--accent); }
 
   .media {
     position: relative;

@@ -1,0 +1,29 @@
+---
+// Learner entry point. The learning platform owns sign-in, dashboards,
+// progress and access; this static page only hands people to it. It never
+// shows a signed-in state or sample progress.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import { site } from "../content/homepage";
+import { withBase } from "../lib/base";
+---
+
+<BaseLayout title="My courses" noindex description="Sign in to access your enrolled courses and continue where you left off.">
+  <PageHero title="Continue your physics learning." lede="Sign in to access your enrolled courses and continue where you left off.">
+    <a href={site.appUrl} class="btn btn-primary" rel="noopener">Log in to My courses</a>
+    <a href={withBase("/courses/")} class="btn btn-ghost">Browse courses</a>
+  </PageHero>
+
+  <section class="wrap help">
+    <p>
+      Expecting access through your program? Use the email address associated with your invitation.
+      <a href={withBase("/contact-support/")}>Contact support</a> if your courses are missing.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .help { padding-bottom: clamp(4rem, 9vw, 7rem); }
+  .help p { margin: 0; max-width: 40rem; color: var(--text-muted); line-height: 1.7; }
+  .help a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+</style>

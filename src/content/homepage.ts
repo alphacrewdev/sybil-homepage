@@ -4,6 +4,8 @@
 // programs, taught by a medical physicist. Items still pending are marked
 // TODO(karen).
 import { withBase } from "../lib/base";
+import { consultHref } from "../lib/enroll";
+import { bundle, productHref, questionBank } from "./courses";
 
 export const site = {
   name: "Sybil Digital Learning",
@@ -17,13 +19,13 @@ export const site = {
 
 export const nav = {
   links: [
-    { label: "Courses", href: withBase("/#courses") },
-    { label: "For Residency Programs", href: withBase("/program-directors") },
-    { label: "About", href: withBase("/about") },
-    { label: "Contact", href: withBase("/contact") },
+    { label: "Courses", href: withBase("/courses/") },
+    { label: "For Residency Programs", href: withBase("/program-directors/") },
+    { label: "About", href: withBase("/about/") },
+    { label: "Contact", href: withBase("/contact/") },
   ],
-  account: { label: "Log in", href: site.appUrl },
-  primary: { label: "Browse courses", href: withBase("/#courses") },
+  account: { label: "My courses", href: withBase("/my-courses/") },
+  primary: { label: "Browse courses", href: withBase("/courses/") },
 };
 
 export const hero = {
@@ -33,12 +35,12 @@ export const hero = {
   headline: "Radiology physics, taught for radiologists.",
   sub:
     "Build your understanding of radiology physics and prepare for the physics on the ABR Core Exam—with short lessons that fit around residency.",
-  primaryCta: { label: "Browse courses", href: withBase("/#courses") },
+  primaryCta: { label: "Browse courses", href: withBase("/courses/") },
   // Used only once a real sample video is set (see `sample.videoUrl`).
   secondaryCta: { label: "Watch a sample lesson", href: withBase("/#sample") },
   // Until then the second button points at the differentiators section.
   fallbackCta: { label: "Explore the learning approach", href: "#learning-approach" },
-  programLine: { text: "Running a residency program?", label: "Schedule a consult", href: withBase("/contact") },
+  programLine: { text: "Running a residency program?", label: "Schedule a consult", href: consultHref },
 };
 
 export const outreach = {
@@ -105,7 +107,7 @@ export const sample = {
   eyebrow: "Sample lesson",
   heading: "See how Sybil teaches.",
   body: "Watch a sample of the explanations and visual teaching residents use in Sybil’s courses. Then explore the subject you want to study next.",
-  cta: { label: "Browse courses", href: withBase("/#courses") },
+  cta: { label: "Browse courses", href: withBase("/courses/") },
   // TODO(karen): embed URL for the sample lesson (VdoCipher or YouTube).
   // While empty, the section is hidden and the hero links to #learning-approach.
   videoUrl: "",
@@ -149,7 +151,7 @@ export const tools = {
     },
   ],
   programLine: "Bring Sybil to your residency program.",
-  programCta: { label: "Schedule a consult", href: withBase("/contact") },
+  programCta: { label: "Schedule a consult", href: consultHref },
 };
 
 export const path = {
@@ -163,13 +165,13 @@ export const courses = {
   heading: "Find the subject you need to understand next.",
   intro:
     "Explore eight radiology physics courses, a dedicated Core Exam physics question bank, or the complete course bundle.",
-  cta: { label: "Browse all courses", href: withBase("/courses") },
+  cta: { label: "Browse all courses", href: withBase("/courses/") },
   bundle: {
     title: "Radiology Physics Course Bundle",
     body:
       "All eight radiology physics courses plus Core Physics Practice Questions, together in one bundle.",
     // TODO: point at the platform's own checkout once Phase 2 ships
-    cta: { label: "View the bundle", href: "https://sybildigitallearning.com/" },
+    cta: { label: "View the bundle", href: productHref(bundle) },
   },
 };
 
@@ -180,13 +182,13 @@ export const ways = {
       title: "For individual residents",
       body:
         "Strengthen your physics understanding at your own pace. Choose a subject or the full bundle, with practice for the physics on the Core Exam.",
-      cta: { label: "Browse courses", href: withBase("/#courses") },
+      cta: { label: "Browse courses", href: withBase("/courses/") },
     },
     {
       title: "For residency programs",
       body:
         "Give residents a structured physics learning path with on-demand courses and live teaching. Track progress and coordinate schedules and billing around your program.",
-      cta: { label: "Schedule a consult", href: withBase("/contact") },
+      cta: { label: "Schedule a consult", href: consultHref },
     },
   ],
 };
@@ -200,15 +202,15 @@ export const team = {
   // Headshot lives in public/images/team/; the placeholder shows if it's missing.
   photo: "/images/team/karen-brown.jpg",
   photoAlt: "Portrait of Karen Brown",
-  link: { label: "Meet our instructors", href: withBase("/about") },
+  link: { label: "Meet our instructors", href: withBase("/about/#instructors") },
 };
 
 export const closing = {
   heading: "Find the physics education that fits your needs.",
   body:
     "Explore the subjects you need for your own study, or schedule a consult about bringing Sybil to your residency program.",
-  primary: { label: "Browse courses", href: withBase("/#courses") },
-  secondary: { label: "Schedule a consult", href: withBase("/contact") },
+  primary: { label: "Browse courses", href: withBase("/courses/") },
+  secondary: { label: "Schedule a consult", href: consultHref },
 };
 
 export const footer = {
@@ -220,22 +222,25 @@ export const footer = {
     {
       title: "Learn",
       links: [
-        { label: "Courses", href: withBase("/#courses") },
-        { label: "Core Physics Practice Questions", href: withBase("/#courses") },
-        { label: "For Residency Programs", href: withBase("/program-directors") },
+        { label: "Courses", href: withBase("/courses/") },
+        { label: "Core Physics Practice Questions", href: productHref(questionBank) },
+        { label: "For Residency Programs", href: withBase("/program-directors/") },
       ],
     },
     {
       title: "About",
       links: [
-        { label: "About Sybil", href: withBase("/about") },
-        { label: "Our Instructors", href: withBase("/about") },
-        { label: "Contact", href: withBase("/contact") },
+        { label: "About Sybil", href: withBase("/about/") },
+        { label: "Our Instructors", href: withBase("/about/#instructors") },
+        { label: "Contact", href: withBase("/contact/") },
       ],
     },
     {
       title: "Account",
-      links: [{ label: "Log in", href: site.appUrl }],
+      links: [
+        { label: "My courses", href: withBase("/my-courses/") },
+        { label: "Log in", href: site.appUrl },
+      ],
     },
   ],
   // Same slugs as the previous site — the platform links out to these.

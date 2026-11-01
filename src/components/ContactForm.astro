@@ -1,0 +1,273 @@
+---
+// Contact and consultation form.
+//
+// Delivery is configured, not assumed. Set PUBLIC_CONTACT_ENDPOINT (a secure
+// form endpoint that accepts JSON via POST and mails a monitored inbox) at
+// build time and the form submits there, showing the success page only after
+// the endpoint accepts the message. Without it the form does NOT pretend to
+// send: it opens the visitor's email app with the message pre-filled and says
+// so. Keys never live in the browser; spam control (honeypot + the endpoint's
+// own rate limiting/captcha) and server-side validation belong to the endpoint.
+import { footer } from "../content/homepage";
+import { courseList } from "../content/courses";
+import { withBase } from "../lib/base";
+
+const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const products = courseList.map((c) => ({ slug: c.slug, title: c.title }));
+---
+
+<form
+  id="contact-form"
+  class="form"
+  novalidate
+  data-endpoint={endpoint}
+  data-email={footer.contactEmail}
+  data-thanks={withBase("/contact/thank-you/")}
+  aria-labelledby="form-title"
+>
+  <h2 id="form-title" class="title" data-title>Send us a message</h2>
+  <p class="mode-note" data-mode-note hidden></p>
+
+  <div class="field">
+    <label for="f-name">Name <span class="req" aria-hidden="true">*</span></label>
+    <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name" />
+    <p class="err" id="e-name" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+    <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email" />
+    <p class="err" id="e-email" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="f-intent">I’m contacting you about <span class="req" aria-hidden="true">*</span></label>
+    <select id="f-intent" name="intent" required aria-describedby="e-intent">
+      <option value="">Choose one</option>
+      <option value="program">Residency program</option>
+      <option value="individual">Individual course or bundle</option>
+      <option value="general">General question</option>
+    </select>
+    <p class="err" id="e-intent" hidden></p>
+  </div>
+
+  <div class="field" data-for="individual" hidden>
+    <label for="f-course">Course (optional)</label>
+    <select id="f-course" name="course">
+      <option value="">Not sure yet</option>
+      {products.map((p) => <option value={p.slug}>{p.title}</option>)}
+    </select>
+  </div>
+
+  <div class="field" data-for="program" hidden>
+    <label for="f-institution">Program or institution <span class="req" aria-hidden="true">*</span></label>
+    <input id="f-institution" name="institution" type="text" autocomplete="organization" aria-describedby="e-institution" />
+    <p class="err" id="e-institution" hidden></p>
+  </div>
+
+  <div class="field" data-for="program" hidden>
+    <label for="f-role">Your role (optional)</label>
+    <input id="f-role" name="role" type="text" autocomplete="organization-title" />
+  </div>
+
+  <div class="two" data-for="program" hidden>
+    <div class="field">
+      <label for="f-residents">Number of residents (optional)</label>
+      <input id="f-residents" name="residents" type="text" inputmode="numeric" />
+    </div>
+    <div class="field">
+      <label for="f-timeframe">Preferred timeframe (optional)</label>
+      <input id="f-timeframe" name="timeframe" type="text" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="f-message">Message <span class="req" aria-hidden="true">*</span></label>
+    <textarea id="f-message" name="message" rows="6" required aria-describedby="e-message"></textarea>
+    <p class="err" id="e-message" hidden></p>
+  </div>
+
+  <!-- Honeypot: real visitors never see or fill this. -->
+  <div class="hp" aria-hidden="true">
+    <label for="f-site">Leave this field empty</label>
+    <input id="f-site" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <p class="privacy">We’ll use these details to respond to your inquiry. Read our <a href={withBase("/privacy-policy/")}>Privacy Policy</a>.</p>
+
+  {!endpoint && <p class="privacy">Online delivery isn’t connected yet. Sending opens your email app with your message ready to send to {footer.contactEmail}.</p>}
+
+  <div class="actions">
+    <button type="submit" class="btn btn-primary" data-submit>{endpoint ? "Send message" : "Open email draft"}</button>
+  </div>
+  <p class="status" role="status" aria-live="polite" data-status></p>
+
+  <noscript>
+    <p class="status">This form needs JavaScript. You can also email us at <a href={`mailto:${footer.contactEmail}`}>{footer.contactEmail}</a>.</p>
+  </noscript>
+</form>
+
+<style>
+  .form { display: grid; gap: 1.1rem; }
+  .title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; }
+  .mode-note { margin: -0.4rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  .field { display: grid; gap: 0.4rem; }
+  .field[hidden], .two[hidden], .err[hidden], .mode-note[hidden] { display: none; }
+  .two { display: grid; gap: 1.1rem; }
+  @media (min-width: 560px) { .two { grid-template-columns: 1fr 1fr; } }
+  label { font-size: 0.92rem; font-weight: 500; }
+  .req { color: var(--mark); }
+  input, select, textarea {
+    width: 100%; padding: 0.75rem 0.9rem; font: inherit; font-size: 1rem;
+    color: var(--text); background: var(--surface); border: 1px solid var(--border);
+  }
+  textarea { resize: vertical; min-height: 8rem; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  [aria-invalid="true"] { border-color: #c2410c; }
+  .err { margin: 0; color: #b45309; font-size: 0.88rem; }
+  :global(:root.dark) .err { color: #fbbf77; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .privacy { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+  .privacy a, .status a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .actions { display: flex; }
+  .status { margin: 0; min-height: 1.4em; color: var(--text); line-height: 1.55; }
+  .status[data-kind="error"] { color: #b45309; }
+  :global(:root.dark) .status[data-kind="error"] { color: #fbbf77; }
+  button[disabled] { opacity: 0.6; cursor: not-allowed; }
+</style>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  if (form) {
+    const endpoint = form.dataset.endpoint ?? "";
+    const toEmail = form.dataset.email ?? "";
+    const thanks = form.dataset.thanks ?? "/contact/thank-you/";
+    const $ = <T extends HTMLElement>(sel: string) => form.querySelector<T>(sel)!;
+    const status = $<HTMLElement>("[data-status]");
+    const submit = $<HTMLButtonElement>("[data-submit]");
+    const intentEl = $<HTMLSelectElement>("#f-intent");
+    const courseEl = $<HTMLSelectElement>("#f-course");
+    const titleEl = $<HTMLElement>("[data-title]");
+    const modeNote = $<HTMLElement>("[data-mode-note]");
+
+    const REQUIRED = "Please complete this field";
+    const INVALID_EMAIL = "Enter a valid email address";
+    const FAILED = `Your message could not be sent. Please try again or email ${toEmail}.`;
+
+    function applyIntent() {
+      const intent = intentEl.value;
+      form!.querySelectorAll<HTMLElement>("[data-for]").forEach((el) => {
+        el.hidden = el.dataset.for !== intent;
+      });
+      titleEl.textContent = intent === "program" ? "Discuss your residency program." : "Send us a message";
+      submit.textContent = endpoint
+        ? intent === "program" ? "Request a consult" : "Send message"
+        : intent === "program" ? "Open consult request email" : "Open email draft";
+      modeNote.hidden = intent !== "program";
+      if (intent === "program") {
+        modeNote.textContent = endpoint
+          ? "Send a request and we’ll coordinate a time by email."
+          : "Send a request and we’ll coordinate a time by email. Your email app will open with the request ready to send.";
+      }
+    }
+
+    // Prefill from the link that brought the visitor here (whitelisted values only).
+    const params = new URLSearchParams(location.search);
+    const wanted = params.get("intent");
+    if (wanted && ["program", "individual", "general"].includes(wanted)) intentEl.value = wanted;
+    const wantedCourse = params.get("course");
+    if (wantedCourse && Array.from(courseEl.options).some((o) => o.value === wantedCourse)) {
+      courseEl.value = wantedCourse;
+      if (!intentEl.value) intentEl.value = "individual";
+    }
+    applyIntent();
+    intentEl.addEventListener("change", applyIntent);
+
+    function setError(id: string, message: string | null) {
+      const input = form!.querySelector<HTMLElement>(`#${id}`);
+      const err = form!.querySelector<HTMLElement>(`#e-${id.replace("f-", "")}`);
+      if (!input || !err) return;
+      if (message) {
+        input.setAttribute("aria-invalid", "true");
+        err.textContent = message;
+        err.hidden = false;
+      } else {
+        input.removeAttribute("aria-invalid");
+        err.hidden = true;
+      }
+    }
+
+    function validate(): boolean {
+      const get = (id: string) => (form!.querySelector<HTMLInputElement>(`#${id}`)?.value ?? "").trim();
+      const checks: [string, boolean, string][] = [
+        ["f-name", !!get("f-name"), REQUIRED],
+        ["f-email", !!get("f-email"), REQUIRED],
+        ["f-intent", !!get("f-intent"), REQUIRED],
+        ["f-message", !!get("f-message"), REQUIRED],
+      ];
+      if (get("f-intent") === "program") checks.push(["f-institution", !!get("f-institution"), REQUIRED]);
+      let firstBad: string | null = null;
+      for (const id of ["f-name", "f-email", "f-intent", "f-institution", "f-message"]) setError(id, null);
+      for (const [id, ok, msg] of checks) {
+        if (!ok) { setError(id, msg); firstBad ??= id; }
+      }
+      const email = get("f-email");
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setError("f-email", INVALID_EMAIL);
+        firstBad ??= "f-email";
+      }
+      if (firstBad) form!.querySelector<HTMLElement>(`#${firstBad}`)?.focus();
+      return !firstBad;
+    }
+
+    function say(text: string, kind: "info" | "error" = "info") {
+      status.textContent = text;
+      status.dataset.kind = kind;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (submit.disabled) return;
+      if (!validate()) { say(""); return; }
+
+      const data = Object.fromEntries(new FormData(form!).entries()) as Record<string, string>;
+      if (data.website) return; // honeypot filled: drop silently
+
+      if (!endpoint) {
+        const lines = [
+          `Name: ${data.name}`,
+          `Email: ${data.email}`,
+          `About: ${intentEl.selectedOptions[0]?.text ?? ""}`,
+          data.course ? `Course: ${courseEl.selectedOptions[0]?.text}` : "",
+          data.institution ? `Program or institution: ${data.institution}` : "",
+          data.role ? `Role: ${data.role}` : "",
+          data.residents ? `Number of residents: ${data.residents}` : "",
+          data.timeframe ? `Preferred timeframe: ${data.timeframe}` : "",
+          "",
+          data.message,
+        ].filter((l, i, a) => l !== "" || a[i - 1] !== "");
+        const subject = data.intent === "program" ? "Residency program consult request" : "Website inquiry";
+        location.href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+        say(`Your email app should open with your message ready to send. If it doesn’t, write to ${toEmail}.`);
+        return;
+      }
+
+      submit.disabled = true;
+      say("Sending…");
+      try {
+        const { website: _hp, ...payload } = data;
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        try { sessionStorage.setItem("sybil-contact-sent", data.intent); } catch {}
+        location.href = `${thanks}?type=${encodeURIComponent(data.intent)}`;
+      } catch {
+        submit.disabled = false;
+        say(FAILED, "error");
+      }
+    });
+  }
+</script>

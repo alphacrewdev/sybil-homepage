@@ -1,21 +1,19 @@
 ---
-// Course detail as a native <dialog>: focus trapping, Esc-to-close and the
-// backdrop come free, and it needs no framework. One per course, opened by
-// the matching card via data-open.
+// Quick preview as a native <dialog>: focus trapping, Esc-to-close and the
+// backdrop come free, and it needs no framework. One per product, opened by
+// the matching card via data-open. The permanent page is the full reference;
+// this is only a shortcut.
 import CourseVignette from "./CourseVignette.astro";
-import type { CourseInfo } from "../content/courses";
-import { withBase } from "../lib/base";
+import type { Product } from "../content/courses";
+import { productHref } from "../content/courses";
+import { enrollmentFor } from "../lib/enroll";
+import { consultHref } from "../lib/enroll";
 
 interface Props {
-  course: CourseInfo;
+  course: Product;
 }
 const { course } = Astro.props;
-const meta = [
-  course.rating && `★ ${course.rating}`,
-  course.students && `${course.students} students`,
-  course.modules.length > 0 && `${course.modules.length} modules`,
-  course.duration,
-].filter(Boolean);
+const enroll = enrollmentFor(course.slug);
 ---
 
 <dialog class="cm" id={`cm-${course.slug}`} aria-labelledby={`cm-title-${course.slug}`}>
@@ -25,67 +23,34 @@ const meta = [
     </button>
 
     <div class="cm-hero">
-      {course.image ? <img src={course.image} alt="" width="438" height="304" /> : <CourseVignette kind={course.slug} />}
+      {course.image ? <img src={course.image} alt="" width="438" height="304" /> : <CourseVignette kind={course.vignette} />}
       <div class="cm-hero-text">
-        <span class="tag-mono cm-meta">{meta.join("  ·  ")}</span>
+        <span class="tag-mono cm-meta">{course.tag.toUpperCase()}</span>
         <h3 class="cm-title" id={`cm-title-${course.slug}`}>{course.title}</h3>
       </div>
     </div>
 
     <div class="cm-body">
       <div class="cm-main">
+        <p class="cm-p">{course.hero}</p>
+
+        {course.outcomes.length > 0 && (
+          <>
+            <h4 class="cm-h">What you will learn</h4>
+            <ul class="cm-list">{course.outcomes.map((l) => <li>{l}</li>)}</ul>
+          </>
+        )}
+
         {course.instructors.length > 0 && (
           <p class="tag-mono cm-taught">TAUGHT BY {course.instructors.map((i) => i.name).join(" · ").toUpperCase()}</p>
         )}
-        {course.description.map((p) => <p class="cm-p">{p}</p>)}
-
-        {course.learn.length > 0 && (
-          <>
-            <h4 class="cm-h">What you will learn</h4>
-            <ul class="cm-list">{course.learn.map((l) => <li>{l}</li>)}</ul>
-          </>
-        )}
-
-        {course.features.length > 0 && (
-          <>
-            <h4 class="cm-h">Included</h4>
-            <ul class="cm-chips">{course.features.map((f) => <li class="tag-mono">{f}</li>)}</ul>
-          </>
-        )}
-
-        {(course.duration || course.requirements.length > 0) && (
-          <>
-            <h4 class="cm-h">Time and requirements</h4>
-            <ul class="cm-list">
-              {course.duration && <li>{course.duration}</li>}
-              {course.requirements.map((r) => <li>{r}</li>)}
-            </ul>
-          </>
-        )}
-
-        {course.instructors.length > 0 && (
-          <>
-            <h4 class="cm-h">Instructors</h4>
-            {course.instructors.map((i) => (
-              <p class="cm-p"><strong class="cm-name">{i.name}.</strong> {i.bio}</p>
-            ))}
-          </>
-        )}
       </div>
-
-      {course.modules.length > 0 && (
-        <aside class="cm-side">
-          <h4 class="cm-h cm-h-first">Curriculum</h4>
-          <ol class="cm-modules">
-            {course.modules.map((m) => <li>{m.replace(/^Module\s+\d+\s*[–:-]\s*/i, "")}</li>)}
-          </ol>
-        </aside>
-      )}
     </div>
 
     <div class="cm-actions">
-      <a href={course.enrollUrl} class="btn btn-primary" rel="noopener">View enrollment options</a>
-      <a href={withBase("/program-directors")} class="btn btn-ghost">Ask about program access</a>
+      <a href={productHref(course)} class="btn btn-primary">{course.kind === "course" ? "View course" : "View details"}</a>
+      <a href={enroll.href} class="btn btn-ghost">{enroll.label}</a>
+      <a href={consultHref} class="btn btn-ghost">Ask about program access</a>
     </div>
   </div>
 </dialog>

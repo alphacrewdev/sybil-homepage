@@ -1,13 +1,110 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import PageHero from "../components/PageHero.astro";
+import { team, outreach } from "../content/homepage";
+import { consultHref } from "../lib/enroll";
+import { withBase } from "../lib/base";
+
+const outreachCopy: Record<string, string> = {
+  "RAD-AID": "Sybil provides radiology education to residency programs through RAD-AID.",
+  WinSPIRE: "Sybil supports WinSPIRE’s work to expand access to STEM education.",
+};
 ---
 
-<BaseLayout title="About">
-  <PagePlaceholder
-    eyebrow="ABOUT / INSTRUCTOR BIOS"
-    heading="About Sybil"
-    body="This page will carry Dr. Karen Brown's full bio and credentials, and her co-author's if he's credited publicly. Low priority per the developer spec — build once copy and photos are in hand."
-    pending={["Karen's bio + headshot", "Co-author bio, if credited", "Confirm: separate page or homepage section, per content length"]}
+<BaseLayout
+  title="About"
+  description="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
+>
+  <PageHero
+    eyebrow="About Sybil"
+    title="Physics taught with radiologists in mind."
+    lede="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
   />
+
+  <section class="wrap block narrow">
+    <h2 class="h">Make complex ideas easier to work through.</h2>
+    <p class="body">
+      Radiology residents need physics explained in terms that connect to how they will use it. Sybil breaks the material
+      into manageable lessons and brings coursework, practice, and teaching together.
+    </p>
+  </section>
+
+  <section class="wrap block" id="instructors" aria-labelledby="team-h">
+    <h2 id="team-h" class="h">Our instructors</h2>
+    <div class="people">
+      <article class="person">
+        <img src={withBase(team.photo)} alt={team.photoAlt} width="160" height="160" loading="lazy" />
+        <div>
+          <h3>Karen Brown</h3>
+          <p class="role">Founder and Lead Instructor</p>
+          <p>
+            Karen Brown is a medical physicist and the founder of Sybil Digital Learning. She leads Sybil’s teaching
+            alongside fellow instructors, with a focus on physics relevant to radiologists and Core Exam preparation.
+          </p>
+        </div>
+      </article>
+      <article class="person">
+        <div>
+          <h3>Sam Einstein</h3>
+          <p class="role">Basic MRI Physics Instructor</p>
+          <p>Sam Einstein contributes to Basic MRI Physics, bringing expertise in diagnostic medical physics and MR safety.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="out-h">
+    <h2 id="out-h" class="h">Extending access to physics education.</h2>
+    <div class="out">
+      {outreach.partners.map((p) => (
+        <div class="out-card">
+          {p.logo
+            ? <img src={withBase(p.logo)} alt={p.name} loading="lazy" />
+            : <h3>{p.name}</h3>}
+          <p>{outreachCopy[p.name] ?? p.blurb}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap closing">
+    <div class="band">
+      <h2>Find the right starting point.</h2>
+      <div class="btns">
+        <a href={withBase("/courses/")} class="btn btn-light">Browse courses</a>
+        <a href={consultHref} class="btn btn-outline">Schedule a consult</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .block { padding-block: clamp(1.5rem, 4vw, 3rem); }
+  .narrow { max-width: 52rem; }
+  .h { margin: 0 0 1rem; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 2.6vw, 1.9rem); letter-spacing: -0.015em; }
+  .body { margin: 0; color: var(--text-muted); font-size: 1.05rem; line-height: 1.75; }
+  .people { display: grid; gap: 1.5rem; }
+  @media (min-width: 860px) { .people { grid-template-columns: 1.4fr 1fr; align-items: start; } }
+  .person { display: grid; gap: 1.25rem; padding: 1.5rem; border: 1px solid var(--border); background: var(--surface); }
+  @media (min-width: 560px) { .person:has(img) { grid-template-columns: 8rem 1fr; } }
+  .person img { width: 8rem; height: 8rem; object-fit: cover; object-position: center top; }
+  .person h3 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
+  .role { margin: 0.2rem 0 0.75rem; color: var(--accent); font-size: 0.9rem; font-weight: 500; }
+  .person p:not(.role) { margin: 0; color: var(--text-muted); line-height: 1.7; }
+  .out { display: grid; gap: 1.25rem; }
+  @media (min-width: 760px) { .out { grid-template-columns: 1fr 1fr; } }
+  .out-card { padding: 1.5rem; border: 1px solid var(--border); background: var(--surface); display: grid; gap: 0.9rem; align-content: start; }
+  .out-card img { height: 3rem; width: auto; max-width: 12rem; object-fit: contain; object-position: left center; }
+  .out-card h3 { margin: 0; font-size: 1.1rem; }
+  .out-card p { margin: 0; color: var(--text-muted); line-height: 1.65; }
+  .closing { padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem); }
+  .band {
+    display: grid; gap: 1.5rem; align-items: center; padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%); color: #fff;
+  }
+  @media (min-width: 820px) { .band { grid-template-columns: 1fr auto; gap: 2.5rem; } }
+  .band h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 2.8vw, 1.8rem); letter-spacing: -0.015em; }
+  .btns { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .btn-light { background: #fff; color: var(--color-navy-700); }
+  .btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.6); }
+</style>

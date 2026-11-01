@@ -1,0 +1,42 @@
+---
+// Shown only after the contact endpoint has accepted a message (the form sets
+// a session flag first). Opened directly, it does not claim anything was sent.
+// No submitted details are placed in the URL: only the non-personal topic.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { withBase } from "../../lib/base";
+---
+
+<BaseLayout title="Thanks for getting in touch" noindex description="Your message has been sent.">
+  <div id="sent" hidden>
+    <PageHero title="Thanks for getting in touch.">
+      <p class="msg">Your message has been sent. We’ll reply using the email address you provided.</p>
+      <p class="msg" id="program-note" hidden>We’ll coordinate a time by email.</p>
+      <a href={withBase("/courses/")} class="btn btn-primary">Browse courses</a>
+      <a href={withBase("/")} class="btn btn-ghost">Back to home</a>
+    </PageHero>
+  </div>
+
+  <div id="not-sent">
+    <PageHero title="Looking for the contact form?" lede="Nothing has been sent from this page.">
+      <a href={withBase("/contact/")} class="btn btn-primary">Go to contact</a>
+      <a href={withBase("/")} class="btn btn-ghost">Back to home</a>
+    </PageHero>
+  </div>
+</BaseLayout>
+
+<style>
+  .msg { flex-basis: 100%; margin: 0; color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; }
+  [hidden] { display: none; }
+</style>
+
+<script>
+  let intent: string | null = null;
+  try { intent = sessionStorage.getItem("sybil-contact-sent"); } catch {}
+  if (intent) {
+    document.getElementById("sent")!.hidden = false;
+    document.getElementById("not-sent")!.hidden = true;
+    if (intent === "program") document.getElementById("program-note")!.hidden = false;
+    try { sessionStorage.removeItem("sybil-contact-sent"); } catch {}
+  }
+</script>

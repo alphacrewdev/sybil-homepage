@@ -1,0 +1,250 @@
+---
+// One permanent page per product: eight courses (shared template), the
+// question bank and the bundle. Data comes from src/content/courses.ts.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import Faq from "../../components/Faq.astro";
+import PromoBanner from "../../components/PromoBanner.astro";
+import EnrollPanel from "../../components/EnrollPanel.astro";
+import { courseList, physicsCourses, questionBank, bundle, productHref, type Product } from "../../content/courses";
+import { consultHref } from "../../lib/enroll";
+import { withBase } from "../../lib/base";
+import { site } from "../../content/homepage";
+
+export function getStaticPaths() {
+  return courseList.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props as { product: Product };
+const isCourse = product.kind === "course";
+const isBank = product.kind === "bank";
+const isBundle = product.kind === "bundle";
+
+const description = `${product.summary} On-demand radiology physics education for residents.`;
+const abs = (path: string) => new URL(path, Astro.site).href;
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: abs(withBase("/")) },
+      { "@type": "ListItem", position: 2, name: "Courses", item: abs(withBase("/courses/")) },
+      { "@type": "ListItem", position: 3, name: product.title, item: abs(productHref(product)) },
+    ],
+  },
+];
+if (isCourse) {
+  // Only fields we can stand behind: no ratings, offers or durations.
+  jsonLd.push({
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: product.title,
+    description: product.hero,
+    url: abs(productHref(product)),
+    provider: { "@type": "Organization", name: site.name, url: site.url },
+  });
+}
+
+const accessFaq = [
+  {
+    q: "Does this include live teaching?",
+    a: "Live teaching depends on your access arrangement. Check the enrollment details or contact us before purchasing.",
+  },
+  { q: "Does Sybil offer CME credit?", a: "Sybil does not currently offer CME credit." },
+  {
+    q: "Can my program arrange access?",
+    a: "Yes. Schedule a consult to discuss coursework and live teaching for your residency program.",
+  },
+];
+
+const bankFaq = [
+  {
+    q: "Is this the same as the course quizzes?",
+    a: "No. Course quizzes accompany lessons; Core Physics Practice Questions is a separate resource for exam review.",
+  },
+  {
+    q: "Is it included in the bundle?",
+    a: "Yes. The Radiology Physics Course Bundle includes all eight courses and Core Physics Practice Questions.",
+  },
+];
+
+const bundleFaq = [
+  { q: "What is included?", a: "All eight radiology physics courses and Core Physics Practice Questions." },
+  {
+    q: "Is this for an entire program?",
+    a: "This page describes the course bundle. For access and teaching arrangements for your residency program, schedule a consult.",
+  },
+];
+
+const experience = [
+  { title: "Study on your schedule", body: "Short lessons and visual explanations help you work through the physics." },
+  { title: "Check your understanding", body: "Lesson quizzes and answer explanations help you decide what to revisit." },
+  { title: "Continue where you stopped", body: "Resume videos and revisit completed lessons during your access period." },
+];
+
+const bankBenefits = [
+  { title: "Practice with a physics focus", body: "Keep your question-based review centered on radiology physics." },
+  { title: "Complement your coursework", body: "Use a dedicated bank alongside the quizzes that accompany individual lessons." },
+  { title: "Choose the access that fits", body: "Explore the question bank on its own or as part of the full course bundle." },
+];
+
+const bundleBenefits = [
+  { title: "Study across subjects", body: "Bring the major imaging physics topics together in one collection." },
+  { title: "Connect learning and review", body: "Work through coursework and use the included question bank for exam preparation." },
+  { title: "Fit study around residency", body: "Study on demand and return to completed lessons during your access period." },
+];
+
+const benefits = isBank ? bankBenefits : isBundle ? bundleBenefits : [];
+---
+
+<BaseLayout title={product.title} description={description} jsonLd={jsonLd}>
+  <PageHero
+    eyebrow={product.tag}
+    title={product.title}
+    lede={product.hero}
+    breadcrumb={[
+      { label: "Home", href: withBase("/") },
+      { label: "Courses", href: withBase("/courses/") },
+      { label: product.title },
+    ]}
+  />
+
+  <div class="wrap layout">
+    <div class="main">
+      {isCourse && (
+        <>
+          <p class="audience">Designed for radiology residents; also relevant to other medical professionals reviewing imaging physics.</p>
+
+          <section aria-labelledby="learn">
+            <h2 id="learn" class="h">What you’ll learn</h2>
+            <ul class="outcomes">
+              {product.outcomes.map((o) => <li>{o}</li>)}
+            </ul>
+          </section>
+
+          <section aria-labelledby="topics">
+            <h2 id="topics" class="h">Topics covered</h2>
+            <details class="topics">
+              <summary>View the topic outline</summary>
+              <div class="topic-body">
+                {product.topics.map((g) => (
+                  <div>
+                    {g.group && <h3>{g.group}</h3>}
+                    <ul>{g.items.map((i) => <li>{i}</li>)}</ul>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </section>
+
+          <section aria-labelledby="experience">
+            <h2 id="experience" class="h">The learning experience</h2>
+            <div class="strip">
+              {experience.map((e) => (
+                <div class="strip-item">
+                  <h3>{e.title}</h3>
+                  <p>{e.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section aria-labelledby="instructor">
+            <h2 id="instructor" class="h">{product.instructors.length > 1 ? "Instructors" : "Instructor"}</h2>
+            <ul class="people">
+              {product.instructors.map((i) => (
+                <li>
+                  <strong>{i.name}</strong> — {i.role}.{i.bio && ` ${i.bio}`}
+                </li>
+              ))}
+            </ul>
+            <p class="more"><a href={withBase("/about/#instructors")}>Meet our instructors</a></p>
+          </section>
+        </>
+      )}
+
+      {(isBank || isBundle) && (
+        <section aria-labelledby="why">
+          <h2 id="why" class="h">{isBundle ? "Why choose the bundle?" : "Why use a question bank?"}</h2>
+          <div class="strip">
+            {benefits.map((e) => (
+              <div class="strip-item">
+                <h3>{e.title}</h3>
+                <p>{e.body}</p>
+              </div>
+            ))}
+          </div>
+          {isBank && <p class="scope">Covers radiology physics. Clinical exam content is not included.</p>}
+        </section>
+      )}
+
+      {isBundle && (
+        <section aria-labelledby="included">
+          <h2 id="included" class="h">What’s included</h2>
+          <p class="kicker">8 courses + question bank</p>
+          <ul class="included">
+            {physicsCourses.map((c) => <li><a href={productHref(c)}>{c.title}</a></li>)}
+            <li><a href={productHref(questionBank)}>{questionBank.title}</a></li>
+          </ul>
+        </section>
+      )}
+
+      <section aria-labelledby="faq">
+        <h2 id="faq" class="h">Questions</h2>
+        <Faq items={isBank ? bankFaq : isBundle ? bundleFaq : accessFaq} />
+      </section>
+    </div>
+
+    <div class="side">
+      <EnrollPanel slug={product.slug} title={product.title} />
+      {isBank && (
+        <p class="alt"><a class="btn btn-ghost" href={productHref(bundle)}>Explore the course bundle</a></p>
+      )}
+      {isCourse && (
+        <p class="alt">Running a residency program? <a href={consultHref}>Schedule a consult.</a></p>
+      )}
+    </div>
+  </div>
+
+  <PromoBanner kind={isBundle ? "program" : "bundle"} />
+</BaseLayout>
+
+<style>
+  .layout { display: grid; gap: 2.5rem; padding-bottom: 1rem; }
+  .side { display: grid; gap: 1rem; order: -1; }
+  @media (min-width: 960px) {
+    .layout { grid-template-columns: minmax(0, 1fr) 20rem; align-items: start; gap: 3.5rem; }
+    .side { position: sticky; top: 5.5rem; order: 2; }
+  }
+  .main { display: grid; gap: 2.75rem; min-width: 0; }
+  .audience { margin: 0; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+  .h { margin: 0 0 1rem; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; }
+  .outcomes { list-style: disc; margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; font-size: 1.02rem; line-height: 1.6; }
+  .outcomes li::marker { color: var(--accent); }
+  .topics { border: 1px solid var(--border); background: var(--surface); }
+  .topics summary { cursor: pointer; padding: 1rem 1.25rem; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+  .topics summary::-webkit-details-marker { display: none; }
+  .topics summary::after { content: "+"; color: var(--accent); font-size: 1.3rem; line-height: 1; }
+  .topics[open] summary::after { content: "–"; }
+  .topics summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .topic-body { padding: 0 1.25rem 1.25rem; display: grid; gap: 1.1rem; }
+  .topic-body h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+  .topic-body ul { list-style: disc; margin: 0; padding-left: 1.2rem; color: var(--text-muted); line-height: 1.65; }
+  .topic-body li::marker { color: var(--accent); }
+  .strip { display: grid; gap: 1rem; }
+  @media (min-width: 720px) { .strip { grid-template-columns: repeat(3, 1fr); } }
+  .strip-item { padding: 1.25rem; border: 1px solid var(--border); background: var(--surface); }
+  .strip-item h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+  .strip-item p { margin: 0.5rem 0 0; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
+  .people { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.75rem; line-height: 1.6; }
+  .more { margin: 0.75rem 0 0; }
+  .more a, .alt a:not(.btn) { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .alt { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .scope { margin: 1.25rem 0 0; color: var(--text-muted); }
+  .kicker { margin: 0 0 0.9rem; font-weight: 600; }
+  .included { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem 2rem; }
+  @media (min-width: 640px) { .included { grid-template-columns: repeat(2, 1fr); } }
+  .included a { color: var(--text); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+  .included a:hover { color: var(--accent); }
+</style>

@@ -1,29 +1,70 @@
 ---
 // Technical support, at the same slug as the previous site so links from the
-// platform keep working. Copy is the previous page's, verbatim.
+// platform keep working. Email-based: no live chat, response-time promise,
+// ticket number or status page is implied.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { site, footer } from "../content/homepage";
+import PageHero from "../components/PageHero.astro";
+import Faq from "../components/Faq.astro";
+import { footer } from "../content/homepage";
+import { withBase } from "../lib/base";
+
+const include = [
+  "The email used for your account",
+  "The course and lesson title, if relevant",
+  "What happened and any error message",
+  "Your browser and device",
+  "Optionally, a screenshot with personal details removed",
+];
+
+const troubleshooting = [
+  {
+    q: "I can’t sign in",
+    a: "Use the sign-in or account recovery options on the platform. Contact us if you still can’t access your account.",
+  },
+  {
+    q: "My course isn’t showing",
+    a: "Check that you’re using the email associated with your purchase or program invitation, then contact us with the course name.",
+  },
+  {
+    q: "A lesson won’t play",
+    a: "Refresh the page and check your connection. If the issue continues, send us the lesson title, browser, and any error message.",
+  },
+];
 ---
 
-<BaseLayout title="Contact Support" description="Technical support for Sybil Digital Learning.">
-  <section class="wrap support">
-    <div class="rv max-w-2xl">
-      <span class="eyebrow">Technical support</span>
-      <h1 class="section-title">Contact Support</h1>
-      <p class="section-lede">
-        We want to ensure that you have a positive experience with us, so please feel free to contact us if there is anything we can help out with.
-      </p>
-      <div class="mt-9 flex flex-wrap gap-3">
-        <a href={`mailto:${footer.contactEmail}?subject=Technical%20support`} class="btn btn-primary">Email support</a>
-        <a href={site.appUrl} class="btn btn-ghost">Log in to the platform</a>
-      </div>
-      <p class="mt-8 text-sm text-[var(--text-muted)]">
-        Include the course or lesson you were in and what you expected to happen — it helps us sort it out faster.
-      </p>
-    </div>
+<BaseLayout
+  title="Contact Support"
+  description="Get help with signing in, accessing a course, or playing a lesson on Sybil Digital Learning."
+>
+  <PageHero
+    eyebrow="Technical support"
+    title="Get help with your course or account."
+    lede="Having trouble signing in, accessing a course, or playing a lesson? Email us so we can help."
+  >
+    <a href={`mailto:${footer.contactEmail}?subject=Technical%20support`} class="btn btn-primary">Email support</a>
+    <a href={withBase("/my-courses/")} class="btn btn-ghost">My courses</a>
+  </PageHero>
+
+  <section class="wrap block">
+    <h2 class="h">What to include</h2>
+    <ul class="include">
+      {include.map((i) => <li>{i}</li>)}
+    </ul>
+    <p class="note">Please don’t send passwords, payment card details, or patient information.</p>
+  </section>
+
+  <section class="wrap block narrow" aria-labelledby="ts-h">
+    <h2 id="ts-h" class="h">Quick fixes</h2>
+    <Faq items={troubleshooting} label="Troubleshooting" />
   </section>
 </BaseLayout>
 
 <style>
-  .support { padding-block: clamp(3.5rem, 8vw, 6rem) clamp(5rem, 11vw, 9rem); }
+  .block { padding-block: clamp(1.5rem, 4vw, 2.5rem); }
+  .block:last-of-type { padding-bottom: clamp(4rem, 9vw, 7rem); }
+  .narrow { max-width: 52rem; }
+  .h { margin: 0 0 1rem; font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; }
+  .include { list-style: disc; margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; max-width: 40rem; line-height: 1.6; }
+  .include li::marker { color: var(--accent); }
+  .note { margin: 1.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
 </style>

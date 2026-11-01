@@ -8,9 +8,13 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  /** Keeps a page out of search results (preview, confirmation and account entry pages). */
+  noindex?: boolean;
+  /** Extra JSON-LD objects for this page (breadcrumbs, Course). */
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, noindex = false, jsonLd = [] } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -22,7 +26,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{title} · {site.name}</title>
+    <title>{title} | {site.name}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
@@ -60,7 +65,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       description: site.description,
     })} />
 
-    <!-- TODO: GA4 — replace G-XXXXXXX with the real measurement ID before launch -->
+    {jsonLd.map((o) => <script type="application/ld+json" set:html={JSON.stringify(o)} />)}
+
+    {/* Analytics is intentionally not configured: add the GA4 snippet here once the measurement ID and consent approach are supplied. */}
     <!--
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
     <script is:inline>

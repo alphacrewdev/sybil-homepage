@@ -1,0 +1,42 @@
+---
+// "Search courses": filters the public catalogue only (title and summary).
+// Without JavaScript the box is hidden and every card stays visible.
+---
+
+<form class="search" role="search" aria-label="Search courses" hidden id="course-search-form" onsubmit="return false">
+  <label for="course-search">Search courses</label>
+  <input id="course-search" type="search" autocomplete="off" />
+</form>
+
+<style>
+  .search { display: grid; gap: 0.4rem; max-width: 26rem; }
+  .search[hidden] { display: none; }
+  label { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+  input {
+    width: 100%; padding: 0.7rem 0.9rem; font: inherit; font-size: 1rem;
+    color: var(--text); background: var(--surface); border: 1px solid var(--border);
+  }
+  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+</style>
+
+<script>
+  const form = document.getElementById("course-search-form") as HTMLFormElement | null;
+  const input = document.getElementById("course-search") as HTMLInputElement | null;
+  const empty = document.getElementById("no-results");
+  if (form && input) {
+    form.hidden = false;
+    const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-card]"));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>("[data-group]"));
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = !q || (card.dataset.text ?? "").includes(q);
+        card.hidden = !match;
+        if (match) shown++;
+      });
+      groups.forEach((g) => { g.hidden = !g.querySelector("[data-card]:not([hidden])"); });
+      if (empty) empty.hidden = shown > 0;
+    });
+  }
+</script>

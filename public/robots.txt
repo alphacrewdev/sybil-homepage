@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /preview/
+Disallow: /my-courses/
+Disallow: /contact/thank-you/

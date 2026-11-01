@@ -1,0 +1,53 @@
+---
+// The one contextual promotional banner near the bottom of a public content
+// page. Two fixed variants from the brief; never used in learning, login,
+// support or payment flows.
+import { consultHref } from "../lib/enroll";
+import { bundle, productHref } from "../content/courses";
+
+interface Props {
+  kind: "program" | "bundle";
+}
+const { kind } = Astro.props;
+const banner =
+  kind === "program"
+    ? {
+        title: "Bring Sybil to your residency program.",
+        body: "Combine on-demand physics courses with live teaching and a clear view of residents’ progress.",
+        label: "Schedule a consult",
+        href: consultHref,
+      }
+    : {
+        title: "Build your physics foundation across all eight subjects.",
+        body: "Explore the full course bundle, including Core Physics Practice Questions.",
+        label: "Explore the bundle",
+        href: productHref(bundle),
+      };
+---
+
+<aside class="wrap banner-wrap" aria-label="Related offer">
+  <div class="banner">
+    <div class="text">
+      <h2>{banner.title}</h2>
+      <p>{banner.body}</p>
+    </div>
+    <a href={banner.href} class="btn btn-light">{banner.label}</a>
+  </div>
+</aside>
+
+<style>
+  .banner-wrap { padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem); }
+  .banner {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #ffffff;
+  }
+  @media (min-width: 820px) { .banner { grid-template-columns: 1fr auto; gap: 2.5rem; } }
+  h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.25rem, 2.6vw, 1.7rem); letter-spacing: -0.015em; }
+  p { margin: 0.6rem 0 0; max-width: 44rem; color: rgba(255, 255, 255, 0.86); font-size: 1rem; line-height: 1.6; }
+  .btn-light { background: #ffffff; color: var(--color-navy-700); }
+  .btn-light:hover { filter: brightness(0.97); }
+</style>

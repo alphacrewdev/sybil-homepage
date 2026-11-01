@@ -1,0 +1,30 @@
+---
+// Enrollment panel: one explicit mode per product (see src/lib/enroll.ts).
+// Today every product is an inquiry, so no price, term or refund is shown.
+import { enrollmentFor } from "../lib/enroll";
+import { withBase } from "../lib/base";
+
+interface Props {
+  slug: string;
+  title: string;
+}
+const { slug, title } = Astro.props;
+const enroll = enrollmentFor(slug);
+---
+
+<aside class="panel bracket-frame" aria-label={`Enrollment: ${title}`}>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <span class="bf-corner" aria-hidden="true"></span>
+  <div class="in">
+    <p class="tag-mono">ENROLLMENT</p>
+    <p class="note">{enroll.note}</p>
+    <a href={enroll.href} class="btn btn-primary">{enroll.label}</a>
+    <a href={withBase("/my-courses/")} class="enrolled">Already enrolled? Go to My courses.</a>
+  </div>
+</aside>
+
+<style>
+  .in { position: relative; display: grid; gap: 0.9rem; justify-items: start; padding: 1.5rem; background: var(--surface); }
+  .note { margin: 0; color: var(--text); font-size: 1rem; line-height: 1.55; }
+  .enrolled { color: var(--accent); font-size: 0.92rem; text-decoration: underline; text-underline-offset: 3px; }
+</style>

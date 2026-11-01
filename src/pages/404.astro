@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import { withBase } from "../lib/base";
+---
+
+<BaseLayout title="Page not found" noindex description="The page you were looking for could not be found.">
+  <PageHero
+    title="We couldn’t find that page."
+    lede="The link may have changed. Browse the courses or return to the homepage to find your next step."
+  >
+    <a href={withBase("/courses/")} class="btn btn-primary">Browse courses</a>
+    <a href={withBase("/")} class="btn btn-ghost">Back to home</a>
+  </PageHero>
+  <p class="wrap quiet"><a href={withBase("/contact-support/")}>Contact support</a></p>
+</BaseLayout>
+
+<style>
+  .quiet { padding-bottom: clamp(4rem, 9vw, 7rem); margin: 0; }
+  .quiet a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+</style>

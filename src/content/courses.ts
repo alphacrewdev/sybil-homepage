@@ -1,197 +1,320 @@
-// Course catalogue. Everything below is carried over from the course pages on
-// sybildigitallearning.com (descriptions, learning outcomes, module lists,
-// durations, instructors) plus the ratings and student counts shown on its
-// homepage tiles. Card blurbs for the five subjects in the reviewed homepage
-// copy are that copy; the other three are drafted from each course's own
-// outcomes and marked for Karen to confirm.
+// Product catalogue: the eight physics courses, the question bank and the
+// bundle. One source for the homepage cards, the /courses/ catalogue, the
+// quick-preview dialogs and every permanent course page.
+//
+// Copy follows Claude-Sybil-Complete-Website-Brief.md (Nov 1, 2026), section 16.
+// Deliberately NOT carried over from the previous site: star ratings and
+// student counts, module counts, "3 hours total", the 27-module Nuclear
+// Medicine list, and the six-month access assumption. Topic outlines describe
+// coverage, not a promised module count or sequence.
 import { withBase } from "../lib/base";
 
-export type CourseInfo = {
+export type Instructor = { name: string; role: string; bio?: string };
+
+export type ProductKind = "course" | "bank" | "bundle";
+
+export type Product = {
+  /** Route segment under /courses/. */
   slug: string;
+  /** Key CourseVignette uses to pick an illustration when there is no photo. */
+  vignette: string;
   title: string;
-  tag: string;
-  blurb: string;
+  kind: ProductKind;
+  tag: "Course" | "Question bank" | "Bundle";
+  /** One sentence for catalogue cards and meta descriptions. */
+  summary: string;
+  /** Short intro at the top of the page. */
+  hero: string;
+  outcomes: string[];
+  /** Expandable outline; one unnamed group, or several named groups. */
+  topics: { group?: string; items: string[] }[];
+  instructors: Instructor[];
   image?: string;
-  url: string;
-  enrollUrl: string;
-  rating?: string;
-  students?: number;
-  description: string[];
-  learn: string[];
-  modules: string[];
-  features: string[];
-  duration?: string;
-  requirements: string[];
-  instructors: { name: string; bio: string }[];
+  /** Address on the previous site; kept so old links and bookmarks still land. */
+  legacyPath?: string;
 };
 
-export const courseList: CourseInfo[] = [
+const karen: Instructor = {
+  name: "Karen Brown",
+  role: "Medical physicist, founder, and lead instructor of Sybil Digital Learning",
+};
+
+const sam: Instructor = {
+  name: "Sam Einstein",
+  role: "Basic MRI Physics instructor",
+  bio: "Contributes to Basic MRI Physics, bringing expertise in diagnostic medical physics and MR safety.",
+};
+
+export const courseList: Product[] = [
   {
     slug: "radiography-physics",
+    vignette: "radiography-physics",
     title: "Radiography Physics",
+    kind: "course",
     tag: "Course",
-    blurb: "Understand core radiography physics principles relevant for clinical practice.",
+    summary: "Understand how X-rays become images—and what influences image quality and radiation dose.",
+    hero: "Build your understanding of X-ray production, image formation, detectors, and radiation safety through focused radiography physics lessons.",
+    outcomes: [
+      "Explain how X-rays are produced and how beam quality and quantity are controlled.",
+      "Connect geometry, scatter, and detector performance to image quality.",
+      "Recognize the physical causes of common radiographic artifacts.",
+      "Review exposure control and the principles of radiation dose and safety.",
+    ],
+    topics: [
+      {
+        items: [
+          "X-ray production, focal spot size, and anode angle",
+          "Magnification, geometric blur, and beam quality and quantity",
+          "Image formation, scattered radiation, and scatter management",
+          "Automatic exposure control and radiographic detectors",
+          "Image quality, artifacts, radiation dose, and safety",
+        ],
+      },
+    ],
+    instructors: [karen],
     image: withBase("/images/courses/radiography.png"),
-    url: "https://sybildigitallearning.com/radiography-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/radiography-physics/",
-    rating: "4.8",
-    students: 166,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying Radiography Physics. The course is also a great refresher for physicians who want to brush up on radiographic imaging principles."],
-    learn: ["Principles of image formation","Factors that affect image quality","Common Artifacts","Effective and Safe Use of Equipment."],
-    modules: ["Introduction","Module 1: Making X-rays","Module 2: Focal Spot Size & Anode Angle","Module 3: Magnification & Geometric Blur","Module 4: X-ray Beam Quality","Module 5: X-ray Beam Quantity","Module 6: Image Formation","Module 7: Scattered Radiation","Module 8: Managing Scatter","Module 9: Automatic Exposure Control","Module 10: Radiographic Detectors","Module 11: Image Quality","Module 12: Artifacts","Module 13: Radiation Dose & Safety."],
-    features: ["Short, focused topical videos","State of the art video animations","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "3 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
-  },
-  {
-    slug: "ultrasound-physics",
-    title: "Ultrasound Physics",
-    tag: "Course",
-    blurb: "Understand core ultrasound physics principles relevant for clinical practice.",
-    image: withBase("/images/courses/ultrasound.png"),
-    url: "https://sybildigitallearning.com/ultrasound-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/ultrasound-physics/",
-    rating: "4.8",
-    students: 176,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying Ultrasound Physics. The course is also a great refresher for physicians who want to brush up on Ultrasound imaging principles."],
-    learn: ["How an Ultrasound transducer works","Basic principles of B-mode, M-mode, and Doppler Imaging","Factors that affect Image Quality","Bioeffects and Safety."],
-    modules: ["Module 1 – Transducers","Module 2 – Basics of Real Time B-Mode Imaging","Module 3 – Reflection and Scattering","Module 4 – Spatial Resolution in Ultrasound","Module 5 – Temporal Resolution in US","Module 6 – Contrast Resolution in US","Module 7 – M-Mode","Module 8 – Doppler Ultrasound","Module 9 – Ultrasound Bioeffects and Safety","Artifact Library."],
-    features: ["Short, focused topical videos","State of the art video animations","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "3 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
-  },
-  {
-    slug: "nuclear-medicine",
-    title: "Nuclear Medicine Physics",
-    tag: "Course",
-    blurb: "Understand core nuclear medicine physics principles relevant for clinical practice.",
-    image: withBase("/images/courses/nuclear-medicine.png"),
-    url: "https://sybildigitallearning.com/nuclear-medicine/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/nuclear-medicine/",
-    rating: "4.7",
-    students: 48,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying NM Physics. The course is also a great refresher for physicians who want to brush up on NM imaging principles."],
-    learn: ["Principles of radioactive decay and measurements","Factors that affect image quality","Common Artifacts."],
-    modules: [],
-    features: ["Short, focused topical video lectures","State of the art video graphics","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "6 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
-  },
-  {
-    slug: "mri-basic-physics",
-    title: "Basic MRI Physics",
-    tag: "Course",
-    blurb: "Understand core MRI physics principles relevant for clinical practice.",
-    image: withBase("/images/courses/mri.png"),
-    url: "https://sybildigitallearning.com/mri-basic-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/mri-basic-physics/",
-    rating: "4.7",
-    students: 67,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying MRI Physics. The course is also a great refresher for physicians who want to brush up on MRI imaging principles."],
-    learn: ["Principles of image formation","Factors that affect image quality","Common Artifacts","Effective and Safe Use of Equipment."],
-    modules: ["Module 1: Basics","Module 2: Putting the Patient in the MRI","Module 3: What Happens When RF Energy Is Applied","Module 4: Loss of Transverse Signal","Module 5: T1 Relaxation","Module 6: Pulse Sequence Basics and Selecting Slices","Module 7: Frequency Encoding","Module 8: Phase Encoding","Module 9: k-Space and Fourier Transform","Module 10: Spin Echo Sequences","Module 11: Fast Spin Echo Sequences","Module 12: GRE Imaging Sequences","Module 13: Tissue Suppression","Module 14: Image Quality","Module 15: Speeding Things Up!","Artifact Library."],
-    features: ["Short, focused topical videos","State of the art video animations","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "5 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."},{"name":"Sam Einstein","bio":"Dr. Einstein is an Assistant Professor of Radiology at Penn State College of Medicine in Hershey, Pennsylvania. He is certified in Diagnostic Medical Physics by the American Board of Radiology and as an MR Safety Expert by the American Board of MR Safety."}],
-  },
-  {
-    slug: "ct-physics",
-    title: "CT Physics",
-    tag: "Course",
-    blurb: "Understand core CT physics principles relevant for clinical practice.",
-    image: withBase("/images/courses/ct.png"),
-    url: "https://sybildigitallearning.com/ct-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/ct-physics/",
-    rating: "4.6",
-    students: 47,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying CT Physics. The course is also a great refresher for physicians who want to brush up on CT imaging principles."],
-    learn: ["Principles of image formation","Factors that affect image quality","Common Artifacts","Effective and Safe Use of Equipment."],
-    modules: ["Module 1: CT System Overview","Module 2: The Xray Tube and Filtration","Module 3: The Detector Array and Collimation","Module 4: Image Formation and CT Number","Module 5: Helical and Axial Acquisiiton Modes","Module 6: Tube Current Modulation","Module 7: CT Acquisition Parameters","Module 8: CT Reconstruction Parameters","Module 9: CT Dose","Module 10: CT Artifacts","Module 11: Dual Energy CT","Module 12: CT Fluoroscopy."],
-    features: ["Short, focused topical video lectures","State of the art graphics","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "4 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
-  },
-  {
-    slug: "fluoroscopy-physics",
-    title: "Fluoroscopy Physics",
-    tag: "Course",
-    blurb: "Understand core fluoroscopy physics principles relevant for clinical practice.",
-    image: withBase("/images/courses/fluoroscopy.png"),
-    url: "https://sybildigitallearning.com/fluoroscopy-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/fluoroscopy-physics/",
-    rating: "4.6",
-    students: 62,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying Fluoroscopy Physics. The course is also a great refresher for physicians who want to brush up on Fluoroscopy imaging principles."],
-    learn: ["Principles of image formation","Factors that affect image quality","Common Artifacts","Effective and Safe Use of Equipment."],
-    modules: ["Module 1: Intro to Fluoroscopy","Module 2: Fluoroscopy Imaging Systems","Module 3: Flat Panel Detectors","Module 4: Image Intensifiers","Module 5: Automatic Exposure Rate Control","Module 6: Electronic Magnification","Module 7: Fluoroscopic Modes of Operation","Module 8: Fluorography Modes of Operation","Module 9: Patient Dose Monitoring","Module 10: Patient Dose Management","Module 11: Operator Dose Management."],
-    features: ["Short, focused topical video lectures","State of the art graphics","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "3 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
+    legacyPath: "/radiography-physics",
   },
   {
     slug: "mammography-physics",
+    vignette: "mammography-physics",
     title: "Mammography Physics",
+    kind: "course",
     tag: "Course",
-    blurb: "Understand core mammography physics principles relevant for clinical practice.",
+    summary: "Understand mammographic image formation, tomosynthesis, image quality, and dose.",
+    hero: "Explore the physics of mammography and digital breast tomosynthesis, from X-ray production and compression to image quality, quality control, and radiation dose.",
+    outcomes: [
+      "Explain the roles of target/filter combinations and the mammography X-ray tube.",
+      "Describe compression, collimation, detectors, grids, and exposure control.",
+      "Review magnification and the basic principles of digital breast tomosynthesis.",
+      "Connect average glandular dose, quality control, and artifacts to mammographic imaging.",
+    ],
+    topics: [
+      {
+        items: [
+          "Introduction, target/filter combinations, and the mammography X-ray tube",
+          "Collimation, compression, grid, detector, and automatic exposure control",
+          "Magnification mammography and average glandular dose",
+          "Digital breast tomosynthesis: introduction, principles, and comparison with 2D imaging",
+          "Quality control and artifacts",
+        ],
+      },
+    ],
+    instructors: [karen],
     image: withBase("/images/courses/mammography.png"),
-    url: "https://sybildigitallearning.com/mammography-physics/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/mammography-physics/",
-    rating: "4.7",
-    students: 62,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying Mammography Physics. The course is also a great refresher for physicians who want to brush up on mammographic imaging principles."],
-    learn: ["Principles of image formation","Factors that affect image quality","Common Artifacts","Effective and Safe Use of Equipment."],
-    modules: ["Module 1: Intro to Mammography","Module 2: Target Filter Combinations","Module 3: The Mammography Xray Tube","Module 4: Collimation and Compression","Module 5: The Grid Detector & AEC","Module 6: Magnification Mammography","Module 7: Average Glandular Dose","Module 8: Introduction to Digital Breast Tomosynthesis","Module 9: DBT Imaging Principles","Module 10: DBT vs 2D","Module 11: Quality Control","Module 12: Artifacts."],
-    features: ["Short, focused topical video lectures","State of the art graphics","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "3 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
+    legacyPath: "/mammography-physics",
+  },
+  {
+    slug: "fluoroscopy-physics",
+    vignette: "fluoroscopy-physics",
+    title: "Fluoroscopy Physics",
+    kind: "course",
+    tag: "Course",
+    summary: "Connect fluoroscopic image formation with exposure control and dose management.",
+    hero: "Understand fluoroscopy systems and operating modes, with focused coverage of image formation, exposure-rate control, and radiation dose for patients and operators.",
+    outcomes: [
+      "Describe fluoroscopic systems, flat-panel detectors, and image intensifiers.",
+      "Explain automatic exposure-rate control and electronic magnification.",
+      "Compare fluoroscopic and fluorographic modes of operation.",
+      "Review patient dose monitoring and dose management for patients and operators.",
+    ],
+    topics: [
+      {
+        items: [
+          "Introduction and fluoroscopic imaging systems",
+          "Flat-panel detectors and image intensifiers",
+          "Automatic exposure-rate control and electronic magnification",
+          "Fluoroscopy and fluorography operating modes",
+          "Patient dose monitoring, patient dose management, and operator dose management",
+        ],
+      },
+    ],
+    instructors: [karen],
+    image: withBase("/images/courses/fluoroscopy.png"),
+    legacyPath: "/fluoroscopy-physics",
+  },
+  {
+    slug: "ct-physics",
+    vignette: "ct-physics",
+    title: "CT Physics",
+    kind: "course",
+    tag: "Course",
+    summary: "Understand how CT acquisition and reconstruction shape images, artifacts, and dose.",
+    hero: "Explore the CT imaging chain, from the X-ray tube and detector array to reconstruction, image quality, radiation dose, and common artifacts.",
+    outcomes: [
+      "Describe the main components of a CT system and their roles.",
+      "Explain image formation, CT numbers, and acquisition modes.",
+      "Connect acquisition and reconstruction parameters to the resulting image.",
+      "Review dose, artifacts, dual-energy CT, and CT fluoroscopy concepts.",
+    ],
+    topics: [
+      {
+        items: [
+          "System overview, X-ray tube, filtration, detectors, and collimation",
+          "Image formation, CT numbers, and helical and axial acquisition",
+          "Tube current modulation and acquisition parameters",
+          "Reconstruction parameters, CT dose, and artifacts",
+          "Dual-energy CT and CT fluoroscopy",
+        ],
+      },
+    ],
+    instructors: [karen],
+    image: withBase("/images/courses/ct.png"),
+    legacyPath: "/ct-physics",
+  },
+  {
+    slug: "nuclear-medicine",
+    vignette: "nuclear-medicine",
+    title: "Nuclear Medicine Physics",
+    kind: "course",
+    tag: "Course",
+    summary: "Explore radioactive decay, imaging instrumentation, and the physics of SPECT and PET.",
+    hero: "Follow nuclear medicine physics from radionuclides and radiation measurement to image formation, image quality, and common artifacts.",
+    outcomes: [
+      "Explain principles of radioactive decay, activity, and half-life.",
+      "Describe the roles of radiation measurement and imaging instrumentation.",
+      "Connect SPECT and PET imaging principles to image quality.",
+      "Review quality-control concepts and common imaging artifacts.",
+    ],
+    // Broad topics only: the course's current lesson inventory has not been reconciled.
+    topics: [
+      {
+        items: [
+          "Nuclides, nuclear stability, decay processes, activity, and half-life",
+          "Radionuclide production and generators",
+          "Radiation instrumentation, ionization chambers, and scintillation detectors",
+          "Gamma cameras, collimation, and SPECT imaging",
+          "Quality control, PET, reconstruction, artifacts, and quantitative imaging",
+        ],
+      },
+    ],
+    instructors: [karen],
+    image: withBase("/images/courses/nuclear-medicine.png"),
+    legacyPath: "/nuclear-medicine",
   },
   {
     slug: "radiation-biology-safety-dose",
+    vignette: "radiation-biology-safety-dose",
     title: "Radiation Biology, Safety, and Dose",
+    kind: "course",
     tag: "Course",
-    blurb: "Understand radiation biology, typical radiation doses, and safety practices relevant for clinical practice.",
+    summary: "Understand biological effects, radiation protection, and the dose quantities used in imaging.",
+    hero: "Connect the biological effects of radiation with protection principles and the dose quantities used to describe exposure in medical imaging.",
+    outcomes: [
+      "Describe mechanisms of cellular damage and biological effects.",
+      "Distinguish tissue effects, stochastic effects, and effects on development.",
+      "Review radiation protection for the public and occupational workers.",
+      "Explain air kerma, absorbed dose, equivalent dose, effective dose, and diagnostic reference levels.",
+    ],
+    // Three topic groups, kept separate as in the source course.
+    topics: [
+      {
+        group: "Radiation biology",
+        items: ["Cellular interactions", "Tissue effects", "Stochastic effects", "Teratogenic effects"],
+      },
+      {
+        group: "Radiation protection",
+        items: ["Background radiation", "The public", "Occupational workers", "Protection from external and internal exposure"],
+      },
+      {
+        group: "Radiation dose",
+        items: ["Air kerma", "Absorbed and equivalent dose", "Effective dose", "Diagnostic reference levels"],
+      },
+    ],
+    instructors: [karen],
     image: withBase("/images/courses/radiation-biology.png"),
-    url: "https://sybildigitallearning.com/radiation-biology-safety-dose/",
-    // TODO: point at the platform's own checkout once Phase 2 ships; for now the current course page.
-    enrollUrl: "https://sybildigitallearning.com/radiation-biology-safety-dose/",
-    rating: "4.8",
-    students: 35,
-    description: ["This course was designed for Radiology residents and other medical professionals such as x-ray technologists, medical students, and physicists studying Radiation Physics. The course is also a great refresher for physicians who want to brush up on basic principles."],
-    learn: ["Mechanisms of Biological Damage","Types of Biological Effects","Radiation Protection Principles","Radiation Dose Metrics & Units."],
-    modules: ["Module 1 - Cellular Interactions","Module 2 - Tissue Effects","Module 3 - Stochastic Effect","Module 4 - Teratogenic Effect","Module 1 - Background Radiation","Module 2 - Members of the Public","Module 3 - Occupational Workers","Module 4 - Protection from External & Internal Exposure","Module 1 - Air Kerma","Module 2 - Absorbed & Equivalent Dose","Module 3 - Effective Dose","Module 4 - Diagnostic Reference Levels."],
-    features: ["Short, focused topical video lectures","State of the art video graphics","Access to course instructor","On-demand content","Engaging questions","Clinically relevant examples."],
-    duration: "3 hours total · 10–15 minutes per module",
-    requirements: ["A desire to learn","A quiet spot or headphones."],
-    instructors: [{"name":"Karen Brown","bio":"Ms. Brown is a Diagnostic Imaging Physicist for Penn State College of Medicine. She is Certified in Radiological Physics by the American Board of Radiology (ABR) and in Health Physics by the American Board of Health Physics (ABHP)."}],
+    legacyPath: "/radiation-biology-safety-dose",
   },
   {
-    slug: "board-review",
-    // Karen's chosen public name for the former "quiz app".
+    slug: "ultrasound-physics",
+    vignette: "ultrasound-physics",
+    title: "Ultrasound Physics",
+    kind: "course",
+    tag: "Course",
+    summary: "Connect transducers, imaging modes, and image quality to the physics behind ultrasound.",
+    hero: "Explore how ultrasound images are formed, how B-mode, M-mode, and Doppler imaging work, and how physical factors affect image quality and safety.",
+    outcomes: [
+      "Explain the role of the transducer in ultrasound imaging.",
+      "Describe the basic principles of B-mode, M-mode, and Doppler imaging.",
+      "Relate spatial, temporal, and contrast resolution to image quality.",
+      "Review common artifacts, bioeffects, and ultrasound safety.",
+    ],
+    topics: [
+      {
+        items: [
+          "Transducers and real-time B-mode imaging",
+          "Reflection and scattering",
+          "Spatial, temporal, and contrast resolution",
+          "M-mode and Doppler ultrasound",
+          "Bioeffects, safety, and the artifact library",
+        ],
+      },
+    ],
+    instructors: [karen],
+    image: withBase("/images/courses/ultrasound.png"),
+    legacyPath: "/ultrasound-physics",
+  },
+  {
+    slug: "mri-basic-physics",
+    vignette: "mri-basic-physics",
+    title: "Basic MRI Physics",
+    kind: "course",
+    tag: "Course",
+    summary: "Make sense of MR signal, spatial encoding, pulse sequences, and image quality.",
+    hero: "Build a foundation in MRI physics, from RF excitation and relaxation to spatial encoding, pulse sequences, and the factors that shape an MR image.",
+    outcomes: [
+      "Explain the basic processes of signal generation and relaxation.",
+      "Follow slice selection, frequency encoding, phase encoding, and k-space.",
+      "Compare the principles of spin echo and gradient echo imaging.",
+      "Review tissue suppression, image quality, acceleration, and common artifacts.",
+    ],
+    topics: [
+      {
+        items: [
+          "Basic MRI concepts, the patient in the magnetic field, and RF excitation",
+          "Transverse signal loss and T1 relaxation",
+          "Pulse sequences, slice selection, and spatial encoding",
+          "k-space and Fourier transform",
+          "Spin echo, fast spin echo, gradient echo, and tissue suppression",
+          "Image quality, faster imaging, and the artifact library",
+        ],
+      },
+    ],
+    instructors: [karen, sam],
+    image: withBase("/images/courses/mri.png"),
+    legacyPath: "/mri-basic-physics",
+  },
+  {
+    slug: "core-physics-practice-questions",
+    vignette: "board-review",
     title: "Core Physics Practice Questions",
+    kind: "bank",
     tag: "Question bank",
-    blurb: "A dedicated question bank for focused review of the physics on the ABR Core Exam.",
-    url: "https://sybildigitallearning.com/",
-    // TODO: point at the platform once the question bank is sold there.
-    enrollUrl: "https://sybildigitallearning.com/",
-    description: ["Exam-style physics questions for ABR Core Exam preparation. Practice beyond the lessons, review the questions you missed, and return to them as you study."],
-    learn: [],
-    modules: [],
-    features: ["Exam-style physics questions", "Included with the Radiology Physics Course Bundle", "Available on its own"],
-    requirements: [],
+    summary: "A dedicated question bank for focused review of the physics on the ABR Core Exam.",
+    hero: "Focus your review on the physics tested on the ABR Core Exam with a dedicated question bank, separate from the quizzes within Sybil’s courses.",
+    outcomes: [],
+    topics: [],
+    instructors: [],
+  },
+  {
+    slug: "radiology-physics-course-bundle",
+    vignette: "bundle",
+    title: "Radiology Physics Course Bundle",
+    kind: "bundle",
+    tag: "Bundle",
+    summary: "All eight radiology physics courses plus Core Physics Practice Questions, together in one bundle.",
+    hero: "Build your understanding across eight radiology physics subjects, with Core Physics Practice Questions included for focused exam review.",
+    outcomes: [],
+    topics: [],
     instructors: [],
   },
 ];
+
+export const productBySlug = (slug: string) => courseList.find((c) => c.slug === slug);
+
+export const physicsCourses = courseList.filter((c) => c.kind === "course");
+export const questionBank = courseList.find((c) => c.kind === "bank")!;
+export const bundle = courseList.find((c) => c.kind === "bundle")!;
+
+/** Canonical path of a product page, base-aware. */
+export const productHref = (c: Product) => withBase(`/courses/${c.slug}/`);

@@ -1,13 +1,138 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import PageHero from "../components/PageHero.astro";
+import Faq from "../components/Faq.astro";
+import { consultHref } from "../lib/enroll";
+import { withBase } from "../lib/base";
+
+const values = [
+  {
+    title: "Support consistent physics learning.",
+    body: "Give residents access to focused lessons across eight physics subjects, with quizzes to check their understanding.",
+  },
+  {
+    title: "Make progress visible.",
+    body: "Review course progress, quiz scores, and class attendance to guide follow-up with residents.",
+  },
+  {
+    title: "Make coordination simpler.",
+    body: "Build a teaching schedule around your program, with flexible billing and tools to invite your residents.",
+  },
+];
+
+const capabilities = ["Course progress", "Quiz scores", "Attendance", "Exportable reports"];
+
+const steps = [
+  { title: "Discuss your goals", body: "Tell us about your residents and current physics teaching." },
+  { title: "Plan the teaching", body: "Discuss course access, live sessions, scheduling, and billing." },
+  { title: "Bring residents on board", body: "Invite residents and follow their progress through the program tools." },
+];
+
+const faq = [
+  { q: "Can residents start at different times?", a: "Yes. Residents can begin coursework at different points in their training." },
+  { q: "Do you work with programs outside the United States?", a: "Yes. Sybil works with residency programs in the United States and internationally." },
+  {
+    q: "Can we arrange live teaching?",
+    a: "Yes. Program arrangements include live teaching or review sessions. Discuss the schedule and scope during your consult.",
+  },
+  { q: "What can administrators see?", a: "Course progress, quiz scores, and class attendance, with reports available to export." },
+  {
+    q: "How is access renewed?",
+    a: "Program access can renew each academic year through graduation. Confirm the terms for your program during the consult.",
+  },
+  { q: "What does it cost?", a: "Contact us to discuss your program’s course access and teaching needs." },
+];
 ---
 
-<BaseLayout title="For Residency Programs">
-  <PagePlaceholder
-    eyebrow="PROGRAM DIRECTORS"
-    heading="For residency programs"
-    body="Marketing page aimed at hospital decision-makers evaluating Sybil for their residents — per-resident pricing up to 12, live Q&A access, and program-level reporting."
-    pending={["Copy from Karen", "Whether to link/attach her existing services brochure"]}
-  />
+<BaseLayout
+  title="For Residency Programs"
+  description="Give residents a structured way to learn physics, with on-demand coursework, live teaching, and visibility into their progress."
+>
+  <PageHero
+    eyebrow="For residency programs"
+    title="Physics education that fits your residency program."
+    lede="Give residents a structured way to learn physics, with on-demand coursework, live teaching, and visibility into their progress."
+  >
+    <a href={consultHref} class="btn btn-primary">Schedule a consult</a>
+    <a href={withBase("/courses/")} class="btn btn-ghost">Explore the courses</a>
+  </PageHero>
+
+  <section class="wrap block">
+    <div class="cards">
+      {values.map((v) => (
+        <div class="card">
+          <h2>{v.title}</h2>
+          <p>{v.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap block split">
+    <div>
+      <h2 class="h">Coursework and live teaching, working together.</h2>
+      <p class="lede">
+        Residents study on demand and take part in scheduled teaching sessions. Recordings support review, while Program
+        Administrators can follow progress and export reports.
+      </p>
+    </div>
+    <ul class="caps" aria-label="What administrators can follow">
+      {capabilities.map((c) => <li>{c}</li>)}
+    </ul>
+  </section>
+
+  <section class="wrap block">
+    <h2 class="h">Start with your program’s needs.</h2>
+    <ol class="steps">
+      {steps.map((s, i) => (
+        <li>
+          <span class="n" aria-hidden="true">{i + 1}</span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="wrap block narrow" aria-labelledby="faq">
+    <h2 id="faq" class="h">Questions from programs</h2>
+    <Faq items={faq} />
+  </section>
+
+  <section class="wrap closing">
+    <div class="band">
+      <h2>Let’s plan physics education for your residents.</h2>
+      <a href={consultHref} class="btn btn-light">Schedule a consult</a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .block { padding-block: clamp(1.5rem, 4vw, 3rem); }
+  .narrow { max-width: 52rem; }
+  .h { margin: 0 0 1rem; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 2.6vw, 1.9rem); letter-spacing: -0.015em; }
+  .lede { margin: 0; max-width: 40rem; color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; }
+  .cards { display: grid; gap: 1.25rem; }
+  @media (min-width: 820px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  .card { padding: 1.5rem; border: 1px solid var(--border); background: var(--surface); }
+  .card h2 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; }
+  .card p { margin: 0.6rem 0 0; color: var(--text-muted); line-height: 1.65; }
+  .split { display: grid; gap: 2rem; align-items: center; }
+  @media (min-width: 860px) { .split { grid-template-columns: 1.3fr 1fr; gap: 4rem; } }
+  .caps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.75rem; grid-template-columns: 1fr 1fr; }
+  .caps li { padding: 1rem; text-align: center; border: 1px solid var(--border); background: var(--surface); font-weight: 600; font-size: 0.95rem; }
+  .steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; }
+  @media (min-width: 820px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .steps li { padding: 1.5rem; border-top: 2px solid var(--accent); background: var(--surface); }
+  .n { display: block; font-family: var(--font-mono); color: var(--accent); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .steps h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+  .steps p { margin: 0.5rem 0 0; color: var(--text-muted); line-height: 1.65; }
+  .closing { padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem); }
+  .band {
+    display: grid; gap: 1.5rem; align-items: center; padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%); color: #fff;
+  }
+  @media (min-width: 820px) { .band { grid-template-columns: 1fr auto; gap: 2.5rem; } }
+  .band h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 2.8vw, 1.8rem); letter-spacing: -0.015em; }
+  .btn-light { background: #fff; color: var(--color-navy-700); }
+</style>
