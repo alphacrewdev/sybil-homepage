@@ -1,6 +1,6 @@
 ---
 import { outreach } from "../content/homepage";
-const stars = Math.round(Number(outreach.averageRating));
+import { withBase } from "../lib/base";
 ---
 
 <section class="border-y bg-[var(--surface)]">
@@ -8,12 +8,12 @@ const stars = Math.round(Number(outreach.averageRating));
     <div class="flex flex-col gap-6 sm:flex-row sm:gap-10">
       {outreach.partners.map((partner, i) => (
         <div class:list={["rv flex items-center gap-4", i === 1 && "rv-d1"]}>
-          <!-- Typeset wordmark stands in until the real logo file arrives -->
           <div class="bracket-frame shrink-0">
             <span class="bf-corner" aria-hidden="true"></span>
             <span class="bf-corner" aria-hidden="true"></span>
-            <div class="grid h-12 w-32 place-items-center bg-[var(--bg)] font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight">
-              {partner.name}
+            <!-- White plate in both themes: the logos are drawn for a light background. -->
+            <div class="grid h-16 w-48 place-items-center bg-white px-4">
+              <img src={withBase(partner.logo)} alt={partner.name} class="max-h-11 w-auto max-w-full object-contain" loading="lazy" />
             </div>
           </div>
           <p class="max-w-[16rem] text-xs leading-snug text-[var(--text-muted)]">{partner.blurb}</p>
@@ -21,17 +21,6 @@ const stars = Math.round(Number(outreach.averageRating));
       ))}
     </div>
 
-    <div class="rv rv-d2 flex items-center gap-2">
-      <div class="flex" aria-hidden="true">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <svg viewBox="0 0 20 20" class="h-4 w-4" fill={i < stars ? "var(--mark)" : "none"} stroke="var(--mark)">
-            <path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L1.3 7.7l6.1-.6L10 1.5z"></path>
-          </svg>
-        ))}
-      </div>
-      <p class="tag-mono md:whitespace-nowrap">
-        {outreach.averageRating} avg · {outreach.courseCount} courses · {outreach.students} students
-      </p>
-    </div>
+    <p class="rv rv-d2 tag-mono md:whitespace-nowrap">{outreach.scope}</p>
   </div>
 </section>

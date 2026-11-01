@@ -23,7 +23,10 @@ import { tools } from "../content/homepage";
       ))}
     </div>
 
-    <p class="rv mt-10 text-xs text-[var(--text-muted)]">{tools.availability}</p>
+    <div class="rv mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
+      <p class="m-0 font-[family-name:var(--font-display)] text-lg font-semibold">{tools.programLine}</p>
+      <a href={tools.programCta.href} class="btn btn-primary">{tools.programCta.label}</a>
+    </div>
   </div>
 </section>
 

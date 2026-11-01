@@ -32,22 +32,20 @@ export const hero = {
   // for a recommendation. Drawn from her own account of what Sybil solves.
   headline: "Radiology physics, taught for radiologists.",
   sub:
-    "Short, animated lessons on the physics the ABR Core Exam tests, taught for how you’ll use it in practice. Built by medical physicist Karen Brown for residents and residency programs.",
+    "Build your understanding of radiology physics and prepare for the physics on the ABR Core Exam—with short lessons that fit around residency.",
   primaryCta: { label: "Browse courses", href: withBase("/#courses") },
+  // Used only once a real sample video is set (see `sample.videoUrl`).
   secondaryCta: { label: "Watch a sample lesson", href: withBase("/#sample") },
+  // Until then the second button points at the differentiators section.
+  fallbackCta: { label: "Explore the learning approach", href: "#learning-approach" },
   programLine: { text: "Running a residency program?", label: "Schedule a consult", href: withBase("/contact") },
-  mediaCaption: "ONE CHEST · FOUR MODALITIES · THE PHYSICS BEHIND EACH",
 };
 
 export const outreach = {
-  // Average and total across the eight courses as shown on the current site.
-  averageRating: "4.7",
-  courseCount: 8,
-  students: 663,
+  scope: "8 physics courses · Core Exam physics review",
   partners: [
-    // TODO(karen): real partner logo files — placeholders are typeset wordmarks
-    { name: "RAD-AID", blurb: "Providing radiology education to international residency programs through RAD-AID." },
-    { name: "WinSPIRE", blurb: "Supporting WinSPIRE’s work to expand access to STEM education." },
+    { name: "RAD-AID", logo: "/images/partners/rad-aid.png", blurb: "Providing radiology education to international residency programs through RAD-AID." },
+    { name: "WinSPIRE", logo: "/images/partners/winspire.png", blurb: "Supporting WinSPIRE’s work to expand access to STEM education." },
   ],
 };
 
@@ -78,20 +76,17 @@ export const why = {
     {
       icon: "lead",
       title: "Taught for radiologists",
-      body:
-        "Most physics is taught the way physicists understand it. Sybil teaches the physics that matters to radiologists and puts it in the context of how you’ll use it.",
+      body: "Make sense of complex physics through visual explanations connected to your work in radiology.",
     },
     {
       icon: "time",
       title: "Built for residency schedules",
-      body:
-        "Modules of 10–15 minutes, available 24/7, so complicated material becomes digestible and fits around clinical work.",
+      body: "Fit study between clinical responsibilities with 10–15 minute video lessons. Pick up where you left off.",
     },
     {
       icon: "program",
       title: "Simple for programs",
-      body:
-        "Flexible billing and a schedule built around your residents, with live review sessions with Karen. Most programs come to us by referral.",
+      body: "Coordinate physics teaching around your program’s schedule, with flexible billing and a clear view of residents’ progress.",
     },
   ],
 };
@@ -108,57 +103,53 @@ export const testimonials = [
 
 export const sample = {
   eyebrow: "Sample lesson",
-  heading: "See how a module works.",
-  body: "Each module is a short animated lesson of 10–15 minutes, followed by questions. Watch one before you enroll.",
-  caption: "SAMPLE LESSON · PREVIEW",
-  // TODO(karen): embed URL for the sample lesson (VdoCipher or YouTube)
+  heading: "See how Sybil teaches.",
+  body: "Watch a sample of the explanations and visual teaching residents use in Sybil’s courses. Then explore the subject you want to study next.",
+  cta: { label: "Browse courses", href: withBase("/#courses") },
+  // TODO(karen): embed URL for the sample lesson (VdoCipher or YouTube).
+  // While empty, the section is hidden and the hero links to #learning-approach.
   videoUrl: "",
 };
 
 export const tools = {
-  eyebrow: "Built around the way you study",
-  heading: "Watch. Test your understanding. Return to what matters.",
-  intro:
-    "Pair clear teaching with tools for active study. Work through lessons, check your understanding, and keep the topics you need to revisit within reach.",
+  eyebrow: "From learning to review",
+  heading: "A study platform built around your coursework.",
+  intro: "Watch, practice, and track your progress in one place.",
+  // Only features that are live on the platform (Nov 1, 2026 summary).
   items: [
     {
       kind: "quiz",
-      title: "Check your understanding",
-      body:
-        "Follow lessons with quizzes that help you identify what needs another look. Review your answers after submission and return to the material as you study.",
+      title: "Know what to revisit",
+      body: "Lesson quizzes and answer explanations help you identify concepts to review. Track your scores over time.",
     },
     {
       kind: "bank",
-      title: "Practice with Core Physics Practice Questions",
-      body:
-        "Use the question bank to prepare for the ABR Core Exam. Repeated practice gives you another opportunity to work through questions you previously missed.",
-    },
-    {
-      kind: "search",
-      title: "Find the explanation again",
-      body:
-        "Search video transcripts for a term to find relevant moments. When reviewing a video you have completed, use chapter markers to return to a specific section.",
-    },
-    {
-      kind: "notes",
-      title: "Keep your own study notes",
-      body:
-        "Save notes alongside a video and bookmark moments you want to revisit. Build a personal set of reference points as you work through the course.",
+      title: "Core Physics Practice Questions",
+      body: "A separate question bank for focused review of the physics on the ABR Core Exam.",
     },
     {
       kind: "resume",
-      title: "Pick up where you left off",
-      body:
-        "Resume a video from your saved position, see your course progress, and review previous quiz attempts as you plan your next study session.",
+      title: "Continue without losing your place",
+      body: "Resume where you stopped. Follow lessons in sequence, then revisit completed coursework during your access period.",
     },
     {
-      kind: "dicom",
-      title: "Explore course images",
-      body:
-        "Work with DICOM images provided in course resources. Zoom, adjust the image display, and use measurement tools to examine the teaching material more closely.",
+      kind: "resources",
+      title: "Keep course resources close",
+      body: "Download your course’s supporting files for study and review.",
+    },
+    {
+      kind: "live",
+      title: "Learn through live review",
+      body: "Learn through scheduled sessions and class recordings. Check which live sessions your access includes.",
+    },
+    {
+      kind: "progress",
+      title: "See where support is needed",
+      body: "Review residents’ progress, quiz scores, and attendance to guide follow-up, with reports available to export.",
     },
   ],
-  availability: "Study tools and resources vary by course and access option. See course details for what is included.",
+  programLine: "Bring Sybil to your residency program.",
+  programCta: { label: "Schedule a consult", href: withBase("/contact") },
 };
 
 export const path = {
@@ -171,12 +162,12 @@ export const path = {
 export const courses = {
   heading: "Find the subject you need to understand next.",
   intro:
-    "Eight physics courses, a Core Exam question bank, and a bundle of everything — for radiology residents and other medical professionals.",
+    "Explore eight radiology physics courses, a dedicated Core Exam physics question bank, or the complete course bundle.",
   cta: { label: "Browse all courses", href: withBase("/courses") },
   bundle: {
     title: "Radiology Physics Course Bundle",
     body:
-      "All eight courses plus Core Physics Practice Questions, for radiology residents and other medical professionals preparing for the ABR Core Exam.",
+      "All eight radiology physics courses plus Core Physics Practice Questions, together in one bundle.",
     // TODO: point at the platform's own checkout once Phase 2 ships
     cta: { label: "View the bundle", href: "https://sybildigitallearning.com/" },
   },
@@ -188,13 +179,13 @@ export const ways = {
     {
       title: "For individual residents",
       body:
-        "Choose a single course or the full bundle for your own Core Exam preparation. Study on demand, with email support when you have questions.",
+        "Strengthen your physics understanding at your own pace. Choose a subject or the full bundle, with practice for the physics on the Core Exam.",
       cta: { label: "Browse courses", href: withBase("/#courses") },
     },
     {
       title: "For residency programs",
       body:
-        "Bring Sybil to your program with on-demand coursework and live review sessions with Karen. Flexible billing and a schedule built around your residents — most programs come to us by referral.",
+        "Give residents a structured physics learning path with on-demand courses and live teaching. Track progress and coordinate schedules and billing around your program.",
       cta: { label: "Schedule a consult", href: withBase("/contact") },
     },
   ],
@@ -204,15 +195,16 @@ export const team = {
   eyebrow: "Meet the teaching team",
   heading: "Led by Karen Brown",
   bio:
-    "Karen Brown is a Diagnostic Imaging Physicist at Penn State College of Medicine, certified by the American Board of Radiology and the American Board of Health Physics, and the founder and lead instructor of Sybil Digital Learning. She works alongside fellow instructors to teach radiology residents the physics they need for the ABR Core Exam and for practice.",
+    "Medical physicist, founder, and lead instructor Karen Brown works alongside fellow instructors to teach physics for radiology training and Core Exam preparation.",
   credentials: ["Diagnostic Imaging Physicist", "ABR and ABHP certified", "Founder and Lead Instructor"],
-  // TODO(karen): headshot — see questionnaire C1
+  // Headshot lives in public/images/team/; the placeholder shows if it's missing.
+  photo: "/images/team/karen-brown.jpg",
   photoAlt: "Portrait of Karen Brown",
   link: { label: "Meet our instructors", href: withBase("/about") },
 };
 
 export const closing = {
-  heading: "Find your next course.",
+  heading: "Find the physics education that fits your needs.",
   body:
     "Explore the subjects you need for your own study, or schedule a consult about bringing Sybil to your residency program.",
   primary: { label: "Browse courses", href: withBase("/#courses") },
@@ -223,7 +215,7 @@ export const footer = {
   // Used by the Contact Support page.
   contactEmail: "contact@sybildigitallearning.com",
   blurb:
-    "On-demand radiology physics courses for residents, with animated explanations for ABR Core Exam preparation and live review sessions for participating residency programs.",
+    "Radiology physics education and board review for residents and residency programs. On-demand courses, practice questions, and live teaching led by medical physicist Karen Brown.",
   columns: [
     {
       title: "Learn",

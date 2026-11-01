@@ -70,10 +70,11 @@ export const SHOTS: Record<"A" | "A2" | "B", Shot> = {
  * and scene phases share these numbers so text and picture stay in step.
  */
 export const TIMELINE = {
-  /** Intro copy over the full image. */
-  intro: [0, 0.2] as const,
-  /** Push in to the detector's field of view; image question. */
-  pushIn: [0.16, 0.42] as const,
+  /** Crossfade from the first message to the second. */
+  handoff: [0.38, 0.48] as const,
+  /** Push in to the detector's field of view; image question. Starts almost
+   *  at once so the first scroll already moves the picture. */
+  pushIn: [0.02, 0.42] as const,
   /** Tilt to the side while the detector layers separate. */
   reveal: [0.44, 0.82] as const,
   /** Hold on the mechanism with labels. */

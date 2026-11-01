@@ -1,5 +1,5 @@
 // Runtime for "Behind the image": renderer, scroll timeline, camera path,
-// copy beats and HTML labels. Loaded only when WebGL is available and the
+// the two copy messages. Loaded only when WebGL is available and the
 // visitor hasn't asked for reduced motion (see BehindImage.astro).
 
 import * as THREE from "three";
@@ -14,6 +14,8 @@ const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 const range = (p: number, [a, b]: readonly [number, number]) => clamp01((p - a) / (b - a));
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+// Moves from the first frame and settles gently: no dead start on scroll.
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 2.2);
 
 function pose(s: Shot) {
   const pos = new THREE.Vector3(...s.pos);
@@ -24,10 +26,6 @@ function pose(s: Shot) {
 export function start(root: HTMLElement) {
   const canvas = root.querySelector<HTMLCanvasElement>("canvas.bi-canvas")!;
   const beats = Array.from(root.querySelectorAll<HTMLElement>("[data-beat]"));
-  const labels = Array.from(root.querySelectorAll<HTMLElement>("[data-label]"));
-  const imageTags = root.querySelector<HTMLElement>("[data-anchor='imageTag']");
-  const fovTag = root.querySelector<HTMLElement>("[data-anchor='fovTag']");
-  const note = root.querySelector<HTMLElement>(".bi-note");
 
   // Debug/poster hooks: ?bi=0.5 pins the timeline; &poster centres the
   // subject for the static fallback stills (scripts in docs/).
@@ -78,7 +76,7 @@ export function start(root: HTMLElement) {
   const tmpV = new THREE.Vector3();
 
   function placeCamera(p: number) {
-    const push = easeInOut(range(p, TIMELINE.pushIn));
+    const push = easeOut(range(p, TIMELINE.pushIn));
     const reveal = easeInOut(range(p, TIMELINE.reveal));
     if (reveal <= 0) {
       camera.position.lerpVectors(A.pos, A2.pos, push);
@@ -117,39 +115,15 @@ export function start(root: HTMLElement) {
     return { push, reveal };
   }
 
-  const v = new THREE.Vector3();
-  function project(el: HTMLElement, key: keyof typeof lab.anchors) {
-    v.copy(lab.anchors[key]).project(camera);
-    const x = (v.x * 0.5 + 0.5) * width;
-    const y = (-v.y * 0.5 + 0.5) * height;
-    el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-    // Keep text on screen: flip to the left of the anchor near the edge.
-    el.classList.toggle("flip", x > width - el.offsetWidth - 16);
-  }
-
-  function placeLabels(alpha: number) {
-    labels.forEach((el) => {
-      project(el, el.dataset.label as keyof typeof lab.anchors);
-      el.style.opacity = String(alpha);
-    });
-    if (imageTags) project(imageTags, "imageTag");
-    if (fovTag) project(fovTag, "fovTag");
-  }
-
   function placeBeats(p: number) {
-    // Beat 0 = intro, 1 = image question, 2 = mechanism.
-    const windows: [number, number][] = [
-      [-1, TIMELINE.intro[1]],
-      [TIMELINE.intro[1] + 0.02, TIMELINE.pushIn[1] + 0.04],
-      [TIMELINE.reveal[0] + 0.16, 2],
-    ];
+    // Two messages, one always on screen: the first shows from the start and
+    // crossfades into the second as the view tilts toward the camera.
+    const [a, b] = TIMELINE.handoff;
+    const t = smooth(range(p, [a, b]));
     beats.forEach((el, i) => {
-      const [a, b] = windows[i];
-      const fin = clamp01((p - a) / 0.06);
-      const fout = clamp01((p - b) / 0.06);
-      const o = smooth(fin) * (1 - smooth(fout));
+      const o = i === 0 ? 1 - t : t;
       el.style.opacity = String(o);
-      el.style.transform = `translate3d(0, ${((1 - fin) * 16 - fout * 12).toFixed(1)}px, 0)`;
+      el.style.transform = `translate3d(0, ${((i === 0 ? -t : 1 - t) * 14).toFixed(1)}px, 0)`;
       el.style.visibility = o > 0.01 ? "visible" : "hidden";
     });
   }
@@ -184,10 +158,6 @@ export function start(root: HTMLElement) {
     });
     composer.render();
     placeBeats(p);
-    placeLabels(smooth(range(p, [TIMELINE.reveal[1] - 0.06, TIMELINE.reveal[1] + 0.04])));
-    if (imageTags) imageTags.style.opacity = String(1 - smooth(clamp01(reveal * 2.5)));
-    if (fovTag) fovTag.style.opacity = String(smooth(clamp01(push * 1.4 - 0.4)) * (1 - smooth(clamp01(reveal * 3))));
-    if (note) note.style.opacity = String(smooth(range(p, [TIMELINE.reveal[1] - 0.04, TIMELINE.reveal[1] + 0.06])));
     root.dataset.ready = "1";
     if (visible) raf = requestAnimationFrame(frame);
   }

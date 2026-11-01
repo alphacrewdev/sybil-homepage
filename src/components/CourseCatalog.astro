@@ -57,8 +57,12 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
     ))}
   </div>
 
-  <!-- The bundle: everything above in one purchase. -->
-  <div class="bundle rv mt-6">
+  <div class="rv mt-8">
+    <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
+  </div>
+
+  <!-- The bundle: every course above in one purchase. -->
+  <div class="bundle rv mt-10">
     <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="bundle-mark" aria-hidden="true" />
     <div class="bundle-text">
       <span class="tag-mono bundle-tag">BUNDLE</span>
@@ -66,10 +70,6 @@ const ordered = order.map((slug) => courseList.find((c) => c.slug === slug)).fil
       <p class="bundle-body">{courses.bundle.body}</p>
     </div>
     <a href={courses.bundle.cta.href} class="btn btn-light" rel="noopener">{courses.bundle.cta.label}</a>
-  </div>
-
-  <div class="rv mt-10">
-    <a href={courses.cta.href} class="btn btn-ghost">{courses.cta.label}</a>
   </div>
 
   {ordered.map((course) => <CourseModal course={course} />)}

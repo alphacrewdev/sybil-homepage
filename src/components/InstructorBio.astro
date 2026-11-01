@@ -1,17 +1,27 @@
 ---
 import BracketFrame from "./BracketFrame.astro";
 import { team } from "../content/homepage";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { withBase } from "../lib/base";
+
+// Show the headshot once the file is in public/; until then, the placeholder.
+const hasPhoto = existsSync(join(process.cwd(), "public", team.photo));
 ---
 
 <section class="wrap section">
   <div class="grid grid-cols-1 gap-10 md:grid-cols-[260px_1fr] md:items-center md:gap-14">
     <BracketFrame class="rv w-fit">
-      <!-- TODO(karen): replace with headshot — see questionnaire C1 -->
-      <div class="portrait" role="img" aria-label={team.photoAlt}>
-        <img src={withBase("/brand/sybil-mark-color.png")} alt="" class="mark" />
-        <span class="tag-mono">PORTRAIT PENDING</span>
-      </div>
+      {hasPhoto ? (
+        <div class="portrait">
+          <img src={withBase(team.photo)} alt={team.photoAlt} class="photo" width="240" height="320" loading="lazy" />
+        </div>
+      ) : (
+        <div class="portrait" role="img" aria-label={team.photoAlt}>
+          <img src={withBase("/brand/sybil-mark-color.png")} alt="" class="mark" />
+          <span class="tag-mono">PORTRAIT PENDING</span>
+        </div>
+      )}
     </BracketFrame>
 
     <div class="rv rv-d1 min-w-0">
@@ -47,6 +57,14 @@ import { withBase } from "../lib/base";
     bottom: -25%;
     opacity: 0.07;
     pointer-events: none;
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   :root.dark .mark { filter: brightness(2.2); }

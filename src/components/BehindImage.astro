@@ -1,6 +1,6 @@
 ---
-// "Behind the image": a scroll-driven journey from an illustrative bone scan
-// to the gamma camera that records one. The 3D runtime (three.js) is loaded
+// "Behind the image": a scroll-driven illustrative animation, from a bone
+// scan to the gamma camera that records one, under two audience messages. The 3D runtime (three.js) is loaded
 // only when the section approaches, WebGL works and motion is allowed;
 // otherwise the section shows rendered stills with the same copy.
 //
@@ -19,8 +19,8 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
 ---
 
 <section class="bi band-dark" id="behind-the-image" aria-labelledby="bi-heading">
-  <h2 id="bi-heading" class="sr-only">{c.label}: {c.headline}</h2>
-  <p class="sr-only">{c.intro} {c.description}</p>
+  <h2 id="bi-heading" class="sr-only">{c.beats[0].headline}</h2>
+  <p class="sr-only">{c.beats[0].body} {c.beats[1].headline} {c.beats[1].body} {c.description}</p>
 
   <div class="bi-sticky">
     <picture class="bi-poster" aria-hidden="true">
@@ -29,36 +29,21 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
     </picture>
     <canvas class="bi-canvas" aria-hidden="true"></canvas>
 
-    <div class="bi-labels" aria-hidden="true">
-      <span class="bi-tag tag-mono" data-anchor="imageTag"><span>{c.imageTag}</span><span>{c.imageMeta}</span></span>
-      <span class="bi-tag bi-fovtag tag-mono" data-anchor="fovTag"><span>{c.fovTag}</span></span>
-      {Object.entries(c.labels).map(([key, text]) => (
-        <span class="bi-label" data-label={key}><i></i><b>{text}</b></span>
-      ))}
-    </div>
-    <p class="bi-note tag-mono" aria-hidden="true">{c.simplified}</p>
-
     <div class="bi-copy" aria-hidden="true">
-      <div class="bi-beat" data-beat="0">
-        <span class="eyebrow">{c.label}</span>
-        <p class="bi-headline">{c.headline}</p>
-        <p class="bi-sub">{c.intro}</p>
-      </div>
       {c.beats.map((b, i) => (
-        <div class="bi-beat" data-beat={i + 1}>
+        <div class="bi-beat" data-beat={i}>
           <span class="eyebrow">{b.kicker}</span>
-          <p class="bi-line">{b.line}</p>
-          {b.question && <p class="bi-question">{b.question}</p>}
+          <p class="bi-headline">{b.headline}</p>
+          <p class="bi-sub">{b.body}</p>
         </div>
       ))}
     </div>
+
+    <p class="bi-caption tag-mono" aria-hidden="true"><span>{c.caption}</span><span>{c.note}</span></p>
   </div>
 
-  <!-- Static version: reduced motion, no WebGL, or before the scene loads. -->
+  <!-- Static version: reduced motion, no WebGL, or the scene failed to load. -->
   <div class="bi-static wrap">
-    <span class="eyebrow">{c.label}</span>
-    <p class="bi-headline">{c.headline}</p>
-    <p class="bi-sub">{c.intro}</p>
     <div class="bi-static-grid">
       {c.beats.map((b, i) => (
         <figure class="bi-static-fig">
@@ -68,20 +53,21 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
           </picture>
           <figcaption>
             <span class="eyebrow">{b.kicker}</span>
-            <span class="bi-line">{b.line}</span>
-            {b.question && <span class="bi-question">{b.question}</span>}
+            <span class="bi-headline">{b.headline}</span>
+            <span class="bi-sub">{b.body}</span>
           </figcaption>
         </figure>
       ))}
     </div>
-    <p class="tag-mono">{c.imageTag} · {c.simplified}</p>
+    <p class="tag-mono">{c.caption} · {c.note}</p>
   </div>
 </section>
 
 <style>
   .bi {
     position: relative;
-    height: 440vh;
+    height: 240vh;
+    height: 240svh;
     background: var(--color-ink-950);
   }
 
@@ -103,6 +89,8 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
   }
 
   .bi-poster img { object-fit: cover; }
+  /* Once the live scene has drawn, the poster goes so the two never overlap. */
+  .bi[data-ready] .bi-poster { visibility: hidden; }
   .bi-canvas { opacity: 0; transition: opacity 0.6s ease; }
   .bi.bi-live .bi-canvas { opacity: 1; }
 
@@ -112,7 +100,7 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--color-ink-950) 82%, transparent) 0%, transparent 46%);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-ink-950) 94%, transparent) 0%, color-mix(in srgb, var(--color-ink-950) 80%, transparent) 34%, transparent 56%);
   }
 
   .bi-copy {
@@ -132,135 +120,39 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
     visibility: hidden;
   }
 
-  /* Before the runtime takes over, show the opening beat. */
+  /* Before the runtime takes over (and without JavaScript), show the first message. */
   .bi:not(.bi-live) .bi-beat[data-beat="0"] { opacity: 1; visibility: visible; }
 
   .bi-headline {
-    margin: 0;
+    display: block;
+    margin: 0.6rem 0 0;
     font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 1.06;
-    font-size: clamp(2rem, 4.2vw, 3.3rem);
+    line-height: 1.08;
+    font-size: clamp(2rem, 3.3vw, 3.1rem);
     text-wrap: balance;
   }
 
   .bi-sub {
+    display: block;
     margin: 1.1rem 0 0;
-    color: var(--text-muted);
-    font-size: 1.02rem;
+    color: #c9d6de;
+    font-size: 1.125rem;
     line-height: 1.6;
     max-width: 30rem;
   }
 
-  .bi-line {
-    display: block;
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.012em;
-    line-height: 1.18;
-    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-    text-wrap: balance;
-  }
-
-  .bi-question {
-    display: block;
-    margin: 1rem 0 0;
-    padding-left: 0.9rem;
-    border-left: 2px solid var(--color-teal-300);
-    color: var(--color-teal-200);
-    font-size: 1.05rem;
-    line-height: 1.5;
-  }
-
-  /* Tags pinned beside points on the image (projected from 3D). The text
-     block hangs up and to the right of its anchor. */
-  .bi-tag {
+  /* Under the copy column, clear of the scene. */
+  .bi-caption {
     position: absolute;
-    left: 0;
-    top: 0;
+    z-index: 2;
+    left: max(clamp(1.05rem, 4vw, 2rem), calc((100vw - 72rem) / 2 + 2rem));
+    bottom: clamp(1rem, 3vh, 2rem);
+    margin: 0;
     display: grid;
-    gap: 0.3rem;
-    width: max-content;
-    max-width: 15rem;
-    color: var(--color-teal-200);
-    will-change: transform, opacity;
-  }
-
-  .bi-tag > span {
-    display: block;
-    translate: 0 -100%;
-    white-space: normal;
-  }
-
-  .bi-tag > span + span { color: var(--text-muted); }
-  .bi-tag.flip > span { translate: -100% -100%; text-align: right; }
-  .bi-fovtag { opacity: 0; }
-  .bi-fovtag > span { translate: 0 -50%; }
-  .bi-fovtag.flip > span { translate: -100% -50%; }
-
-  .bi-note {
-    position: absolute;
-    z-index: 2;
-    right: clamp(1.05rem, 3vw, 2.2rem);
-    bottom: clamp(1.5rem, 5vh, 3rem);
-    margin: 0;
-    opacity: 0;
-  }
-
-  .bi-labels {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .bi-label {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    white-space: nowrap;
-    will-change: transform, opacity;
-  }
-
-  .bi-label i {
-    width: 7px;
-    height: 7px;
-    margin: -3.5px 0 0 -3.5px;
-    border-radius: 50%;
-    background: var(--color-teal-200);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-teal-300) 25%, transparent);
-    flex: none;
-  }
-
-  .bi-label i::after {
-    content: "";
-    display: block;
-    width: 1.6rem;
-    height: 1px;
-    margin: 3px 0 0 7px;
-    background: color-mix(in srgb, var(--color-teal-200) 70%, transparent);
-  }
-
-  .bi-label.flip { flex-direction: row-reverse; translate: -100% 0; }
-  .bi-label.flip i { margin: -3.5px -3.5px 0 0; }
-  .bi-label.flip i::after { margin: 3px 0 0 -1.6rem; }
-  .bi-label.flip b { margin: 0 1.6rem 0 0; }
-
-  .bi-label b {
-    margin-left: 1.6rem;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: 0.74rem;
-    letter-spacing: 0.04em;
-    color: #e4eef3;
-    background: color-mix(in srgb, var(--color-ink-950) 70%, transparent);
-    padding: 0.2rem 0.45rem;
+    gap: 0.25rem;
+    color: var(--text-muted);
   }
 
   .bi-static { display: none; }
@@ -276,14 +168,17 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
       width: auto;
       right: clamp(1.05rem, 4vw, 2rem);
     }
-    .bi-headline { font-size: clamp(1.75rem, 8vw, 2.3rem); }
-    .bi-sub { font-size: 0.95rem; }
-    .bi-label b { font-size: 0.66rem; }
-    .bi-fovtag, .bi-note { display: none; }
-    /* The "illustrative" notice stays put under the nav on small screens. */
-    .bi-tag[data-anchor="imageTag"] { transform: translate3d(clamp(1.05rem, 4vw, 2rem), 4.6rem, 0) !important; }
-    .bi-tag[data-anchor="imageTag"] > span { translate: none !important; text-align: left !important; }
-    .bi-tag[data-anchor="imageTag"] > span + span { display: none; }
+    .bi-headline { font-size: clamp(1.7rem, 7.4vw, 2.2rem); }
+    .bi-sub { font-size: 1rem; }
+    .bi-caption {
+      top: 4.6rem;
+      bottom: auto;
+      left: clamp(1.05rem, 4vw, 2rem);
+      font-size: 0.62rem;
+      padding: 0.35rem 0.5rem;
+      color: #c9d6de;
+      background: color-mix(in srgb, var(--color-ink-950) 78%, transparent);
+    }
   }
 
   /* Static fallback: one viewport of copy plus the two key stills. */
@@ -299,7 +194,7 @@ const posterBMobile = withBase("/images/behind-image/scene-b-mobile.jpg");
   .bi-static-fig { margin: 0; }
   .bi-static-fig img { width: 100%; height: auto; display: block; }
   .bi-static-fig figcaption { display: grid; gap: 0.4rem; margin-top: 1rem; }
-  .bi-static-fig .bi-line { font-size: 1.2rem; }
+  .bi-static-fig .bi-headline { font-size: clamp(1.5rem, 2.4vw, 2rem); }
 
   .sr-only {
     position: absolute;

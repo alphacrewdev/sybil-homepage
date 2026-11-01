@@ -1,7 +1,10 @@
 ---
 import BracketFrame from "./BracketFrame.astro";
 import ModalityCycle from "./ModalityCycle.astro";
-import { hero } from "../content/homepage";
+import { hero, sample } from "../content/homepage";
+
+// No sample video yet: point the second button at the learning approach.
+const second = sample.videoUrl ? hero.secondaryCta : hero.fallbackCta;
 ---
 
 <section class="wrap pb-16 pt-12 md:pb-24 md:pt-16">
@@ -16,7 +19,7 @@ import { hero } from "../content/homepage";
       </p>
       <div class="mt-9 flex flex-wrap items-center gap-3">
         <a href={hero.primaryCta.href} class="btn btn-primary">{hero.primaryCta.label}</a>
-        <a href={hero.secondaryCta.href} class="btn btn-ghost">{hero.secondaryCta.label}</a>
+        <a href={second.href} class="btn btn-ghost">{second.label}</a>
       </div>
       <p class="mt-5 text-sm text-[var(--text-muted)]">
         {hero.programLine.text} <a href={hero.programLine.href} class="link-accent text-sm">{hero.programLine.label}</a>
@@ -27,7 +30,6 @@ import { hero } from "../content/homepage";
       <BracketFrame class="frame-intro">
         <ModalityCycle />
       </BracketFrame>
-      <p class="tag-mono mt-3">{hero.mediaCaption}</p>
     </div>
   </div>
 </section>
