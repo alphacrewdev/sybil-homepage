@@ -52,12 +52,12 @@ export const nav = {
 };
 
 export const hero = {
-  eyebrow: "Radiology physics for residents and residency programs",
+  eyebrow: "For residents and residency programs",
   // Recommended headline — Karen didn't love the earlier options and asked
   // for a recommendation. Drawn from her own account of what Sybil solves.
   headline: "Radiology physics, taught for radiologists.",
   sub:
-    "Build your understanding of radiology physics and prepare for the physics on the ABR Core Exam—with short lessons that fit around residency.",
+    "Understand complex concepts through clear visual lessons. Prepare for the physics on the ABR Core Exam at a pace that fits your training.",
   primaryCta: { label: "Browse courses", href: links.courses },
   // Used only once a real sample video is set (see `sample.videoUrl`).
   secondaryCta: { label: "Watch a sample lesson", href: withBase("/#sample") },
