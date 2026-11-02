@@ -1,0 +1,35 @@
+---
+// Three-up feature cards, each led by a small infographic.
+import FeatureArt, { type ArtKey } from "./FeatureArt.astro";
+
+interface Props {
+  items: { title: string; body: string; art: ArtKey }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="fc-grid">
+  {items.map((f, i) => (
+    <div class:list={["fc rv", i && `rv-d${i}`]}>
+      <div class="fc-art"><FeatureArt art={f.art} /></div>
+      <div class="fc-text">
+        <h3 class="h3">{f.title}</h3>
+        <p class="body-muted">{f.body}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .fc-grid { display: grid; gap: 1.25rem; }
+  @media (min-width: 768px) { .fc-grid { grid-template-columns: repeat(3, 1fr); } }
+  .fc { display: flex; flex-direction: column; border: 1px solid var(--border); background: var(--surface); }
+  .fc-art {
+    padding: 1.4rem 1.25rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--border) 80%, transparent) 1px, transparent 0) 0 0 / 14px 14px,
+      var(--surface);
+  }
+  .fc-text { padding: 1.25rem 1.35rem 1.5rem; }
+</style>

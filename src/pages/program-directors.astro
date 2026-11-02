@@ -1,14 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureCards from "../components/page/FeatureCards.astro";
 import PageHero from "../components/page/PageHero.astro";
 import Faq from "../components/page/Faq.astro";
 import ToolVignette from "../components/ToolVignette.astro";
 import { links } from "../content/homepage";
 
 const values = [
-  { title: "Support consistent physics learning.", body: "Give residents access to focused lessons across eight physics subjects, with quizzes to check their understanding." },
-  { title: "Make progress visible.", body: "Review course progress, quiz scores, and class attendance to guide follow-up with residents." },
-  { title: "Make coordination simpler.", body: "Build a teaching schedule around your program, with flexible billing and tools to invite your residents." },
+  { title: "Support consistent physics learning.", body: "Give residents access to focused lessons across eight physics subjects, with quizzes to check their understanding.", art: "subjects" },
+  { title: "Make progress visible.", body: "Review course progress, quiz scores, and class attendance to guide follow-up with residents.", art: "progress" },
+  { title: "Make coordination simpler.", body: "Build a teaching schedule around your program, with flexible billing and tools to invite your residents.", art: "coordinate" },
 ];
 
 const capabilities = ["Course progress", "Quiz scores", "Attendance", "Exportable reports"];
@@ -49,14 +50,7 @@ const faq = [
   <div class="wrap">
     <section class="sub-section" aria-labelledby="h-value">
       <h2 class="sr-only" id="h-value">What Sybil gives your program</h2>
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-        {values.map((v, i) => (
-          <div class:list={["rv border-t pt-6", i && `rv-d${i}`]} style="border-color: var(--border);">
-            <h3 class="h3">{v.title}</h3>
-            <p class="body-muted">{v.body}</p>
-          </div>
-        ))}
-      </div>
+      <FeatureCards items={values} />
     </section>
 
     <section class="sub-section" aria-labelledby="h-together">

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeatureCards from "../../components/page/FeatureCards.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import EnrollPanel from "../../components/page/EnrollPanel.astro";
 import Faq from "../../components/page/Faq.astro";
@@ -8,9 +9,9 @@ import { links } from "../../content/homepage";
 
 // No discount or access-length claim until real prices and terms exist.
 const reasons = [
-  { title: "Study across subjects", body: "Bring the major imaging physics topics together in one collection." },
-  { title: "Connect learning and review", body: "Work through coursework and use the included question bank for exam preparation." },
-  { title: "Fit study around residency", body: "Study on demand and return to completed lessons during your access period." },
+  { title: "Study across subjects", body: "Bring the major imaging physics topics together in one collection.", art: "subjects" },
+  { title: "Connect learning and review", body: "Work through coursework and use the included question bank for exam preparation.", art: "connect" },
+  { title: "Fit study around residency", body: "Study on demand and return to completed lessons during your access period.", art: "week" },
 ];
 
 const faq = [
@@ -41,14 +42,7 @@ const faq = [
 
     <section class="sub-section" aria-labelledby="h-why">
       <h2 class="section-title" id="h-why">Why choose the bundle?</h2>
-      <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
-        {reasons.map((r) => (
-          <div class="border-t pt-5" style="border-color: var(--border);">
-            <h3 class="h3">{r.title}</h3>
-            <p class="body-muted">{r.body}</p>
-          </div>
-        ))}
-      </div>
+      <div class="mt-8"><FeatureCards items={reasons} /></div>
     </section>
 
     <section class="sub-section">

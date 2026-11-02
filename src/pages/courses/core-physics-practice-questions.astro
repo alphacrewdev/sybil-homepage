@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeatureCards from "../../components/page/FeatureCards.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import EnrollPanel from "../../components/page/EnrollPanel.astro";
 import Faq from "../../components/page/Faq.astro";
@@ -10,9 +11,9 @@ import { links } from "../../content/homepage";
 // No question count, exam modes or scoring features are claimed until the
 // question bank's own behaviour is verified.
 const benefits = [
-  { title: "Practice with a physics focus", body: "Keep your question-based review centered on radiology physics." },
-  { title: "Complement your coursework", body: "Use a dedicated bank alongside the quizzes that accompany individual lessons." },
-  { title: "Choose the access that fits", body: "Explore the question bank on its own or as part of the full course bundle." },
+  { title: "Practice with a physics focus", body: "Keep your question-based review centered on radiology physics.", art: "focus" },
+  { title: "Complement your coursework", body: "Use a dedicated bank alongside the quizzes that accompany individual lessons.", art: "complement" },
+  { title: "Choose the access that fits", body: "Explore the question bank on its own or as part of the full course bundle.", art: "access" },
 ];
 
 const faq = [
@@ -39,14 +40,7 @@ const faq = [
   <div class="wrap">
     <section class="sub-section" aria-labelledby="h-why">
       <h2 class="sr-only" id="h-why">Why use the question bank</h2>
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-        {benefits.map((b) => (
-          <div class="border-t pt-5" style="border-color: var(--border);">
-            <h3 class="h3">{b.title}</h3>
-            <p class="body-muted">{b.body}</p>
-          </div>
-        ))}
-      </div>
+      <FeatureCards items={benefits} />
       <a href={links.bundle} class="btn btn-ghost mt-10">Explore the course bundle</a>
     </section>
 

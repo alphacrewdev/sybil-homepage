@@ -1,6 +1,7 @@
 ---
 // One template for the eight subject courses. Content: src/content/courses.ts.
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeatureCards from "../../components/page/FeatureCards.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import EnrollPanel from "../../components/page/EnrollPanel.astro";
 import Faq from "../../components/page/Faq.astro";
@@ -23,9 +24,9 @@ const team = course.instructors.map((id) => instructors[id]);
 const hasPhoto = (p?: string) => !!p && existsSync(join(process.cwd(), "public", p));
 
 const experience = [
-  { title: "Study on your schedule", body: "Short lessons and visual explanations help you work through the physics." },
-  { title: "Check your understanding", body: "Lesson quizzes and answer explanations help you decide what to revisit." },
-  { title: "Continue where you stopped", body: "Resume videos and revisit completed lessons during your access period." },
+  { title: "Study on your schedule", body: "Short lessons and visual explanations help you work through the physics.", art: "schedule" },
+  { title: "Check your understanding", body: "Lesson quizzes and answer explanations help you decide what to revisit.", art: "quiz" },
+  { title: "Continue where you stopped", body: "Resume videos and revisit completed lessons during your access period.", art: "resume" },
 ];
 
 const faq = [
@@ -101,14 +102,7 @@ const jsonLd = {
 
     <section class="sub-section" aria-labelledby="h-exp">
       <h2 class="sr-only" id="h-exp">How you’ll study</h2>
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-        {experience.map((x) => (
-          <div class="border-t pt-5" style="border-color: var(--border);">
-            <h3 class="h3">{x.title}</h3>
-            <p class="body-muted">{x.body}</p>
-          </div>
-        ))}
-      </div>
+      <FeatureCards items={experience} />
     </section>
 
     <section class="sub-section" aria-labelledby="h-team">
