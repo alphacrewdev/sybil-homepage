@@ -326,34 +326,6 @@
     color: var(--text-muted);
   }
 
-  /* One orchestrated load-in moment, used once on the hero media only —
-     brackets converge like a viewport calibrating into focus. */
-  .frame-intro::before,
-  .frame-intro::after,
-  .frame-intro .bf-corner {
-    animation: bracket-converge 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-  }
-
-  @keyframes bracket-converge {
-    from {
-      width: 90px;
-      height: 90px;
-      opacity: 0;
-    }
-    to {
-      width: 22px;
-      height: 22px;
-      opacity: 1;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .frame-intro::before,
-    .frame-intro::after,
-    .frame-intro .bf-corner {
-      animation: none;
-    }
-  }
 }
 
 /* Secondary pages: compact hero, quiet sub-sections, on-gradient buttons. */
