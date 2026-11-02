@@ -1,0 +1,197 @@
+---
+// Closing banner on every secondary page, right above the footer. One design,
+// with copy and CTAs chosen for the page it closes. Claims here stay within
+// what the course and program pages already state.
+import { instructors } from "../../content/team";
+import { links, footer } from "../../content/homepage";
+import { enrollInquiryHref, productHref, bundle, type Product } from "../../content/courses";
+import { withBase } from "../../lib/base";
+
+export type BannerVariant = "general" | "about" | "courses" | "product" | "bundle" | "programs" | "contact" | "learner";
+
+interface Props {
+  variant?: BannerVariant;
+  // The course, question bank, or bundle a product page is about.
+  product?: Product;
+}
+const { variant = "general", product } = Astro.props;
+
+const karen = instructors["karen-brown"];
+type Cta = { label: string; href: string };
+type Copy = { eyebrow: string; heading: string; body: string; points: string[]; primary: Cta; secondary: Cta };
+
+const variants: Record<BannerVariant, Copy> = {
+  general: {
+    eyebrow: `Taught by ${karen.name}`,
+    heading: "Radiology physics, explained by a medical physicist.",
+    body: "Eight on-demand courses for residents, plus live teaching and review sessions for residency programs.",
+    points: ["8 physics subjects", "Core Exam practice questions", "Live teaching for programs"],
+    primary: { label: "Browse courses", href: links.courses },
+    secondary: { label: "Schedule a consult", href: links.consult },
+  },
+  about: {
+    eyebrow: `Work with ${karen.name}`,
+    heading: "Physics teaching for your residents, led by a medical physicist.",
+    body: `${karen.name} works with residency programs to combine scheduled teaching with on-demand coursework, and you can follow residents’ progress throughout.`,
+    points: ["Live teaching sessions", "Review sessions", "Progress and quiz reports"],
+    primary: { label: "Schedule a consult", href: links.consult },
+    secondary: { label: "See program options", href: links.programs },
+  },
+  courses: {
+    eyebrow: "Not sure where to start?",
+    heading: "Tell us your exam timeline and we’ll suggest a starting point.",
+    body: "Share where you are in training and which subjects feel weakest. We’ll reply by email with the courses that fit, plus current pricing and access details.",
+    points: ["Single courses", "Practice questions", "The full bundle"],
+    primary: { label: "Ask which course fits", href: withBase("/contact/?intent=individual#contact-form") },
+    secondary: { label: "Compare with the bundle", href: links.bundle },
+  },
+  product: {
+    eyebrow: product ? `Questions about ${product.title}?` : "Questions about this course?",
+    heading: "Get pricing and access details before you enroll.",
+    body: `Ask about current pricing, how long access lasts, and whether the course or the bundle suits your timeline. In a residency program? Your program can arrange access for the whole cohort.`,
+    points: ["Pricing and access", "Bundle or single course", "Program access"],
+    primary: { label: "Ask about enrollment", href: product ? enrollInquiryHref(product) : links.contact },
+    secondary: product?.slug === bundle.slug
+      ? { label: "Schedule a program consult", href: links.consult }
+      : { label: "See the full bundle", href: productHref(bundle) },
+  },
+  bundle: {
+    eyebrow: "Enrolling a whole cohort?",
+    heading: "Program access adds live teaching and progress reports.",
+    body: `Residency programs can pair the course collection with scheduled teaching or review sessions led by ${karen.name}, and see course progress, quiz scores, and attendance.`,
+    points: ["Live teaching sessions", "Attendance and quiz scores", "Exportable reports"],
+    primary: { label: "Schedule a consult", href: links.consult },
+    secondary: { label: "How program access works", href: links.programs },
+  },
+  programs: {
+    eyebrow: `Plan with ${karen.name}`,
+    heading: "Talk through your residents’ physics teaching in one consult.",
+    body: "We’ll cover which courses your residents need, how live teaching or review sessions fit your schedule, and what progress reporting you’ll see.",
+    points: ["Course access", "Live teaching schedule", "Progress reporting"],
+    primary: { label: "Schedule a consult", href: links.consult },
+    secondary: { label: "Email us instead", href: `mailto:${footer.contactEmail}` },
+  },
+  contact: {
+    eyebrow: "Still deciding?",
+    heading: "See exactly what each course covers.",
+    body: "Every course page lists its learning outcomes, topic areas, and instructors, so you can compare subjects before you ask.",
+    points: ["Learning outcomes", "Topic areas", "Instructors"],
+    primary: { label: "Browse courses", href: links.courses },
+    secondary: { label: "For residency programs", href: links.programs },
+  },
+  learner: {
+    eyebrow: "Already enrolled?",
+    heading: "Pick up where you left off.",
+    body: "Sign in to resume lessons, take lesson quizzes, and revisit completed material during your access period.",
+    points: ["Resume lessons", "Lesson quizzes", "Revisit completed lessons"],
+    primary: { label: "Log in to My courses", href: links.dashboard },
+    secondary: { label: "Browse more courses", href: links.courses },
+  },
+};
+const c = variants[variant];
+---
+
+<section class="kb" aria-labelledby="kb-title">
+  <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="kb-mark" aria-hidden="true" />
+  <div class="wrap kb-grid">
+    {karen.photo && (
+      <figure class="kb-figure">
+        <img src={withBase(karen.photo)} alt={`Portrait of ${karen.name}`} class="kb-photo" width="168" height="210" loading="lazy" />
+        <figcaption>{karen.name}<span>Medical physicist · Founder</span></figcaption>
+      </figure>
+    )}
+    <div class="kb-text">
+      <span class="kb-eyebrow">{c.eyebrow}</span>
+      <h2 class="kb-title" id="kb-title">{c.heading}</h2>
+      <p class="kb-body">{c.body}</p>
+      <ul class="kb-services" role="list">
+        {c.points.map((s) => <li>{s}</li>)}
+      </ul>
+      <div class="kb-ctas">
+        <a href={c.primary.href} class="btn btn-light">{c.primary.label}</a>
+        <a href={c.secondary.href} class="btn btn-outline">{c.secondary.label}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kb {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 45%, var(--color-teal-500) 100%);
+    color: #ffffff;
+  }
+  .kb-mark {
+    position: absolute;
+    right: -5%;
+    top: 50%;
+    width: clamp(16rem, 36vw, 30rem);
+    max-width: none;
+    transform: translateY(-50%) rotate(-8deg);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .kb-grid {
+    position: relative;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding-block: clamp(3.5rem, 7vw, 5.5rem);
+  }
+  @media (min-width: 768px) {
+    .kb-grid { grid-template-columns: auto 1fr; gap: 3rem; }
+  }
+  .kb-figure { margin: 0; width: fit-content; }
+  .kb-photo {
+    display: block;
+    width: 168px;
+    height: 210px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 10px 10px 0 rgba(255, 255, 255, 0.08);
+  }
+  .kb-figure figcaption {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #ffffff;
+  }
+  .kb-figure figcaption span {
+    display: block;
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .kb-text { max-width: 42rem; }
+  .kb-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .kb-title {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: #ffffff;
+  }
+  .kb-body { margin: 1rem 0 0; font-size: 1.05rem; line-height: 1.6; color: rgba(255, 255, 255, 0.86); }
+  .kb-services { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0 0; padding: 0; list-style: none; }
+  .kb-services li {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+  }
+  .kb-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+</style>

@@ -4,7 +4,6 @@ import PageHero from "../components/page/PageHero.astro";
 import Faq from "../components/page/Faq.astro";
 import ToolVignette from "../components/ToolVignette.astro";
 import { links } from "../content/homepage";
-import { withBase } from "../lib/base";
 
 const values = [
   { title: "Support consistent physics learning.", body: "Give residents access to focused lessons across eight physics subjects, with quizzes to check their understanding." },
@@ -32,6 +31,7 @@ const faq = [
 ---
 
 <BaseLayout
+  promo="programs"
   title="For Residency Programs"
   description="Give residents a structured way to learn radiology physics, with on-demand coursework, live teaching, and visibility into their progress."
 >
@@ -80,7 +80,7 @@ const faq = [
     </section>
 
     <section class="sub-section" aria-labelledby="h-steps">
-      <h2 class="section-title" id="h-steps">Start with your program’s needs.</h2>
+      <h2 class="section-title" id="h-steps">How a program partnership starts.</h2>
       <ol class="steps mt-10">
         {steps.map((s, i) => (
           <li>
@@ -97,13 +97,6 @@ const faq = [
     </section>
   </div>
 
-  <section class="closing">
-    <img src={withBase("/brand/sybil-mark-white.png")} alt="" class="closing-mark" aria-hidden="true" />
-    <div class="wrap section relative">
-      <h2 class="section-title text-white">Let’s plan physics education for your residents.</h2>
-      <a href={links.consult} class="btn btn-light mt-8">Schedule a consult</a>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>
@@ -116,19 +109,4 @@ const faq = [
   @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); } }
   .step-n { display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 0.75rem; }
 
-  .closing {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(115deg, var(--color-navy-900) 0%, var(--color-navy-700) 40%, var(--color-teal-500) 100%);
-  }
-  .closing-mark {
-    position: absolute;
-    right: -6%;
-    top: 50%;
-    width: clamp(16rem, 40vw, 32rem);
-    max-width: none;
-    transform: translateY(-50%) rotate(-8deg);
-    opacity: 0.13;
-    pointer-events: none;
-  }
 </style>

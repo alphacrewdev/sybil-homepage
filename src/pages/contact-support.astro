@@ -1,6 +1,6 @@
 ---
 // Technical support, at the same slug as the previous site so links from the
-// platform keep working. No sales banners on this page.
+// platform keep working. Closes with the learner banner, not a sales one.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/page/PageHero.astro";
 import Faq from "../components/page/Faq.astro";
@@ -20,7 +20,7 @@ const help = [
 ];
 ---
 
-<BaseLayout title="Technical Support" description="Get help signing in, accessing a course, or playing a lesson on Sybil Digital Learning.">
+<BaseLayout promo="learner" title="Technical Support" description="Get help signing in, accessing a course, or playing a lesson on Sybil Digital Learning.">
   <PageHero
     eyebrow="Technical support"
     title="Get help with your course or account."

@@ -3,7 +3,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import EnrollPanel from "../../components/page/EnrollPanel.astro";
 import Faq from "../../components/page/Faq.astro";
-import PromoBanner from "../../components/page/PromoBanner.astro";
 import { bundle, courseList, questionBank, productHref } from "../../content/courses";
 import { links } from "../../content/homepage";
 
@@ -21,7 +20,7 @@ const faq = [
 ];
 ---
 
-<BaseLayout title={bundle.title} description={`${bundle.summary} On-demand radiology physics education for residents.`}>
+<BaseLayout promo="bundle" title={bundle.title} description={`${bundle.summary} On-demand radiology physics education for residents.`}>
   <PageHero
     title={bundle.title}
     eyebrow="Bundle · 8 courses + question bank"
@@ -57,7 +56,6 @@ const faq = [
     </section>
   </div>
 
-  <PromoBanner variant="program" />
 </BaseLayout>
 
 <style>

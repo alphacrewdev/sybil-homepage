@@ -3,85 +3,279 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/page/PageHero.astro";
 import BracketFrame from "../components/BracketFrame.astro";
 import { instructors } from "../content/team";
+import { courseList, productHref } from "../content/courses";
 import { links, outreach } from "../content/homepage";
 import { withBase } from "../lib/base";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const team = [instructors["karen-brown"], instructors["sam-einstein"]];
 const hasPhoto = (p?: string) => !!p && existsSync(join(process.cwd(), "public", p));
+const taughtBy = (id: string) => courseList.filter((c) => c.instructors.includes(id as never));
+
+const karen = instructors["karen-brown"];
+const sam = instructors["sam-einstein"];
+
+const mosaic = ["ct-physics", "mri-basic-physics", "nuclear-medicine", "ultrasound-physics"]
+  .map((slug) => courseList.find((c) => c.slug === slug)!)
+  .filter(Boolean);
+
+const principles = [
+  { title: "Visual explanations", body: "Physics shown in pictures first, so each concept connects to the images residents read." },
+  { title: "Focused coursework", body: "Short lessons across eight imaging subjects, with quizzes to check understanding." },
+  { title: "Live teaching", body: "Scheduled sessions for residency programs, alongside on-demand study." },
+];
 
 const partners = [
   { name: "RAD-AID", body: "Sybil provides radiology education to residency programs through RAD-AID." },
   { name: "WinSPIRE", body: "Sybil supports WinSPIRE’s work to expand access to STEM education." },
 ].map((p) => ({ ...p, logo: outreach.partners.find((o) => o.name === p.name)?.logo }));
+
+const paths = [
+  {
+    tag: "Individual residents",
+    title: "Enroll in the courses you need.",
+    body: "Choose one subject, the eight-course bundle, or Core Physics Practice Questions. Study on demand, check yourself with lesson quizzes, and pick up where you stopped.",
+    points: ["8 physics courses", "Core Exam practice", "On-demand study"],
+    cta: "Browse the courses",
+    href: links.courses,
+  },
+  {
+    tag: "Residency programs",
+    title: "Give your whole cohort structured physics teaching.",
+    body: "Residents get course access plus scheduled live teaching or review sessions. Program administrators see course progress, quiz scores, and attendance, with reports to export.",
+    points: ["Live teaching", "Progress reports", "Flexible start dates"],
+    cta: "How program access works",
+    href: links.programs,
+  },
+];
 ---
 
 <BaseLayout
+  promo="about"
   title="About Sybil"
   description="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
 >
   <PageHero
+    eyebrow="About Sybil"
     title="Physics taught with radiologists in mind."
     intro="Sybil Digital Learning helps residents understand radiology physics in the context of their training, through visual explanations, focused coursework, and live teaching."
-  />
+  >
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href={links.courses} class="btn btn-primary">Browse courses</a>
+      <a href="#instructors" class="btn btn-ghost">Meet the instructors</a>
+    </div>
+    <div class="mosaic" slot="aside" aria-hidden="true">
+      {mosaic.map((c) => (
+        <figure>
+          <img src={c.image} alt="" width="438" height="304" loading="eager" />
+          <figcaption>{c.title}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </PageHero>
 
   <div class="wrap">
     <section class="sub-section" aria-labelledby="h-approach">
-      <h2 class="section-title" id="h-approach">Make complex ideas easier to work through.</h2>
-      <p class="section-lede">
-        Radiology residents need physics explained in terms that connect to how they will use it. Sybil breaks the material into manageable lessons and brings coursework, practice, and teaching together.
-      </p>
+      <div class="approach">
+        <div>
+          <span class="eyebrow">Our approach</span>
+          <h2 class="section-title" id="h-approach">Make complex ideas easier to work through.</h2>
+          <p class="section-lede">
+            Radiology residents need physics explained in terms that connect to how they will use it. Sybil breaks the material into manageable lessons and brings coursework, practice, and teaching together.
+          </p>
+        </div>
+        <ol class="principles" role="list">
+          {principles.map((p, i) => (
+            <li class:list={["rv", i && `rv-d${i}`]}>
+              <span class="p-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <h3 class="h3">{p.title}</h3>
+                <p class="body-muted">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
 
     <section class="sub-section" id="instructors" aria-labelledby="h-team">
       <span class="eyebrow">Our instructors</span>
       <h2 class="section-title" id="h-team">The teaching team</h2>
-      <div class="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2">
-        {team.map((t) => (
-          <article class="flex flex-col gap-6 sm:flex-row sm:items-start">
-            {hasPhoto(t.photo) && (
-              <BracketFrame class="w-fit shrink-0">
-                <img src={withBase(t.photo!)} alt={`Portrait of ${t.name}`} class="portrait" width="180" height="240" loading="lazy" />
-              </BracketFrame>
-            )}
-            <div>
-              <h3 class="h3 text-xl">{t.name}</h3>
-              <p class="tag-mono mt-1">{t.role.toUpperCase()}</p>
-              <p class="body-muted mt-4">{t.bio}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+
+      <article class="lead mt-10">
+        {hasPhoto(karen.photo) && (
+          <BracketFrame class="lead-photo">
+            <img src={withBase(karen.photo!)} alt={`Portrait of ${karen.name}`} width="280" height="350" loading="lazy" />
+          </BracketFrame>
+        )}
+        <div class="min-w-0">
+          <p class="tag-mono role">{karen.role}</p>
+          <h3 class="lead-name">{karen.name}</h3>
+          <p class="lead-bio">{karen.bio}</p>
+          <p class="taught-label">Teaches</p>
+          <ul class="chips" role="list">
+            {taughtBy(karen.id).map((c) => <li><a href={productHref(c)}>{c.title}</a></li>)}
+          </ul>
+        </div>
+      </article>
+
+      <article class="member mt-6">
+        {hasPhoto(sam.photo)
+          ? <img src={withBase(sam.photo!)} alt={`Portrait of ${sam.name}`} class="member-photo" width="88" height="110" loading="lazy" />
+          : <span class="monogram" aria-hidden="true">{sam.name.split(" ").map((w) => w[0]).join("")}</span>}
+        <div class="min-w-0">
+          <p class="tag-mono role">{sam.role}</p>
+          <h3 class="h3 text-xl">{sam.name}</h3>
+          <p class="body-muted">{sam.bio}</p>
+          <ul class="chips mt-4" role="list">
+            {taughtBy(sam.id).map((c) => <li><a href={productHref(c)}>{c.title}</a></li>)}
+          </ul>
+        </div>
+      </article>
     </section>
 
     <section class="sub-section" aria-labelledby="h-outreach">
+      <span class="eyebrow">Outreach</span>
       <h2 class="section-title" id="h-outreach">Extending access to physics education.</h2>
       <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
         {partners.map((p) => (
           <div class="partner">
-            {p.logo
-              ? <div class="plate"><img src={withBase(p.logo)} alt={p.name} loading="lazy" /></div>
-              : <h3 class="h3">{p.name}</h3>}
-            <p class="body-muted">{p.body}</p>
+            <div class="plate">
+              {p.logo ? <img src={withBase(p.logo)} alt={p.name} loading="lazy" /> : <span class="h3">{p.name}</span>}
+            </div>
+            <p class="partner-body">{p.body}</p>
           </div>
         ))}
       </div>
     </section>
 
     <section class="sub-section" aria-labelledby="h-next">
-      <h2 class="section-title" id="h-next">Find the right starting point.</h2>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href={links.courses} class="btn btn-primary">Browse courses</a>
-        <a href={links.consult} class="btn btn-ghost">Schedule a consult</a>
+      <span class="eyebrow">Ways to study</span>
+      <h2 class="section-title" id="h-next">Learn on your own, or through your residency program.</h2>
+      <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {paths.map((p) => (
+          <a href={p.href} class="path">
+            <span class="tag-mono">{p.tag}</span>
+            <span class="path-title">{p.title}</span>
+            <span class="path-body">{p.body}</span>
+            <span class="path-points">{p.points.map((x) => <span>{x}</span>)}</span>
+            <span class="path-cta">{p.cta} <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
       </div>
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .portrait { display: block; width: 180px; height: 240px; object-fit: cover; }
-  .partner { border: 1px solid var(--border); background: var(--surface); padding: 1.6rem; }
-  .plate { display: grid; place-items: center; width: 12rem; height: 4rem; background: #fff; padding: 0.5rem 1rem; margin-bottom: 0.5rem; }
-  .plate img { max-height: 2.75rem; width: auto; max-width: 100%; object-fit: contain; }
+  /* Hero: four course covers as a quiet visual of what Sybil teaches. */
+  .mosaic { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .mosaic figure { position: relative; margin: 0; aspect-ratio: 4 / 3; overflow: hidden; background: #04070c; }
+  .mosaic figure:nth-child(2) { transform: translateY(1.25rem); }
+  .mosaic figure:nth-child(4) { transform: translateY(1.25rem); }
+  .mosaic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mosaic figcaption {
+    position: absolute;
+    left: 0.5rem;
+    bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.45rem;
+    color: #ffffff;
+    background: rgba(2, 18, 40, 0.72);
+  }
+  @media (max-width: 899px) { .mosaic { margin-top: 0.5rem; margin-bottom: 1.25rem; } }
+
+  /* Approach */
+  .approach { display: grid; gap: 2.5rem; }
+  @media (min-width: 900px) { .approach { grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; } }
+  .principles { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .principles li { display: flex; gap: 1.25rem; padding-block: 1.4rem; border-top: 1px solid var(--border); }
+  .principles li:last-child { border-bottom: 1px solid var(--border); }
+  .p-n { flex: none; width: 2rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); padding-top: 0.15rem; }
+
+  /* Team */
+  .role { margin: 0 0 0.4rem; text-transform: uppercase; color: var(--accent); }
+  .lead {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  @media (min-width: 768px) { .lead { grid-template-columns: auto 1fr; gap: 3rem; align-items: center; } }
+  .lead-photo { width: fit-content; }
+  .lead-photo img { display: block; width: 240px; height: 300px; object-fit: cover; }
+  .lead-name { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -0.02em; line-height: 1.15; }
+  .lead-bio { margin: 1rem 0 0; max-width: 38rem; font-size: 1.05rem; line-height: 1.65; color: var(--text-muted); }
+  .taught-label { margin: 1.6rem 0 0.6rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+  .chips a {
+    display: inline-block;
+    padding: 0.32rem 0.7rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .chips a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .member {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: clamp(1.5rem, 3.5vw, 2rem) clamp(1.5rem, 3.5vw, 2.5rem);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  @media (min-width: 640px) { .member { flex-direction: row; align-items: flex-start; gap: 2rem; } }
+  .member-photo { width: 88px; height: 110px; object-fit: cover; flex: none; }
+  .monogram {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 88px;
+    height: 88px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--color-navy-700), var(--color-teal-500));
+  }
+
+  /* Partners */
+  .partner { display: flex; flex-direction: column; border: 1px solid var(--border); background: var(--surface); }
+  .plate { display: grid; place-items: center; height: 7.5rem; padding: 1rem 2rem; background: #ffffff; border-bottom: 1px solid var(--border); }
+  .plate img { max-height: 3.5rem; width: auto; max-width: 100%; object-fit: contain; }
+  .partner-body { margin: 0; padding: 1.4rem 1.6rem 1.6rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* Starting points */
+  .path {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: clamp(1.5rem, 3.5vw, 2.25rem);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .path:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .path .tag-mono { text-transform: uppercase; color: var(--accent); }
+  .path-title { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; line-height: 1.3; letter-spacing: -0.01em; }
+  .path-body { color: var(--text-muted); line-height: 1.6; }
+  .path-points { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .path-points span { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.55rem; border: 1px solid var(--border); color: var(--text); }
+  .path-cta { margin-top: auto; padding-top: 0.4rem; font-weight: 500; color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .path, .chips a { transition: none; }
+    .path:hover { transform: none; }
+  }
 </style>

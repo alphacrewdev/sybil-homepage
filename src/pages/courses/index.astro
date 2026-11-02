@@ -2,19 +2,19 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import ProductCard from "../../components/page/ProductCard.astro";
-import PromoBanner from "../../components/page/PromoBanner.astro";
 import { courseList, questionBank, bundle } from "../../content/courses";
 import { links } from "../../content/homepage";
 import { withBase } from "../../lib/base";
 ---
 
 <BaseLayout
+  promo="courses"
   title="Radiology Physics Courses"
   description="Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. On-demand radiology physics education for residents."
 >
   <PageHero
-    title="Find the physics you want to understand next."
-    intro="Explore eight radiology physics courses, focused Core Exam practice, or the complete course bundle. Choose what fits your training."
+    title="Eight radiology physics courses, plus Core Exam practice."
+    intro="Each course lists its learning outcomes, topic areas, and instructors. Take one subject, practice with the question bank, or get all eight in the bundle."
     crumbs={[{ label: "Courses" }]}
   >
     <p class="mt-6 text-[var(--text-muted)]">
@@ -51,7 +51,6 @@ import { withBase } from "../../lib/base";
     </section>
   </div>
 
-  <PromoBanner variant="program" />
 </BaseLayout>
 
 <style>

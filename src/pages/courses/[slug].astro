@@ -4,7 +4,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/page/PageHero.astro";
 import EnrollPanel from "../../components/page/EnrollPanel.astro";
 import Faq from "../../components/page/Faq.astro";
-import PromoBanner from "../../components/page/PromoBanner.astro";
 import { courseList, productHref, type Course } from "../../content/courses";
 import { instructors, courseCredit } from "../../content/team";
 import { links, site } from "../../content/homepage";
@@ -57,7 +56,7 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={course.title} description={description} jsonLd={jsonLd}>
+<BaseLayout title={course.title} description={description} jsonLd={jsonLd} promo="product" promoProduct={course}>
   <PageHero
     title={course.title}
     eyebrow="Course"
@@ -80,16 +79,24 @@ const jsonLd = {
         {course.outcomes.map((o) => <li>{o}</li>)}
       </ul>
 
-      <details class="topics mt-10">
-        <summary>
-          <span>Topics covered</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
-        </summary>
-        <ul>
-          {course.topics.map((t) => <li>{t}</li>)}
-        </ul>
-        <p class="topics-note">Lessons are short videos, typically 10–15 minutes each.</p>
-      </details>
+    </section>
+
+    <section class="sub-section" aria-labelledby="h-topics">
+      <div class="topics-head">
+        <h2 class="section-title" id="h-topics">Topics covered</h2>
+        <p class="topics-meta">
+          <span class="tag-mono">{course.topics.length} topic areas</span>
+          Lessons are short videos, typically 10–15 minutes each.
+        </p>
+      </div>
+      <ol class="topics mt-10" role="list">
+        {course.topics.map((t, i) => (
+          <li class="topic">
+            <span class="topic-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <p class="topic-text">{t}</p>
+          </li>
+        ))}
+      </ol>
     </section>
 
     <section class="sub-section" aria-labelledby="h-exp">
@@ -125,7 +132,6 @@ const jsonLd = {
     </section>
   </div>
 
-  <PromoBanner variant="bundle" />
 </BaseLayout>
 
 <style>
@@ -134,28 +140,43 @@ const jsonLd = {
 
   .avatar { width: 72px; height: 96px; object-fit: cover; flex: none; }
 
-  .topics { border: 1px solid var(--border); background: var(--surface); max-width: 48rem; }
-  .topics summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.1rem 1.35rem;
-    cursor: pointer;
-    list-style: none;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.1rem;
+  .topics-head { display: grid; gap: 0.75rem; }
+  @media (min-width: 768px) {
+    .topics-head { grid-template-columns: 1fr auto; align-items: end; gap: 2rem; }
   }
-  .topics summary::-webkit-details-marker { display: none; }
-  .topics summary svg { width: 1.15rem; height: 1.15rem; color: var(--accent); transition: transform 0.2s ease; }
-  .topics[open] summary svg { transform: rotate(180deg); }
-  .topics ul { margin: 0; padding: 0 1.35rem 0.5rem 2.6rem; color: var(--text-muted); line-height: 1.65; }
-  .topics li { margin-bottom: 0.55rem; }
-  .topics li::marker { color: var(--accent); }
-  .topics-note { margin: 0; padding: 0.5rem 1.35rem 1.25rem; font-size: 0.9rem; color: var(--text-muted); }
+  .topics-meta { margin: 0; max-width: 22rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.55; }
+  .topics-meta .tag-mono { display: block; margin-bottom: 0.35rem; color: var(--accent); text-transform: uppercase; }
+
+  .topics { list-style: none; margin-inline: 0; margin-bottom: 0; padding: 0; display: grid; gap: 1rem; }
+  @media (min-width: 640px) { .topics { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .topics { grid-template-columns: repeat(3, 1fr); } }
+
+  .topic {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.4rem 1.4rem 1.6rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: border-color 0.2s ease;
+  }
+  .topic::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: 2.5rem;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .topic:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .topic:hover::before { width: calc(100% + 2px); }
+  .topic-n { font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.06em; color: var(--accent); }
+  .topic-text { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; line-height: 1.45; color: var(--text); }
 
   @media (prefers-reduced-motion: reduce) {
-    .topics summary svg { transition: none; }
+    .topic, .topic::before { transition: none; }
   }
 </style>

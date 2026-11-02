@@ -1,6 +1,8 @@
 ---
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import KarenBanner, { type BannerVariant } from "../components/page/KarenBanner.astro";
+import type { Product } from "../content/courses";
 import { site } from "../content/homepage";
 import { withBase, base } from "../lib/base";
 import "../styles/global.css";
@@ -13,9 +15,13 @@ interface Props {
   noindex?: boolean;
   // Extra JSON-LD for the page (e.g. breadcrumbs), only with real data.
   jsonLd?: object;
+  // Closing banner above the footer: which version, or false for none.
+  promo?: false | BannerVariant;
+  // The product a course page is about, for the banner's enrollment link.
+  promoProduct?: Product;
 }
 
-const { title, description = site.description, noindex = false, jsonLd } = Astro.props;
+const { title, description = site.description, noindex = false, jsonLd, promo = "general", promoProduct } = Astro.props;
 
 // Canonicals always name the production domain. The GitHub Pages build is a
 // review copy under a subpath, so it is never indexed.
@@ -80,6 +86,7 @@ const robots = noindex || isPreviewBuild ? "noindex, nofollow" : null;
     <Nav />
     <main>
       <slot />
+      {promo && <KarenBanner variant={promo} product={promoProduct} />}
     </main>
     <Footer />
 
