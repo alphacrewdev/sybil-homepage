@@ -30,6 +30,9 @@ export const links = {
   bank: withBase("/courses/core-physics-practice-questions/"),
   bundle: withBase("/courses/radiology-physics-course-bundle/"),
   login: `${site.appUrl}/login`,
+  // SDL storefront (Access & Commerce): SDL owns the catalog, prices, bundles, cart, sign-in and checkout.
+  catalog: `${site.appUrl}/catalog`,
+  cart: `${site.appUrl}/cart`,
   // Role-aware landing on the platform; signed-out visitors go to its sign-in.
   dashboard: `${site.appUrl}/`,
   account: `${site.appUrl}/profile`,

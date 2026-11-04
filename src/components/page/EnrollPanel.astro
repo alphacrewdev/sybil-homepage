@@ -3,7 +3,7 @@
 // verified checkout shows the real price and access term; otherwise the
 // honest inquiry route. Never an invented price or term.
 import type { Product } from "../../content/courses";
-import { enrollInquiryHref, productLabel } from "../../content/courses";
+import { enrollInquiryHref, productLabel, sdlStorefrontHref } from "../../content/courses";
 import { links } from "../../content/homepage";
 
 interface Props {
@@ -12,6 +12,9 @@ interface Props {
 }
 const { product, includes } = Astro.props;
 const e = product.enrollment;
+// SDL storefront (Access & Commerce): when the product has an SDL id, the buy button opens it in the SDL catalog,
+// where the current price, cart, sign-in and checkout live. No price is shown on this site.
+const storefront = sdlStorefrontHref(product);
 ---
 
 <aside class="enroll" aria-labelledby={`enroll-${product.slug}`}>
@@ -22,6 +25,12 @@ const e = product.enrollment;
       <p class="enroll-price">{e.price}</p>
       <p class="enroll-note">{e.access}</p>
       <a href={e.url} class="btn btn-primary enroll-btn">View enrollment options</a>
+    </>
+  ) : storefront ? (
+    <>
+      <p class="enroll-note">See the current price and buy in the SDL course catalog. You'll sign in or create an account before you pay.</p>
+      <a href={storefront} class="btn btn-primary enroll-btn">{product.kind === "bundle" ? "Buy this bundle" : "Buy this course"}</a>
+      <p class="enroll-foot">Questions first? <a class="text-link" href={enrollInquiryHref(product)}>Ask about enrollment</a></p>
     </>
   ) : (
     <>

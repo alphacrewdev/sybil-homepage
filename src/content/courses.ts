@@ -10,6 +10,7 @@
 // the contact inquiry mode. Switch a product to `checkout` only once its SKU,
 // price, access term, payment and entitlement have been tested end to end.
 import { withBase } from "../lib/base";
+import { site } from "./homepage";
 
 export type InstructorId = "karen-brown" | "sam-einstein";
 
@@ -268,3 +269,34 @@ export const productHref = (p: Pick<Product, "slug">) => withBase(`/courses/${p.
 // accepted by the form, so the parameter can't inject arbitrary text.
 export const enrollInquiryHref = (p: Pick<Product, "slug">) =>
   withBase(`/contact/?intent=individual&course=${p.slug}#contact-form`);
+
+// ── SDL storefront links (Access & Commerce, TASK-AC-MARKETING-COMMERCE-LINK-01) ──
+// SDL owns the catalog, current prices, bundles, the cart, sign-in and checkout. This site never shows or
+// computes a price; it only links into the SDL course catalog, which opens on the product:
+//   /catalog?course=<SDL Course id>   (the buyer adds it to the cart there)
+//   /catalog?bundle=<SDL bundle id>   (the bundle view with "Add bundle to cart")
+// Fill each id from SDL Admin › Catalog (PRODUCTION ids). An empty id keeps the existing inquiry route, so nothing
+// changes for a product until its id is set. The question bank is sold as the Quiz App add-on inside the SDL cart
+// (no deep link), so it keeps the inquiry route.
+export const sdlStorefrontIds: Record<string, string> = {
+  "radiography-physics": "",
+  "mammography-physics": "",
+  "fluoroscopy-physics": "",
+  "ct-physics": "",
+  "nuclear-medicine": "",
+  "radiation-biology-safety-dose": "",
+  "ultrasound-physics": "",
+  "mri-basic-physics": "",
+  "radiology-physics-course-bundle": "",
+};
+
+const SDL_ID = /^[A-Za-z0-9_-]{1,128}$/;
+
+/** The SDL storefront link for a product, or null when it has no (valid) SDL id → keep the inquiry route. */
+export function sdlStorefrontHref(p: Pick<Product, "slug" | "kind">): string | null {
+  if (p.kind === "bank") return null;
+  const id = (sdlStorefrontIds[p.slug] ?? "").trim();
+  if (!SDL_ID.test(id)) return null;
+  const param = p.kind === "bundle" ? "bundle" : "course";
+  return `${site.appUrl}/catalog?${param}=${encodeURIComponent(id)}`;
+}
