@@ -2,6 +2,7 @@
 // Catalog card with a permanent link to the product page. The whole card is
 // clickable through the title link's stretched hit area.
 import CourseVignette from "../CourseVignette.astro";
+import CourseRating from "../CourseRating.astro";
 import type { Product } from "../../content/courses";
 import { productHref, productLabel } from "../../content/courses";
 
@@ -25,6 +26,7 @@ const action = product.kind === "course" ? "View course" : "View details";
     <div class="flex flex-1 flex-col justify-between p-6">
       <div>
         <h3 class="h3"><a href={productHref(product)} class="stretch">{product.title}</a></h3>
+        <CourseRating product={product} />
         <p class="body-muted">{product.summary}</p>
       </div>
       <span class="link-accent mt-6 w-fit" aria-hidden="true">{action}</span>

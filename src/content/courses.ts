@@ -292,6 +292,13 @@ export const sdlStorefrontIds: Record<string, string> = {
 
 const SDL_ID = /^[A-Za-z0-9_-]{1,128}$/;
 
+/** The SDL Course id of a course product (for its star rating), or null (bank / bundle / no valid id). */
+export function sdlCourseId(p: Pick<Product, "slug" | "kind">): string | null {
+  if (p.kind !== "course") return null;
+  const id = (sdlStorefrontIds[p.slug] ?? "").trim();
+  return SDL_ID.test(id) ? id : null;
+}
+
 /** The SDL storefront link for a product, or null when it has no (valid) SDL id → keep the inquiry route. */
 export function sdlStorefrontHref(p: Pick<Product, "slug" | "kind">): string | null {
   if (p.kind === "bank") return null;
