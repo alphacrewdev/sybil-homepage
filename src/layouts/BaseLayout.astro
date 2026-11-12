@@ -1,6 +1,7 @@
 ---
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import Analytics from "../components/Analytics.astro";
 import KarenBanner, { type BannerVariant } from "../components/page/KarenBanner.astro";
 import type { Product } from "../content/courses";
 import { site } from "../content/homepage";
@@ -29,8 +30,11 @@ const isPreviewBuild = base !== "/";
 const pathNoBase = isPreviewBuild ? Astro.url.pathname.slice(base.replace(/\/$/, "").length) || "/" : Astro.url.pathname;
 const canonicalURL = new URL(pathNoBase, site.url);
 const robots = noindex || isPreviewBuild ? "noindex, nofollow" : null;
+const fullTitle = `${title} | ${site.name}`;
 
-// Analytics: none until Karen approves a measurement ID and a consent setup.
+// Analytics: GA4 ships dormant. Nothing loads until PUBLIC_GA_MEASUREMENT_ID is set at build time,
+// which must wait for Karen's approval of the measurement ID and a consent setup
+// (docs/GA4-ACTIVATION-CHECKLIST.md).
 ---
 
 <!doctype html>
@@ -41,7 +45,7 @@ const robots = noindex || isPreviewBuild ? "noindex, nofollow" : null;
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{title} | {site.name}</title>
+    <title>{fullTitle}</title>
     {robots && <meta name="robots" content={robots} />}
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
@@ -80,6 +84,7 @@ const robots = noindex || isPreviewBuild ? "noindex, nofollow" : null;
       description: site.description,
     })} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <Analytics title={fullTitle} />
 
   </head>
   <body>

@@ -1,0 +1,47 @@
+---
+// GA4 page analytics (B12). Renders NOTHING unless PUBLIC_GA_MEASUREMENT_ID holds a valid GA4 id
+// at build time; then one deferred module script sends this page's single, sanitized page_view.
+// Privacy contract and activation gates: src/lib/analytics/ga4.ts, docs/GA4-ACTIVATION-CHECKLIST.md.
+import { parseMeasurementId, sanitizePath } from "../lib/analytics/ga4";
+import { base } from "../lib/base";
+
+interface Props {
+  /** The page's static, public title. */
+  title: string;
+}
+
+// Never on the GitHub Pages review copy (served under a subpath), even if an id leaks into its build.
+const isPreviewBuild = base !== "/";
+const measurementId = isPreviewBuild ? null : parseMeasurementId(import.meta.env.PUBLIC_GA_MEASUREMENT_ID);
+// The route path as built — never the visitor's live URL, query string or hash.
+const config = measurementId
+  ? JSON.stringify({ id: measurementId, path: sanitizePath(Astro.url.pathname), title: Astro.props.title }).replace(
+      /</g,
+      "\\u003c",
+    )
+  : null;
+---
+
+{config && (
+  <>
+    <script type="application/json" id="ga4-config" set:html={config} />
+    <script>
+      import { startGa4, type AnalyticsDocument, type AnalyticsWindow } from "../lib/analytics/ga4";
+
+      try {
+        const raw = document.getElementById("ga4-config")?.textContent;
+        if (raw) {
+          const { id, path, title } = JSON.parse(raw);
+          startGa4({
+            measurementId: id,
+            page: { path, title },
+            win: window as unknown as AnalyticsWindow,
+            doc: document as unknown as AnalyticsDocument,
+          });
+        }
+      } catch {
+        // Analytics must never affect the page.
+      }
+    </script>
+  </>
+)}

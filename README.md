@@ -49,6 +49,14 @@ every pending item.
 | `npm run dev`       | Dev server at `localhost:4321`               |
 | `npm run build`     | Production build to `./dist/`                |
 | `npm run preview`   | Preview the production build locally         |
+| `npm test`          | Unit tests (Node's built-in runner; Node ≥ 22.18) |
+
+## Analytics (GA4)
+
+Dormant by default. Set `PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXX` at build time to enable a
+privacy-safe `page_view` per page (path and title only — no query strings, hashes or identity).
+Activation requires the client's consent-policy decision and the GA property settings in
+`docs/GA4-ACTIVATION-CHECKLIST.md`.
 
 ## Deploy
 
