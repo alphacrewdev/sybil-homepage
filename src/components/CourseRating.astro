@@ -1,0 +1,88 @@
+---
+// Course star rating line for course cards (SDL TASK-STAGE2-B8-COURSE-RATINGS-01).
+//
+// Shown under the card title only when SDL publishes a rating for the course: an average of 4 stars or more from at
+// least 3 students who chose to count their course feedback publicly. SDL serves those figures from one public,
+// read-only feed (no names or comments), cached for 12 hours: GET <appUrl>/api/public-course-ratings.
+//
+// The line is rendered hidden and filled in the browser, so the stars stay current without rebuilding the site.
+// If the course has no SDL id (sdlStorefrontIds), the feed has no entry for it, or the feed cannot be reached, the
+// line stays hidden and the card looks exactly as before. Stars use the same drawing and colour as Testimonials.
+import type { Product } from "../content/courses";
+import { sdlCourseId } from "../content/courses";
+import { site } from "../content/homepage";
+
+interface Props {
+  product: Pick<Product, "slug" | "kind">;
+}
+const id = sdlCourseId(Astro.props.product);
+const feed = `${site.appUrl}/api/public-course-ratings`;
+---
+
+{id && <p class="course-rating" data-sdl-course={id} data-feed={feed} hidden></p>}
+
+<script>
+  type Rating = { courseId: string; averageStars: number; ratingCount: number };
+  const STAR = "M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L1.3 7.7l6.1-.6L10 1.5z";
+  let uid = 0;
+
+  function stars(avg: number): string {
+    const rounded = Math.round(avg * 2) / 2; // whole or half stars
+    let out = "";
+    for (let s = 0; s < 5; s++) {
+      const share = Math.max(0, Math.min(1, rounded - s));
+      const gid = `cr-half-${uid++}`;
+      const fill = share === 1 ? "var(--mark)" : share === 0 ? "none" : `url(#${gid})`;
+      const defs = share > 0 && share < 1
+        ? `<defs><linearGradient id="${gid}"><stop offset="50%" stop-color="var(--mark)"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>`
+        : "";
+      out += `<svg viewBox="0 0 20 20" aria-hidden="true">${defs}<path d="${STAR}" fill="${fill}" stroke="var(--mark)"/></svg>`;
+    }
+    return out;
+  }
+
+  async function fill(): Promise<void> {
+    const lines = Array.from(document.querySelectorAll<HTMLElement>(".course-rating[data-sdl-course]"));
+    if (lines.length === 0) return;
+    const feed = lines[0]!.dataset.feed;
+    if (!feed) return;
+    let ratings: Rating[] = [];
+    try {
+      const res = await fetch(feed, { headers: { Accept: "application/json" } });
+      if (!res.ok) return;
+      const body = (await res.json()) as { ratings?: Rating[] };
+      ratings = Array.isArray(body.ratings) ? body.ratings : [];
+    } catch {
+      return; // SDL unreachable: keep every card exactly as it was.
+    }
+    const byId = new Map(ratings.map((r) => [r.courseId, r]));
+    for (const line of lines) {
+      const r = byId.get(line.dataset.sdlCourse ?? "");
+      if (!r || !(r.averageStars >= 4) || !(r.ratingCount >= 3)) continue;
+      const avg = r.averageStars.toFixed(1);
+      line.innerHTML = `<span class="sr-only">Rated ${avg} out of 5 by ${r.ratingCount} students.</span><span class="cr-stars" aria-hidden="true">${stars(r.averageStars)}</span><span class="cr-val" aria-hidden="true">${avg} · ${r.ratingCount} ratings</span>`;
+      line.hidden = false;
+    }
+  }
+
+  fill();
+</script>
+
+<style is:global>
+  .course-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.45rem 0 0;
+  }
+  .course-rating[hidden] { display: none; }
+  .course-rating .cr-stars { display: inline-flex; gap: 2px; }
+  .course-rating svg { width: 14px; height: 14px; }
+  .course-rating .cr-val {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+</style>

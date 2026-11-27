@@ -4,7 +4,7 @@
 // The product page is the permanent home; this links to it.
 import CourseVignette from "./CourseVignette.astro";
 import type { Course, QuestionBank } from "../content/courses";
-import { enrollInquiryHref, productHref, productLabel } from "../content/courses";
+import { enrollInquiryHref, productHref, productLabel, sdlStorefrontHref } from "../content/courses";
 import { instructors } from "../content/team";
 
 interface Props {
@@ -55,7 +55,12 @@ const taught = isCourse ? course.instructors.map((id) => instructors[id].name) :
 
     <div class="cm-actions">
       <a href={productHref(course)} class="btn btn-primary">{isCourse ? "View course" : "View details"}</a>
-      <a href={enrollInquiryHref(course)} class="btn btn-ghost">Ask about enrollment</a>
+      {/* SDL storefront when the product has an SDL id; otherwise the inquiry route (Access & Commerce). */}
+      {sdlStorefrontHref(course) ? (
+        <a href={sdlStorefrontHref(course)!} class="btn btn-ghost">Buy this course</a>
+      ) : (
+        <a href={enrollInquiryHref(course)} class="btn btn-ghost">Ask about enrollment</a>
+      )}
     </div>
   </div>
 </dialog>

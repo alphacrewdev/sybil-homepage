@@ -1,6 +1,7 @@
 ---
 import CourseVignette from "./CourseVignette.astro";
 import CourseModal from "./CourseModal.astro";
+import CourseRating from "./CourseRating.astro";
 import { courses } from "../content/homepage";
 import { courseList, questionBank, productHref, productLabel } from "../content/courses";
 import { withBase } from "../lib/base";
@@ -30,6 +31,7 @@ const ordered = [...courseList, questionBank];
           <div class="flex flex-1 flex-col justify-between p-6">
             <div>
               <h3 class="text-lg font-semibold"><a href={productHref(course)}>{course.title}</a></h3>
+              <CourseRating product={course} />
               <p class="mt-2 text-base leading-relaxed text-[var(--text-muted)]">{course.summary}</p>
             </div>
             <div class="mt-6 flex items-center justify-between gap-3">

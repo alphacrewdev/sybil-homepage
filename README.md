@@ -49,6 +49,20 @@ every pending item.
 | `npm run dev`       | Dev server at `localhost:4321`               |
 | `npm run build`     | Production build to `./dist/`                |
 | `npm run preview`   | Preview the production build locally         |
+| `npm test`          | Unit tests (Node's built-in runner; Node ≥ 22.18) |
+
+## Analytics (GTM or GA4, opt-in)
+
+Dormant by default. Two build-time options (see `.env.example`); **set only one**:
+
+- `PUBLIC_GTM_CONTAINER_ID=GTM-XXXXXXX` loads the PM's Google Tag Manager container, which already
+  carries the GA4 tag. When it is set, the direct GA4 path below does **not** load, so visits are never
+  counted twice. See `docs/GTM-ACTIVATION-CHECKLIST.md`.
+- `PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXX` (used only without a GTM id) sends a privacy-safe `page_view`
+  per page (path and title only). See `docs/GA4-ACTIVATION-CHECKLIST.md`.
+
+Either way, a cookie card asks first and no Google script loads until the visitor clicks Accept;
+"Cookie settings" in the footer changes the choice. Preview builds never load analytics.
 
 ## Deploy
 

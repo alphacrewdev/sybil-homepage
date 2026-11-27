@@ -1,6 +1,7 @@
 ---
 import { site, footer } from "../content/homepage";
 import { withBase } from "../lib/base";
+import { analyticsSetup } from "../lib/analytics/setup";
 ---
 
 <footer class="sitefoot rule-gradient">
@@ -28,6 +29,7 @@ import { withBase } from "../lib/base";
       <span>© <span id="fyear">2026</span> {site.name}. All rights reserved.</span>
       <nav class="legallinks" aria-label="Legal">
         {footer.legal.map((link) => <a href={link.href}>{link.label}</a>)}
+        {analyticsSetup && <button type="button" class="cookielink" data-cookie-settings>Cookie settings</button>}
       </nav>
       <span>Developed by <a href="https://alphacrewstudio.com" rel="noopener">AlphaCrew Studio</a></span>
     </div>
@@ -96,8 +98,10 @@ import { withBase } from "../lib/base";
   }
 
   .legallinks { display: flex; gap: 1.2rem; }
-  .legalbar a { color: inherit; transition: color 0.18s ease; }
-  .legalbar a:hover { color: var(--accent); }
+  .legallinks { flex-wrap: wrap; }
+  .legalbar a, .cookielink { color: inherit; transition: color 0.18s ease; }
+  .legalbar a:hover, .cookielink:hover { color: var(--accent); }
+  .cookielink { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
 </style>
 
 <script>
